@@ -1,0 +1,21 @@
+name: traffic_counter
+
+dependencies:
+  - python==3.8.5
+  - pip
+  - matplotlib
+  - scipy
+  - cudnn
+  - cudatoolkit==10.1.243
+  - pip:
+    - tensorflow-gpu==2.3.0
+    - opencv-python
+    - PySide2==5.15
+    - numpy>=1.19
+    - pyqtgraph
+    - qtmodern
+    - lxml
+    - tqdm
+    - absl-py
+    - easydict
+    - pillow
