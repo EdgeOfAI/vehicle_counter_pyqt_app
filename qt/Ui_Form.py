@@ -649,7 +649,7 @@ class Ui_Form(object):
         self.maxFrameNum.setText(QCoreApplication.translate("Form", u"N", None))
         self.mediaGBox.setTitle(QCoreApplication.translate("Form", u"Media", None))
         self.label_9.setText(QCoreApplication.translate("Form", u"Input Video:", None))
-        self.label_10.setText(QCoreApplication.translate("Form", u"Cache Data:", None))
+        self.label_10.setText(QCoreApplication.translate("Form", u"Model Path:", None))
         self.loadVideoBtn.setText(QCoreApplication.translate("Form", u"...", None))
         self.loadCacheBtn.setText(QCoreApplication.translate("Form", u"...", None))
         self.maskingGBox.setTitle(QCoreApplication.translate("Form", u"Masking", None))

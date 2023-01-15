@@ -72,7 +72,7 @@ class ViewController(QWidget, Ui_Form):
             self.setVideo(file_path)
 
     def openCacheFile(self):
-        file_path, _ = QFileDialog.getOpenFileName(self, "Open Cache Data", '', "hdf (*.h5)")
+        file_path, _ = QFileDialog.getOpenFileName(self, "Open Yolov5 Model", '', "pt (*.pt)")
         if (file_path != ''):
             self.setCacheData(file_path)
 

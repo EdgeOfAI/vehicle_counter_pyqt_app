@@ -99,12 +99,12 @@ class Model(QObject):
     def setCacheDataPath(self, path):
         self.cache_data_path = path
 
-        # parse cache data and send signal with max frame num
-        cache = h5py.File(self.cache_data_path, 'r')
-        cache_data = cache.get('dataset_1')
-        self.cache_data = np.array(cache_data)
+        # parse Model path and send signal with max frame num
+        # cache = h5py.File(self.cache_data_path, 'r')
+        # cache_data = cache.get('dataset_1')
+        # self.cache_data = np.array(cache_data)
 
-        self.max_frame_update_signal.emit(self.cache_data.shape[0])        
+        # self.max_frame_update_signal.emit(self.cache_data.shape[0])        
 
     def setMaskFile(self, path):
         self.mask_path = path
@@ -304,7 +304,7 @@ class Model(QObject):
 
     def validateInputFiles(self) -> bool:
         if self.cache_data is None:
-            self.error_signal.emit('Cache data not specified!')
+            self.error_signal.emit('Model path not specified!')
             return False
         elif self.vid is None:
             self.error_signal.emit('No input video specified')
