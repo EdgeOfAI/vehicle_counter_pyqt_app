@@ -1,3 +1,7 @@
+import os
+import sys
+from pathlib import Path
+
 from typing import Dict
 from PySide2.QtCore import Signal, Slot, QObject, QTimer
 import cv2, h5py, math
@@ -341,6 +345,207 @@ class Model(QObject):
 
 #==================== Inference Functions ========================
 
+    @Slot()
+    def startYolov5(self):
+        FILE = Path(__file__).resolve()
+        ROOT = FILE.parents[0]  # YOLOv5 root directory
+        if str(ROOT) not in sys.path:
+            sys.path.append(str(ROOT))  # add ROOT to PATH
+        ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+
+        # arguments for yolov5 model inference
+        weights = self.cache_data_path  # model path or triton URL
+        source = self.input_video_path  # file/dir/URL/glob/screen/0(webcam)
+        data=ROOT / 'yolov5/data/coco128.yaml',  # dataset.yaml path
+        imgsz=(640, 640),  # inference size (height, width)
+        conf_thres=0.25,  # confidence threshold
+        iou_thres=0.45,  # NMS IOU threshold
+        max_det=1000,  # maximum detections per image
+        device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+        view_img=False,  # show results
+        save_txt=False,  # save results to *.txt
+        save_conf=False,  # save confidences in --save-txt labels
+        save_crop=False,  # save cropped prediction boxes
+        nosave=False,  # do not save images/videos
+        classes=None,  # filter by class: --class 0, or --class 0 2 3
+        agnostic_nms=False,  # class-agnostic NMS
+        augment=False,  # augmented inference
+        visualize=False,  # visualize features
+        update=False,  # update all models
+        project=ROOT / 'yolov5/runs/detect',  # save results to project/name
+        name='exp',  # save results to project/name
+        exist_ok=False,  # existing project/name ok, do not increment
+        line_thickness=3,  # bounding box thickness (pixels)
+        hide_labels=False,  # hide labels
+        hide_conf=False,  # hide confidences
+        half=False,  # use FP16 half-precision inference
+        dnn=False,  # use OpenCV DNN for ONNX inference
+        vid_stride=1,  # video frame-rate stride
+
+        # Load model
+        device = select_device(device)
+        model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)
+        stride, class_names, pt = model.stride, model.names, model.pt
+        imgsz = check_img_size(imgsz, s=stride)  # check image size
+
+        # Load dataset
+        dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)
+        vid_path, vid_writer = [None] * bs, [None] * bs
+
+        model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
+        seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
+
+        if self.vid is None:
+            self.error_signal.emit('No input video specified')
+            return
+
+        self.stop_inference = False
+        self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
+
+        # calculate cosine distance metric
+        metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
+        # initialize tracker
+        tracker = Tracker(metric)
+
+        # begin video capture
+        total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
+        self.max_frame_update_signal.emit(total_frames)
+
+        # go to first frame
+        self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
+
+        # get video ready to save locally 
+        # by default VideoCapture returns float instead of int
+        width = int(self.vid.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        fps = int(self.vid.get(cv2.CAP_PROP_FPS))
+        codec = cv2.VideoWriter_fourcc(*'XVID')
+        out = cv2.VideoWriter(self.output_video_path, codec, fps, (width, height))
+
+        # initialize buffer to store cache
+        cache = []
+
+        # buffer to track and count vehicles
+        cars = {}
+        trucks = {}
+        car_cnt = 0
+        truck_cnt = 0
+
+        frame_num = 0
+
+        for path, im, im0s, vid_cap, s in dataset:
+            im = torch.from_numpy(im).to(model.device)
+            im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
+            im /= 255  # 0 - 255 to 0.0 - 1.0
+            if len(im.shape) == 3:
+                im = im[None]  # expand for batch dim
+
+            # Inference
+            visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
+            pred = model(im, augment=augment, visualize=visualize)
+
+            # NMS
+            pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
+
+            bboxes, scores, classes = [], [], []
+            
+            # Process predictions
+            for i, det in enumerate(pred):  # per image
+                seen += 1
+                p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
+                num_objects = len(det)
+
+                if len(det):
+                    # Rescale boxes from img_size to im0 size
+                    det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
+                    # Write results
+                    for *xyxy, conf, cls in reversed(det):
+                        scores.append(conf)
+                        classes.append(cls)
+                        xmin, ymin, xmax, ymax = xyxy
+                        xmin, ymin, w, h = xmin, ymin, xmax-xmin, ymax-ymin
+                        bboxes.append(np.array([xmin, ymin, w, h]))
+        
+            allowed_classes = ['truck', 'car', 'bus']
+            
+            # loop through objects and use class index to get class name, allow only classes in allowed_classes list
+            names = []
+            deleted_indx = []
+            for i in range(num_objects):
+                class_indx = int(classes[i])
+                class_name = class_names[class_indx]
+                if class_name not in allowed_classes:
+                    deleted_indx.append(i)
+                else:
+                    names.append(class_name)
+            names = np.array(names)
+            count = len(names)
+
+            # delete detections that are not in allowed_classes
+            bboxes = np.delete(bboxes, deleted_indx, axis=0)
+            scores = np.delete(scores, deleted_indx, axis=0)
+
+            # encode yolo detections and feed to tracker
+            features = self.encoder(frame, bboxes)
+            detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
+
+            # run non-maxima supression
+            boxs = np.array([d.tlwh for d in detections])
+            scores = np.array([d.confidence for d in detections])
+            classes = np.array([d.class_name for d in detections])
+            indices = preprocessing.non_max_suppression(boxs, classes, nms_max_overlap, scores)
+            detections = [detections[i] for i in indices]  
+            
+            # Call the tracker
+            tracker.predict()
+            tracker.update(detections)
+
+            obj_num = 0
+            # update tracks
+            for track in tracker.tracks:
+                if not track.is_confirmed() or track.time_since_update > 1:
+                    continue 
+                bbox = track.to_tlbr()
+                class_name = track.get_class()
+                
+                x_min = int(bbox[0])
+                y_min = int(bbox[1])
+                x_max = int(bbox[2])
+                y_max = int(bbox[3])
+                id = int(track.track_id)
+
+                # add to hdf buffer
+                class_id = self.getClassId(class_name)
+                frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
+
+                # Count vehicles
+                detected = self.countVehicles(frame, frame_num, frame_data[obj_num])
+
+                # draw bbox on screen
+                frame = self.drawBoundingBox(frame_original, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
+                
+                obj_num = obj_num +  1
+
+            result = np.asarray(frame)
+            result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            out.write(result)
+
+            cache.append(frame_data)
+
+            # update frame on UI
+            self.frame_update_signal.emit(frame, frame_num)
+
+            print('Frame #: ', frame_num)
+            frame_num = frame_num + 1
+
+        # Save cache file as hdf file
+        cache_data = h5py.File(self.output_data_path, 'w')
+        cache = np.asarray(cache, dtype=int)
+        cache_data.create_dataset('dataset_1', data=cache)
+        cache_data.close()
+
+        self.process_done_signal.emit()
+
     def stopInference(self):
         self.stop_inference = True
 
@@ -349,7 +554,7 @@ class Model(QObject):
         if self.vid is None:
             self.error_signal.emit('No input video specified')
             return
-
+        
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
 
