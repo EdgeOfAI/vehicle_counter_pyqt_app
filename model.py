@@ -1,5 +1,6 @@
 import os
 import sys
+import torch
 from pathlib import Path
 
 from typing import Dict
@@ -28,6 +29,13 @@ from core.yolov4 import filter_boxes
 from core.config import cfg
 import core.utils as utils
 from tools import generate_detections as gdet
+
+from yolov5.models.common import DetectMultiBackend
+from yolov5.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
+from yolov5.utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
+                           increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
+from yolov5.utils.plots import Annotator, colors, save_one_box
+from yolov5.utils.torch_utils import select_device, smart_inference_mode
 
 MAX_DETECTION_NUM = 50
 nn_budget = None
@@ -346,41 +354,33 @@ class Model(QObject):
 #==================== Inference Functions ========================
 
     @Slot()
-    def startYolov5(self):
-        FILE = Path(__file__).resolve()
-        ROOT = FILE.parents[0]  # YOLOv5 root directory
-        if str(ROOT) not in sys.path:
-            sys.path.append(str(ROOT))  # add ROOT to PATH
-        ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
-
+    def startInference(self):
+        if self.vid is None:
+            self.error_signal.emit('No input video specified')
+            return
         # arguments for yolov5 model inference
         weights = self.cache_data_path  # model path or triton URL
         source = self.input_video_path  # file/dir/URL/glob/screen/0(webcam)
-        data=ROOT / 'yolov5/data/coco128.yaml',  # dataset.yaml path
+        data='yolov5/data/coco128.yaml',  # dataset.yaml path
         imgsz=(640, 640),  # inference size (height, width)
         conf_thres=0.25,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
         max_det=1000,  # maximum detections per image
         device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
-        view_img=False,  # show results
-        save_txt=False,  # save results to *.txt
-        save_conf=False,  # save confidences in --save-txt labels
-        save_crop=False,  # save cropped prediction boxes
-        nosave=False,  # do not save images/videos
         classes=None,  # filter by class: --class 0, or --class 0 2 3
         agnostic_nms=False,  # class-agnostic NMS
         augment=False,  # augmented inference
         visualize=False,  # visualize features
-        update=False,  # update all models
-        project=ROOT / 'yolov5/runs/detect',  # save results to project/name
+        project='yolov5/runs/detect',  # save results to project/name
         name='exp',  # save results to project/name
         exist_ok=False,  # existing project/name ok, do not increment
-        line_thickness=3,  # bounding box thickness (pixels)
-        hide_labels=False,  # hide labels
-        hide_conf=False,  # hide confidences
         half=False,  # use FP16 half-precision inference
         dnn=False,  # use OpenCV DNN for ONNX inference
         vid_stride=1,  # video frame-rate stride
+        bs = 1
+        print('Cache data path:  ', self.cache_data_path)
+        print('Input video Path:  ', self.input_video_path)
+        print('*(*(*(*(*(********************************************************)(()()())()(()')
 
         # Load model
         device = select_device(device)
@@ -394,10 +394,6 @@ class Model(QObject):
 
         model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
         seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
-
-        if self.vid is None:
-            self.error_signal.emit('No input video specified')
-            return
 
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
@@ -422,6 +418,8 @@ class Model(QObject):
         codec = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(self.output_video_path, codec, fps, (width, height))
 
+        save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
+
         # initialize buffer to store cache
         cache = []
 
@@ -434,6 +432,7 @@ class Model(QObject):
         frame_num = 0
 
         for path, im, im0s, vid_cap, s in dataset:
+            frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
             im = torch.from_numpy(im).to(model.device)
             im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
             im /= 255  # 0 - 255 to 0.0 - 1.0
@@ -465,9 +464,9 @@ class Model(QObject):
                         xmin, ymin, xmax, ymax = xyxy
                         xmin, ymin, w, h = xmin, ymin, xmax-xmin, ymax-ymin
                         bboxes.append(np.array([xmin, ymin, w, h]))
-        
+
             allowed_classes = ['truck', 'car', 'bus']
-            
+
             # loop through objects and use class index to get class name, allow only classes in allowed_classes list
             names = []
             deleted_indx = []
@@ -507,7 +506,7 @@ class Model(QObject):
                     continue 
                 bbox = track.to_tlbr()
                 class_name = track.get_class()
-                
+
                 x_min = int(bbox[0])
                 y_min = int(bbox[1])
                 x_max = int(bbox[2])
@@ -522,7 +521,7 @@ class Model(QObject):
                 detected = self.countVehicles(frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
-                frame = self.drawBoundingBox(frame_original, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
+                frame = self.drawBoundingBox(frame, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
                 
                 obj_num = obj_num +  1
 
@@ -550,11 +549,11 @@ class Model(QObject):
         self.stop_inference = True
 
     @Slot()
-    def startInference(self):
+    def startInference1(self):
         if self.vid is None:
             self.error_signal.emit('No input video specified')
             return
-        
+
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
 
@@ -649,7 +648,7 @@ class Model(QObject):
 
             # read in all class names from config
             class_names = utils.read_class_names(cfg.YOLO.CLASSES)
-            
+
             # custom allowed classes (uncomment line below to customize tracker for only people)
             allowed_classes = ['truck', 'car', 'bus']
 

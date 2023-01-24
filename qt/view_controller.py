@@ -8,6 +8,7 @@ import numpy as np
 import cv2, os, math
 import pyqtgraph as pg
 
+
 class ViewController(QWidget, Ui_Form):
     startInferenceSignal = Signal()
     startCountingSignal = Signal()
