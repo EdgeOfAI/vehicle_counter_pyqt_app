@@ -18,14 +18,14 @@ from deep_sort import tracker
 from deep_sort.detection import Detection
 from deep_sort.tracker import Tracker
 
-import tensorflow as tf
-physical_devices = tf.config.experimental.list_physical_devices('GPU')
-if len(physical_devices) > 0:
-    tf.config.experimental.set_memory_growth(physical_devices[0], True)
-from tensorflow.python.saved_model import tag_constants
+# import tensorflow as tf
+# physical_devices = tf.config.experimental.list_physical_devices('GPU')
+# if len(physical_devices) > 0:
+#     tf.config.experimental.set_memory_growth(physical_devices[0], True)
+# from tensorflow.python.saved_model import tag_constants
 from tensorflow.compat.v1 import ConfigProto
 from tensorflow.compat.v1 import Session
-from core.yolov4 import filter_boxes
+# from core.yolov4 import filter_boxes
 from core.config import cfg
 import core.utils as utils
 from tools import generate_detections as gdet
@@ -353,38 +353,49 @@ class Model(QObject):
 
 #==================== Inference Functions ========================
 
+    def preprocess(img, imgsz, stride):
+        img = letterbox(img, imgsz, stride=stride)[0]
+        img = img.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        img = np.ascontiguousarray(img)
+        img = torch.from_numpy(img).to(device)
+        img = img.float()
+        img /= 255.0
+        if len(img.shape) == 3:
+            img = img[None]
+        
+        return img
+
     @Slot()
     def startInference(self):
         if self.vid is None:
             self.error_signal.emit('No input video specified')
             return
         # arguments for yolov5 model inference
-        weights = self.cache_data_path  # model path or triton URL
-        source = self.input_video_path  # file/dir/URL/glob/screen/0(webcam)
-        data='yolov5/data/coco128.yaml',  # dataset.yaml path
-        imgsz=(640, 640),  # inference size (height, width)
-        conf_thres=0.25,  # confidence threshold
-        iou_thres=0.45,  # NMS IOU threshold
-        max_det=1000,  # maximum detections per image
-        device='',  # cuda device, i.e. 0 or 0,1,2,3 or cpu
-        classes=None,  # filter by class: --class 0, or --class 0 2 3
-        agnostic_nms=False,  # class-agnostic NMS
-        augment=False,  # augmented inference
-        visualize=False,  # visualize features
-        project='yolov5/runs/detect',  # save results to project/name
-        name='exp',  # save results to project/name
-        exist_ok=False,  # existing project/name ok, do not increment
-        half=False,  # use FP16 half-precision inference
-        dnn=False,  # use OpenCV DNN for ONNX inference
-        vid_stride=1,  # video frame-rate stride
+        weights = ["C:/Users/Shahzodbek/projects/exp14/weights/best.pt"]  # model path or triton URL
+        source = ['C:/Users/Shahzodbek/Downloads/test3.mp4']  # file/dir/URL/glob/screen/0(webcam)
+        data='yolov5/data/coco128.yaml'  # dataset.yaml path
+        imgsz=640  # inference size (height, width)
+        conf_thres=0.25  # confidence threshold
+        iou_thres=0.45  # NMS IOU threshold
+        max_det=1000  # maximum detections per image
+        device='cuda:0'  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+        classes=None  # filter by class: --class 0, or --class 0 2 3
+        agnostic_nms=False  # class-agnostic NMS
+        augment=False  # augmented inference
+        visualize=False  # visualize features
+        project='yolov5/runs/detect'  # save results to project/name
+        name='exp'  # save results to project/name
+        exist_ok=False  # existing project/name ok, do not increment
+        half=False  # use FP16 half-precision inference
+        dnn=False  # use OpenCV DNN for ONNX inference
+        vid_stride=1  # video frame-rate stride
         bs = 1
-        print('Cache data path:  ', self.cache_data_path)
-        print('Input video Path:  ', self.input_video_path)
-        print('*(*(*(*(*(********************************************************)(()()())()(()')
+        # print('Cache data path:  ', self.cache_data_path)
+        # print('Input video Path:  ', self.input_video_path)
 
         # Load model
-        device = select_device(device)
-        model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data, fp16=half)
+        device = select_device('')
+        model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
         stride, class_names, pt = model.stride, model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
@@ -402,6 +413,14 @@ class Model(QObject):
         metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
         # initialize tracker
         tracker = Tracker(metric)
+
+        # load standard tensorflow saved model for YOLO and Deepsort
+        # load configuration for object detector
+        config = ConfigProto()
+        config.gpu_options.allow_growth = True
+        self.sess = Session(config=config)
+        self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
+
 
         # begin video capture
         total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -432,6 +451,8 @@ class Model(QObject):
         frame_num = 0
 
         for path, im, im0s, vid_cap, s in dataset:
+            original_frame = im0s.copy()
+            frame_num += 1
             frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
             im = torch.from_numpy(im).to(model.device)
             im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
@@ -459,11 +480,11 @@ class Model(QObject):
                     det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
-                        scores.append(conf)
-                        classes.append(cls)
+                        scores.append(conf.cpu())
+                        classes.append(cls.cpu())
                         xmin, ymin, xmax, ymax = xyxy
                         xmin, ymin, w, h = xmin, ymin, xmax-xmin, ymax-ymin
-                        bboxes.append(np.array([xmin, ymin, w, h]))
+                        bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
             allowed_classes = ['truck', 'car', 'bus']
 
@@ -485,7 +506,8 @@ class Model(QObject):
             scores = np.delete(scores, deleted_indx, axis=0)
 
             # encode yolo detections and feed to tracker
-            features = self.encoder(frame, bboxes)
+            features = self.encoder(original_frame, bboxes)
+            print(frame_num)
             detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
 
             # run non-maxima supression
@@ -498,6 +520,7 @@ class Model(QObject):
             # Call the tracker
             tracker.predict()
             tracker.update(detections)
+            print(detections)
 
             obj_num = 0
             # update tracks
@@ -518,21 +541,23 @@ class Model(QObject):
                 frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
 
                 # Count vehicles
-                detected = self.countVehicles(frame, frame_num, frame_data[obj_num])
+                detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
-                frame = self.drawBoundingBox(frame, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
+                original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
                 
                 obj_num = obj_num +  1
 
-            result = np.asarray(frame)
-            result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+            result = np.asarray(original_frame)
+            result = cv2.cvtColor(original_frame, cv2.COLOR_RGB2BGR)
             out.write(result)
 
             cache.append(frame_data)
 
             # update frame on UI
-            self.frame_update_signal.emit(frame, frame_num)
+            print(type(original_frame), original_frame.shape)
+            cv2.imwrite('frame1.png', original_frame)
+            self.frame_update_signal.emit(original_frame, frame_num)
 
             print('Frame #: ', frame_num)
             frame_num = frame_num + 1
@@ -766,3 +791,8 @@ class Model(QObject):
             frame[y_min:y_max, x_min:x_max, 0] = 0
             frame[y_min:y_max, x_min:x_max, 2] = 0
         return frame
+
+
+if __name__ == "__main__":
+    model = Model()
+    model.startInference()

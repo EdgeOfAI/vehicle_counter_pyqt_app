@@ -80,6 +80,35 @@ def run(
         dnn=False,  # use OpenCV DNN for ONNX inference
         vid_stride=1,  # video frame-rate stride
 ):
+    print('device', device, type(device))
+    print('weights=',weights)  # model path or triton URL
+    print('source=',source)  # file/dir/URL/glob/screen/0(webcam)
+    print('data=',data)  # dataset.yaml path
+    print('imgsz=',imgsz)  # inference size (height, width)
+    print('conf_thres=',conf_thres)  # confidence threshold
+    print('iou_thres=',iou_thres)  # NMS IOU threshold
+    print('max_det=',max_det)  # maximum detections per image
+    print('device=',device)  # cuda device, i.e. 0 or 0,1,2,3 or cpu
+    print('view_img=',view_img)  # show results
+    print('save_txt=',save_txt)  # save results to *.txt
+    print('save_conf=',save_conf)  # save confidences in --save-txt labels
+    print('save_crop=',save_crop)  # save cropped prediction boxes
+    print('nosave=',nosave)  # do not save images/videos
+    print('classes=',classes)  # filter by class: --class 0, or --class 0 2 3
+    print('agnostic_nms=',agnostic_nms)  # class-agnostic NMS
+    print('augment=',augment)  # augmented inference
+    print('visualize=',visualize)  # visualize features
+    print('update=',update)  # update all models
+    print('project=',project)  # save results to project/name
+    print('name=',name)  # save results to project/name
+    print('exist_ok=',exist_ok)  # existing project/name ok, do not increment
+    print('line_thickness=',line_thickness)  # bounding box thickness (pixels)
+    print('hide_labels=',hide_labels)  # hide labels
+    print('hide_conf=',hide_conf)  # hide confidences
+    print('half=',half)  # use FP16 half-precision inference
+    print('dnn=',dnn)  # use OpenCV DNN for ONNX inference
+    print('vid_stride=',vid_stride)  # video frame-rate stride
+
     source = str(source)
     save_img = not nosave and not source.endswith('.txt')  # save inference images
     is_file = Path(source).suffix[1:] in (IMG_FORMATS + VID_FORMATS)
@@ -252,12 +281,10 @@ def parse_opt():
 
 
 def main(opt):
-    # check_requirements(exclude=('tensorboard', 'thop'))
+    check_requirements(exclude=('tensorboard', 'thop'))
     run(**vars(opt))
 
 
 if __name__ == "__main__":
-    opt = parse_opt() 
-    print('*(*&(&(*&)(*&)(DF*&S)(D*F)S(D*&F)(S*D&F)(S*D&F)(S*D&')
-    print('OPTS:  ', **vars(opt))
+    opt = parse_opt()
     main(opt)

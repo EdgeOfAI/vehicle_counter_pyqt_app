@@ -337,7 +337,7 @@ class DetectMultiBackend(nn.Module):
         fp16 &= pt or jit or onnx or engine  # FP16
         nhwc = coreml or saved_model or pb or tflite or edgetpu  # BHWC formats (vs torch BCWH)
         stride = 32  # default stride
-        cuda = torch.cuda.is_available() and device.type != 'cpu'  # use CUDA
+        cuda = torch.cuda.is_available()  # use CUDA
         if not (pt or triton):
             w = attempt_download(w)  # download if not local
 
@@ -600,7 +600,7 @@ class DetectMultiBackend(nn.Module):
     def _model_type(p='path/to/model.pt'):
         # Return model type from model path, i.e. path='path/to/model.onnx' -> type=onnx
         # types = [pt, jit, onnx, xml, engine, coreml, saved_model, pb, tflite, edgetpu, tfjs, paddle]
-        from export import export_formats
+        from yolov5.export import export_formats
         from yolov5.utils.downloads import is_url
         sf = list(export_formats().Suffix)  # export suffixes
         if not is_url(p, check=False):
