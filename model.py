@@ -370,11 +370,11 @@ class Model(QObject):
         if self.vid is None:
             self.error_signal.emit('No input video specified')
             return
-        print('Cache data path:  ', self.cache_data_path)
-        print('Input video Path:  ', self.input_video_path)
+        # print('Cache data path:  ', self.cache_data_path)
+        # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
-        weights = ['C:/Users/shahz/projects/best.pt']  # model path or triton URL
-        source = ['C:/Users/shahz/projects/test3.mp4']  # file/dir/URL/glob/screen/0(webcam)
+        weights = [self.cache_data_path]  # model path or triton URL
+        source = [self.input_video_path]  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.25  # confidence threshold
@@ -396,7 +396,6 @@ class Model(QObject):
         # Load model
         device = select_device()
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
-        print(1)
         stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
@@ -478,7 +477,7 @@ class Model(QObject):
                 num_objects = len(det)
 
                 if len(det):
-                    print('Detes', det)
+                    # print('Detes', det)
                     # Rescale boxes from img_size to im0 size
                     det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
                     # Write results
@@ -487,7 +486,7 @@ class Model(QObject):
                         classes.append(cls.cpu())
                         # print(xyxy)
                         xmin, ymin, xmax, ymax = xyxy
-                        print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
+                        # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
                         xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
                         bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
@@ -524,12 +523,12 @@ class Model(QObject):
             # Call the tracker
             tracker.predict()
             tracker.update(detections)
-            print(tracker.tracks)
+            # print(tracker.tracks)
 
             obj_num = 0
             # update tracks
             for track in tracker.tracks:
-                print('HERE I am ', track.is_confirmed(), track.time_since_update)
+                # print('HERE I am ', track.is_confirmed(), track.time_since_update)
                 if not track.is_confirmed() or track.time_since_update > 1:
                     continue 
                 bbox = track.to_tlbr()
@@ -546,7 +545,7 @@ class Model(QObject):
                 frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
 
                 # Count vehicles
-                print('I am in')
+                # print('I am in')
                 detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
