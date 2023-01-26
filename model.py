@@ -559,7 +559,7 @@ class Model(QObject):
             # update frame on UI
             print(type(original_frame), original_frame.shape)
             cv2.imwrite('frame1.png', original_frame)
-            self.frame_update_signal.emit(original_frame, frame_num)
+            self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
 
             print('Frame #: ', frame_num)
             frame_num = frame_num + 1
