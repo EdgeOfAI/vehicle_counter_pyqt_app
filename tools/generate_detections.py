@@ -50,39 +50,39 @@ def extract_image_patch(image, bbox, patch_shape):
         boundaries.
 
     """
-    print('11111111111')
+    # print('11111111111')
     bbox = np.array(bbox)
-    print('!!!!!!!!!!!!!!!')
+    # print('!!!!!!!!!!!!!!!')
     if patch_shape is not None:
-        print('@@@@@@@@@@@')
+        # print('@@@@@@@@@@@')
         # correct aspect ratio to patch shape
         target_aspect = float(patch_shape[1]) / patch_shape[0]
         new_width = target_aspect * bbox[3]
         bbox[0] -= (new_width - bbox[2]) / 2
         bbox[2] = new_width
 
-    print('********')
+    # print('********')
 
     # convert to top left, bottom right
     bbox[2:] += bbox[:2]
     bbox = bbox.astype(np.int)
 
-    print('22222222222')
+    # print('22222222222')
 
     # clip at image boundaries
     bbox[:2] = np.maximum(0, bbox[:2])
-    print('BEfore 2')
+    # print('BEfore 2')
     bbox[2:] = np.minimum(np.asarray(image.shape[:2][::-1]) - 1, bbox[2:])
-    print('Before')
+    # print('Before')
     if np.any(bbox[:2] >= bbox[2:]):
-        print('NONE returned')
+        # print('NONE returned')
         return None
     sx, sy, ex, ey = bbox
-    print('Image type', type(image))
+    # print('Image type', type(image))
     image = image[int(sy):int(ey), int(sx):int(ex)]
-    print('2')
+    # print('2')
     image = cv2.resize(image, tuple(patch_shape[::-1]))
-    print('###############')
+    # print('###############')
     return image
 
 
@@ -115,25 +115,24 @@ class ImageEncoder(object):
 
 def create_box_encoder(model_filename, input_name="images",
                        output_name="features", batch_size=32):
-    print('hello')
+    # print('hello')
     image_encoder = ImageEncoder(model_filename, input_name, output_name)
     image_shape = image_encoder.image_shape
 
     def encoder(image, boxes):
-        print('Image types: ', image, type(image))
-        print('here')
+        # print('Image types: ', image, type(image))
+        # print('here')
         image_patches = []
-        print(boxes)
+        # print(boxes)
         for box in boxes:
-            print('patched')
             patch = extract_image_patch(image, box, image_shape[:2])
-            print(patch)
+            # print(patch)
             if patch is None:
                 print("WARNING: Failed to extract image patch: %s." % str(box))
                 patch = np.random.uniform(
                     0., 255., image_shape).astype(np.uint8)
             image_patches.append(patch)
-            print('after patch append')
+            # print('after patch append')
         image_patches = np.asarray(image_patches)
         return image_encoder(image_patches, batch_size)
 

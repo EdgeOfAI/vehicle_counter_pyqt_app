@@ -33,7 +33,7 @@ class Detection(object):
         self.confidence = float(confidence)
         self.class_name = class_name
         self.feature = np.asarray(feature, dtype=np.float32)
-        print('inited')
+        # print('inited')
 
     def get_class(self):
         return self.class_name
