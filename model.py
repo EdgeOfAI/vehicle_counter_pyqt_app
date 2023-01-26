@@ -373,8 +373,8 @@ class Model(QObject):
         print('Cache data path:  ', self.cache_data_path)
         print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
-        weights = [self.cache_data_path]  # model path or triton URL
-        source = [self.input_video_path]  # file/dir/URL/glob/screen/0(webcam)
+        weights = ['C:/Users/shahz/projects/best.pt']  # model path or triton URL
+        source = ['C:/Users/shahz/projects/test3.mp4']  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.25  # confidence threshold
@@ -397,7 +397,7 @@ class Model(QObject):
         device = select_device()
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
         print(1)
-        stride, class_names, pt = model.stride, model.names, model.pt
+        stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
         # Load dataset
@@ -466,9 +466,10 @@ class Model(QObject):
             pred = model(im, augment=augment, visualize=visualize)
 
             # NMS
-            pred = non_max_suppression(pred, conf_thres, iou_thres, classes, agnostic_nms, max_det=max_det)
+            pred = non_max_suppression(pred, conf_thres, iou_thres, None, agnostic_nms, max_det=max_det)
 
             bboxes, scores, classes = [], [], []
+
             
             # Process predictions
             for i, det in enumerate(pred):  # per image
@@ -477,14 +478,17 @@ class Model(QObject):
                 num_objects = len(det)
 
                 if len(det):
+                    print('Detes', det)
                     # Rescale boxes from img_size to im0 size
                     det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
                     # Write results
                     for *xyxy, conf, cls in reversed(det):
                         scores.append(conf.cpu())
                         classes.append(cls.cpu())
+                        # print(xyxy)
                         xmin, ymin, xmax, ymax = xyxy
-                        xmin, ymin, w, h = xmin, ymin, xmax-xmin, ymax-ymin
+                        print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
+                        xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
                         bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
             allowed_classes = ['truck', 'car', 'bus']
@@ -557,8 +561,6 @@ class Model(QObject):
             cache.append(frame_data)
 
             # update frame on UI
-            print(type(original_frame), original_frame.shape)
-            cv2.imwrite('frame1.png', original_frame)
             self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
 
             print('Frame #: ', frame_num)
