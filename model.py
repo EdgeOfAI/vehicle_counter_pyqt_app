@@ -370,9 +370,11 @@ class Model(QObject):
         if self.vid is None:
             self.error_signal.emit('No input video specified')
             return
+        print('Cache data path:  ', self.cache_data_path)
+        print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
-        weights = ["C:/Users/Shahzodbek/projects/exp14/weights/best.pt"]  # model path or triton URL
-        source = ['C:/Users/Shahzodbek/Downloads/test3.mp4']  # file/dir/URL/glob/screen/0(webcam)
+        weights = [self.cache_data_path]  # model path or triton URL
+        source = [self.input_video_path]  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.25  # confidence threshold
@@ -390,12 +392,11 @@ class Model(QObject):
         dnn=False  # use OpenCV DNN for ONNX inference
         vid_stride=1  # video frame-rate stride
         bs = 1
-        # print('Cache data path:  ', self.cache_data_path)
-        # print('Input video Path:  ', self.input_video_path)
 
         # Load model
-        device = select_device('')
+        device = select_device()
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
+        print(1)
         stride, class_names, pt = model.stride, model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
@@ -507,7 +508,6 @@ class Model(QObject):
 
             # encode yolo detections and feed to tracker
             features = self.encoder(original_frame, bboxes)
-            print(frame_num)
             detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
 
             # run non-maxima supression
@@ -520,11 +520,12 @@ class Model(QObject):
             # Call the tracker
             tracker.predict()
             tracker.update(detections)
-            print(detections)
+            print(tracker.tracks)
 
             obj_num = 0
             # update tracks
             for track in tracker.tracks:
+                print('HERE I am ', track.is_confirmed(), track.time_since_update)
                 if not track.is_confirmed() or track.time_since_update > 1:
                     continue 
                 bbox = track.to_tlbr()
@@ -541,6 +542,7 @@ class Model(QObject):
                 frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
 
                 # Count vehicles
+                print('I am in')
                 detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
