@@ -2,6 +2,7 @@ import os
 import sys
 import torch
 from pathlib import Path
+from DrawLineWidget import DrawLineWidget
 
 from typing import Dict
 from PySide2.QtCore import Signal, Slot, QObject, QTimer
@@ -83,6 +84,7 @@ class Model(QObject):
         self.stop_counting = True
         self.count_method = 0
         self.imgMask = None
+        self.cardinal_direction_points = []
         self.initialize_counting()
 
         #initialize color map
@@ -98,9 +100,12 @@ class Model(QObject):
         self.input_video_path = path
         self.vid = cv2.VideoCapture(self.input_video_path)
         _, frame = self.vid.read()
+        self.draw_line_widget = DrawLineWidget(frame)
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         self.frame_update_signal.emit(frame, 0)
-        
+
+        # draw cardinal coordinates
+        cv2.imshow('image', self.draw_line_widget.show_image())
 
     def setOutputVideoPath(self, path):
         self.output_video_path = path
@@ -393,6 +398,10 @@ class Model(QObject):
         vid_stride=1  # video frame-rate stride
         bs = 1
 
+        self.cardinal_direction_points = self.draw_line_widget.list_coordinates
+
+        print('COORDINATES', self.cardinal_direction_points)
+
         # Load model
         device = select_device()
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
@@ -424,10 +433,10 @@ class Model(QObject):
 
         # begin video capture
         total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.max_frame_update_signal.emit(total_frames)
 
         # go to first frame
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        self.max_frame_update_signal.emit(total_frames*2)
 
         # get video ready to save locally 
         # by default VideoCapture returns float instead of int
@@ -437,6 +446,7 @@ class Model(QObject):
         codec = cv2.VideoWriter_fourcc(*'XVID')
         out = cv2.VideoWriter(self.output_video_path, codec, fps, (width, height))
 
+        print('TOTAL FRAMS: ', fps)
         save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
 
         # initialize buffer to store cache
