@@ -19,3 +19,4 @@ dependencies:
     - absl-py
     - easydict
     - pillow
+    - shapely

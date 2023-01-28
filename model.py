@@ -6,6 +6,7 @@ from DrawLineWidget import DrawLineWidget
 
 from typing import Dict
 from shapely.geometry import Polygon
+from pointcheck import is_inside_polygons, is_inside_polygon
 from PySide2.QtCore import Signal, Slot, QObject, QTimer
 import cv2, h5py, math
 import numpy as np
@@ -178,7 +179,9 @@ class Model(QObject):
                 'prev_centroid': [cx, cy],
                 'prev_frame_num': frame_num,
                 'dist': 0,
-                'counted': False
+                'counted': False,
+                'in_cardinal_side':None,
+                'out_cardinal_side':None
                 }
             return False
 
@@ -228,9 +231,10 @@ class Model(QObject):
                 tracker_dict[uid]['dist'] += 1
 
                 if tracker_dict[uid]['dist'] > self.finishFrames:
-                    print(tracker_dict)
+                    # print(tracker_dict)
                     tracker_dict[uid]['counted'] = True
                     cnt = sum([param['counted'] for id, param in tracker_dict.items()])
+                    print(cnt)
                     img = self.getVehicleImage(detection, frame)
                     self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
                     return True
@@ -381,65 +385,41 @@ class Model(QObject):
                 'prev_centroid': [cx, cy],
                 'prev_frame_num': frame_num,
                 'dist': 0,
-                'counted': False
+                'counted': False,
+                'in_cardinal_side':None,
+                'out_cardinal_side':None
                 }
-            return False
+        
+        object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
 
-        # already counted this car, skip
-        elif tracker_dict[uid]['counted'] == True:
-            return True
-
-        # count with vector filter method
-        if self.count_method == 0:
-            # reset distance travelled if previous detected frame is too far off
-            if frame_num - tracker_dict[uid]['prev_frame_num'] > self.filt_frame:
-                tracker_dict[uid]['prev_centroid'] = centroid
-
-            # compute distance traveled
-            prev_centroid = tracker_dict[uid]['prev_centroid']
-            tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
-            tracker_dict[uid]['prev_centroid'] = centroid
-            tracker_dict[uid]['prev_frame_num'] = frame_num
-
-            # count the object if distance traveled exceeds a threshold
-            if tracker_dict[uid]['dist'] > self.filt_dist:
-                # computer direction vector
-                initial_centroid = tracker_dict[uid]['initial_centroid']
-                vect = [cx - initial_centroid[0], cy - initial_centroid[1]]
-
-                # only count vehicles travelling south
-                x_min = self.filt_x_vec - self.filt_width
-                x_max = self.filt_x_vec + self.filt_width
-
-                if (x_min < vect[0] < x_max) and (vect[1] > 0) == (self.filt_y_vec > 0):
-                    tracker_dict[uid]['counted'] = True
-
-                    cnt = sum([param['counted'] for id, param in tracker_dict.items()])
-                    img = self.getVehicleImage(detection, frame)
-                    self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
-                    return True
-
-        # count with finishing line method  
-        elif self.count_method == 1:
-            bx = self.finishLine[0]
-            by = self.finishLine[1]
-            bw = self.finishLine[2]
-            bh = self.finishLine[3]
-
+        for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
+            cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
+            # print(cardinal_side, [[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
+            # if is_inside_polygon(cardinal_side_copy, centroid):
+            #     print(class_id, cardinal_side_id)
+            cardinal_side_polygon = Polygon(cardinal_side_copy)
+            # print('4444444444444', cardinal_side_polygon.intersection(object_polygon).area, cardinal_side_polygon.union(object_polygon).area)
+            # intersect = cardinal_side_polygon.intersection(object_polygon).area / cardinal_side_polygon.union(object_polygon).area
+            is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
+            if is_intersects:
+                print(is_intersects, class_id, cardinal_side_id, uid)
+                if uid == '2':
+                    self.stop_counting = True
             # check if centroid within bounds of finish line
-            if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
-                tracker_dict[uid]['dist'] += 1
+            # if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
+            #     tracker_dict[uid]['dist'] += 1
 
-                if tracker_dict[uid]['dist'] > self.finishFrames:
-                    print(tracker_dict)
-                    tracker_dict[uid]['counted'] = True
-                    cnt = sum([param['counted'] for id, param in tracker_dict.items()])
-                    img = self.getVehicleImage(detection, frame)
-                    self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
-                    return True
-        return False
+            #     if tracker_dict[uid]['dist'] > self.finishFrames:
+            #         print(tracker_dict)
+            #         tracker_dict[uid]['counted'] = True
+            #         cnt = sum([param['counted'] for id, param in tracker_dict.items()])
+            #         print(cnt)
+            #         img = self.getVehicleImage(detection, frame)
+            #         self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)        
 
 #==================== Inference Functions ========================
+    def myTouches(self, poly1, poly2):
+        return poly1.intersects(poly2) and not poly1.crosses(poly2) and not poly1.contains(poly2)
 
     def preprocess(img, imgsz, stride):
         img = letterbox(img, imgsz, stride=stride)[0]
@@ -519,7 +499,7 @@ class Model(QObject):
 
         # go to first frame
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
-        self.max_frame_update_signal.emit(total_frames*2)
+        self.max_frame_update_signal.emit(total_frames)
 
         # get video ready to save locally 
         # by default VideoCapture returns float instead of int
@@ -643,6 +623,7 @@ class Model(QObject):
                 # Count vehicles
                 # print('I am in')
                 detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
+                self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
                 original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
@@ -658,8 +639,7 @@ class Model(QObject):
             # update frame on UI
             self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
 
-            print('Frame #: ', frame_num)
-            frame_num = frame_num + 1
+            # print('Frame #: ', frame_num)
 
         # Save cache file as hdf file
         cache_data = h5py.File(self.output_data_path, 'w')

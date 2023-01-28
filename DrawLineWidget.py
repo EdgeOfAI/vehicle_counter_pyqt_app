@@ -61,7 +61,7 @@ class DrawLineWidget(object):
                             text, 
                             (50, 50), 
                             self.font, 1, 
-                            (0, 0, 255), 
+                            (0, 0, 255),  
                             2, 
                             cv2.LINE_4)
 
