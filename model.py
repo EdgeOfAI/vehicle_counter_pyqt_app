@@ -5,6 +5,7 @@ from pathlib import Path
 from DrawLineWidget import DrawLineWidget
 
 from typing import Dict
+from shapely.geometry import Polygon
 from PySide2.QtCore import Signal, Slot, QObject, QTimer
 import cv2, h5py, math
 import numpy as np
@@ -227,6 +228,7 @@ class Model(QObject):
                 tracker_dict[uid]['dist'] += 1
 
                 if tracker_dict[uid]['dist'] > self.finishFrames:
+                    print(tracker_dict)
                     tracker_dict[uid]['counted'] = True
                     cnt = sum([param['counted'] for id, param in tracker_dict.items()])
                     img = self.getVehicleImage(detection, frame)
@@ -356,6 +358,87 @@ class Model(QObject):
         # update frame signal
         self.frame_update_signal.emit(frame, frame_num)
 
+    def countVehiclesCustom(self, frame, frame_num, detection):
+        class_id = detection[0]
+        uid = str(detection[1])
+
+        # xmin, ymin, xmax, ymax
+        x_min = detection[2]
+        y_min = detection[3]
+        x_max = detection[4]
+        y_max = detection[5]
+        width = x_max - x_min
+        height = y_max - y_min
+        cx = x_min + (width / 2)
+        cy = y_min + (height / 2)
+        centroid = [cx, cy]
+        tracker_dict = self.detected_vehicles[str(class_id)]
+
+        # detecting for the first time
+        if uid not in tracker_dict.keys():
+            tracker_dict[uid] = {
+                'initial_centroid' : [cx, cy], 
+                'prev_centroid': [cx, cy],
+                'prev_frame_num': frame_num,
+                'dist': 0,
+                'counted': False
+                }
+            return False
+
+        # already counted this car, skip
+        elif tracker_dict[uid]['counted'] == True:
+            return True
+
+        # count with vector filter method
+        if self.count_method == 0:
+            # reset distance travelled if previous detected frame is too far off
+            if frame_num - tracker_dict[uid]['prev_frame_num'] > self.filt_frame:
+                tracker_dict[uid]['prev_centroid'] = centroid
+
+            # compute distance traveled
+            prev_centroid = tracker_dict[uid]['prev_centroid']
+            tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
+            tracker_dict[uid]['prev_centroid'] = centroid
+            tracker_dict[uid]['prev_frame_num'] = frame_num
+
+            # count the object if distance traveled exceeds a threshold
+            if tracker_dict[uid]['dist'] > self.filt_dist:
+                # computer direction vector
+                initial_centroid = tracker_dict[uid]['initial_centroid']
+                vect = [cx - initial_centroid[0], cy - initial_centroid[1]]
+
+                # only count vehicles travelling south
+                x_min = self.filt_x_vec - self.filt_width
+                x_max = self.filt_x_vec + self.filt_width
+
+                if (x_min < vect[0] < x_max) and (vect[1] > 0) == (self.filt_y_vec > 0):
+                    tracker_dict[uid]['counted'] = True
+
+                    cnt = sum([param['counted'] for id, param in tracker_dict.items()])
+                    img = self.getVehicleImage(detection, frame)
+                    self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
+                    return True
+
+        # count with finishing line method  
+        elif self.count_method == 1:
+            bx = self.finishLine[0]
+            by = self.finishLine[1]
+            bw = self.finishLine[2]
+            bh = self.finishLine[3]
+
+            # check if centroid within bounds of finish line
+            if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
+                tracker_dict[uid]['dist'] += 1
+
+                if tracker_dict[uid]['dist'] > self.finishFrames:
+                    print(tracker_dict)
+                    tracker_dict[uid]['counted'] = True
+                    cnt = sum([param['counted'] for id, param in tracker_dict.items()])
+                    img = self.getVehicleImage(detection, frame)
+                    self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
+                    return True
+        return False
+
 #==================== Inference Functions ========================
 
     def preprocess(img, imgsz, stride):
@@ -382,8 +465,8 @@ class Model(QObject):
         source = [self.input_video_path]  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
-        conf_thres=0.25  # confidence threshold
-        iou_thres=0.45  # NMS IOU threshold
+        conf_thres=self.score_thresh  # confidence threshold
+        iou_thres=self.iou_thresh  # NMS IOU threshold
         max_det=1000  # maximum detections per image
         device='cuda:0'  # cuda device, i.e. 0 or 0,1,2,3 or cpu
         classes=None  # filter by class: --class 0, or --class 0 2 3
@@ -459,8 +542,11 @@ class Model(QObject):
         truck_cnt = 0
 
         frame_num = 0
+        self.stop_counting = False
 
         for path, im, im0s, vid_cap, s in dataset:
+            if self.stop_counting:
+                break
             original_frame = im0s.copy()
             frame_num += 1
             frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
