@@ -87,6 +87,7 @@ class Model(QObject):
         self.count_method = 0
         self.imgMask = None
         self.cardinal_direction_points = []
+        self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         self.initialize_counting()
 
         #initialize color map
@@ -388,34 +389,49 @@ class Model(QObject):
                 'counted': False,
                 'in_cardinal_side':None,
                 'out_cardinal_side':None
-                }
+            }
         
         object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
 
-        for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
-            cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
-            # print(cardinal_side, [[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
-            # if is_inside_polygon(cardinal_side_copy, centroid):
-            #     print(class_id, cardinal_side_id)
-            cardinal_side_polygon = Polygon(cardinal_side_copy)
-            # print('4444444444444', cardinal_side_polygon.intersection(object_polygon).area, cardinal_side_polygon.union(object_polygon).area)
-            # intersect = cardinal_side_polygon.intersection(object_polygon).area / cardinal_side_polygon.union(object_polygon).area
-            is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
-            if is_intersects:
-                print(is_intersects, class_id, cardinal_side_id, uid)
-                # if uid == '2':
-                #     self.stop_counting = True
-            # check if centroid within bounds of finish line
-            # if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
-            #     tracker_dict[uid]['dist'] += 1
+        if uid == '6':
+            print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
 
-            #     if tracker_dict[uid]['dist'] > self.finishFrames:
-            #         print(tracker_dict)
-            #         tracker_dict[uid]['counted'] = True
-            #         cnt = sum([param['counted'] for id, param in tracker_dict.items()])
-            #         print(cnt)
-            #         img = self.getVehicleImage(detection, frame)
-            #         self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)        
+        if not tracker_dict[uid]['out_cardinal_side']:
+            # compute distance traveled
+            prev_centroid = tracker_dict[uid]['prev_centroid']
+            if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
+                tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
+            tracker_dict[uid]['prev_centroid'] = centroid
+            tracker_dict[uid]['prev_frame_num'] = frame_num
+            for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
+                cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
+                # print(cardinal_side, [[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
+                # if is_inside_polygon(cardinal_side_copy, centroid):
+                #     print(class_id, cardinal_side_id)
+                cardinal_side_polygon = Polygon(cardinal_side_copy)
+                # print('4444444444444', cardinal_side_polygon.intersection(object_polygon).area, cardinal_side_polygon.union(object_polygon).area)
+                # intersect = cardinal_side_polygon.intersection(object_polygon).area / cardinal_side_polygon.union(object_polygon).area
+                is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
+                if is_intersects:
+                    if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 150:
+                        tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                        tracker_dict[uid]['countter'] = True
+                    else:
+                        tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                    break
+                    # if uid == '2':
+                    #     self.stop_counting = True
+                # check if centroid within bounds of finish line
+                # if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
+                #     tracker_dict[uid]['dist'] += 1
+
+                #     if tracker_dict[uid]['dist'] > self.finishFrames:
+                #         print(tracker_dict)
+                #         tracker_dict[uid]['counted'] = True
+                #         cnt = sum([param['counted'] for id, param in tracker_dict.items()])
+                #         print(cnt)
+                #         img = self.getVehicleImage(detection, frame)
+                #         self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)        
 
 #==================== Inference Functions ========================
     def myTouches(self, poly1, poly2):
@@ -635,6 +651,9 @@ class Model(QObject):
             out.write(result)
 
             cache.append(frame_data)
+
+            for cardinal_direction_positions in self.cardinal_direction_points:
+                original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255,  255), 3)
 
             # update frame on UI
             self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
