@@ -403,8 +403,8 @@ class Model(QObject):
             is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
             if is_intersects:
                 print(is_intersects, class_id, cardinal_side_id, uid)
-                if uid == '2':
-                    self.stop_counting = True
+                # if uid == '2':
+                #     self.stop_counting = True
             # check if centroid within bounds of finish line
             # if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
             #     tracker_dict[uid]['dist'] += 1
