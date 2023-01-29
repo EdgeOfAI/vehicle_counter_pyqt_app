@@ -415,7 +415,7 @@ class Model(QObject):
                 if is_intersects:
                     if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 150:
                         tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
-                        tracker_dict[uid]['countter'] = True
+                        tracker_dict[uid]['counted'] = True
                     else:
                         tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                     break
