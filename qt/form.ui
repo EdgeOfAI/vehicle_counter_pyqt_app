@@ -831,7 +831,7 @@
          </widget>
         </item>
         <item row="16" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_42">
+         <widget class="QLCDNumber" name="SWbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -840,11 +840,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="15" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_38">
+         <widget class="QLCDNumber" name="SEcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -853,11 +856,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="15" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_37">
+         <widget class="QLCDNumber" name="SEtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -866,11 +872,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="15" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_39">
+         <widget class="QLCDNumber" name="SEbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -879,11 +888,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="16" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_41">
+         <widget class="QLCDNumber" name="SWcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -892,11 +904,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="16" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_40">
+         <widget class="QLCDNumber" name="SWtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -905,11 +920,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="17" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_45">
+         <widget class="QLCDNumber" name="SSbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -918,11 +936,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="17" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_43">
+         <widget class="QLCDNumber" name="SStruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -931,11 +952,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="17" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_44">
+         <widget class="QLCDNumber" name="SScarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -944,6 +968,9 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
@@ -1040,7 +1067,7 @@
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLCDNumber" name="lcdNumber">
+         <widget class="QLCDNumber" name="NEtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1049,6 +1076,9 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
@@ -1074,7 +1104,7 @@
          </widget>
         </item>
         <item row="2" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_3">
+         <widget class="QLCDNumber" name="NEbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1083,11 +1113,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_2">
+         <widget class="QLCDNumber" name="NEcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1096,6 +1129,9 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
@@ -1114,7 +1150,7 @@
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_4">
+         <widget class="QLCDNumber" name="NWtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1123,11 +1159,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_5">
+         <widget class="QLCDNumber" name="NWcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1136,11 +1175,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="3" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_6">
+         <widget class="QLCDNumber" name="NWbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1149,11 +1191,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="5" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_7">
+         <widget class="QLCDNumber" name="NStruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1162,11 +1207,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="5" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_8">
+         <widget class="QLCDNumber" name="NScarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1175,11 +1223,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="5" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_9">
+         <widget class="QLCDNumber" name="NSbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1188,11 +1239,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="7" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_14">
+         <widget class="QLCDNumber" name="EEcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1201,11 +1255,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="6" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_11">
+         <widget class="QLCDNumber" name="ENcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1214,11 +1271,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="6" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_12">
+         <widget class="QLCDNumber" name="ENbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1227,11 +1287,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="7" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_13">
+         <widget class="QLCDNumber" name="EEtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1240,11 +1303,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="6" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_10">
+         <widget class="QLCDNumber" name="ENtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1253,11 +1319,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="7" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_15">
+         <widget class="QLCDNumber" name="EEbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1266,11 +1335,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="8" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_17">
+         <widget class="QLCDNumber" name="EWcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1279,11 +1351,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="8" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_16">
+         <widget class="QLCDNumber" name="EWtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1292,11 +1367,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="9" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_20">
+         <widget class="QLCDNumber" name="EScarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1305,11 +1383,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="8" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_18">
+         <widget class="QLCDNumber" name="EWbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1318,11 +1399,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="9" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_19">
+         <widget class="QLCDNumber" name="EStruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1331,11 +1415,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="10" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_24">
+         <widget class="QLCDNumber" name="WNbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1344,11 +1431,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="11" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_25">
+         <widget class="QLCDNumber" name="WWtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1357,11 +1447,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="11" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_26">
+         <widget class="QLCDNumber" name="WWcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1370,11 +1463,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="9" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_21">
+         <widget class="QLCDNumber" name="ESbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1383,11 +1479,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="10" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_22">
+         <widget class="QLCDNumber" name="WNtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1396,11 +1495,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="10" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_23">
+         <widget class="QLCDNumber" name="WNcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1409,11 +1511,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="12" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_28">
+         <widget class="QLCDNumber" name="WEtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1422,11 +1527,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="11" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_27">
+         <widget class="QLCDNumber" name="WWbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1435,11 +1543,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="12" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_29">
+         <widget class="QLCDNumber" name="WEcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1448,11 +1559,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="13" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_31">
+         <widget class="QLCDNumber" name="WStruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1461,11 +1575,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="12" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_30">
+         <widget class="QLCDNumber" name="WEbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1474,11 +1591,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="13" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_32">
+         <widget class="QLCDNumber" name="WScarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1487,11 +1607,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="13" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_33">
+         <widget class="QLCDNumber" name="WSbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1500,11 +1623,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="14" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_36">
+         <widget class="QLCDNumber" name="SNbusCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1513,11 +1639,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="14" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_35">
+         <widget class="QLCDNumber" name="SNcarCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1526,11 +1655,14 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>
         <item row="14" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_34">
+         <widget class="QLCDNumber" name="SNtruckCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1539,6 +1671,9 @@
           </property>
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
+          </property>
+          <property name="intValue" stdset="0">
+           <number>0</number>
           </property>
          </widget>
         </item>

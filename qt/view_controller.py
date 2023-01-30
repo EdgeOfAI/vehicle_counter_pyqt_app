@@ -1,6 +1,7 @@
 
 from typing import Tuple
 from PySide2.QtCore import QPoint, QUrl, Signal, Slot
+# from PyQt5 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QTableWidgetItem, QWidget
 from PySide2.QtGui import QImage, QPixmap, Qt, QIcon
 from qt.Ui_Form import Ui_Form
