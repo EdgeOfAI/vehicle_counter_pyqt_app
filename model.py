@@ -61,7 +61,7 @@ class Model(QObject):
     max_frame_update_signal = Signal(int)
     process_done_signal = Signal()
     error_signal = Signal(str)
-    vehicle_count_signal = Signal(int,int,int,np.ndarray)
+    vehicle_count_signal = Signal(int,int,int,np.ndarray,str)
 
     def __init__(self):
         super().__init__()
@@ -173,22 +173,22 @@ class Model(QObject):
         centroid = [cx, cy]
         tracker_dict = self.detected_vehicles[str(class_id)]
 
-        # detecting for the first time
-        if uid not in tracker_dict.keys():
-            tracker_dict[uid] = {
-                'initial_centroid' : [cx, cy], 
-                'prev_centroid': [cx, cy],
-                'prev_frame_num': frame_num,
-                'dist': 0,
-                'counted': False,
-                'in_cardinal_side':None,
-                'out_cardinal_side':None
-                }
-            return False
+        # # detecting for the first time
+        # if uid not in tracker_dict.keys():
+        #     tracker_dict[uid] = {
+        #         'initial_centroid' : [cx, cy], 
+        #         'prev_centroid': [cx, cy],
+        #         'prev_frame_num': frame_num,
+        #         'dist': 0,
+        #         'counted': False,
+        #         'in_cardinal_side':None,
+        #         'out_cardinal_side':None
+        #         }
+        #     return False
 
-        # already counted this car, skip
-        elif tracker_dict[uid]['counted'] == True:
-            return True
+        # # already counted this car, skip
+        # elif tracker_dict[uid]['counted'] == True:
+        #     return True
 
         # count with vector filter method
         if self.count_method == 0:
@@ -217,7 +217,7 @@ class Model(QObject):
 
                     cnt = sum([param['counted'] for id, param in tracker_dict.items()])
                     img = self.getVehicleImage(detection, frame)
-                    self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
+                    # self.vehicle_count_signal.emit(class_id, int(uid), cnt, img, '03')
                     return True
 
         # count with finishing line method  
@@ -233,11 +233,10 @@ class Model(QObject):
 
                 if tracker_dict[uid]['dist'] > self.finishFrames:
                     # print(tracker_dict)
-                    tracker_dict[uid]['counted'] = True
+                    # tracker_dict[uid]['counted'] = True
                     cnt = sum([param['counted'] for id, param in tracker_dict.items()])
-                    print(cnt)
                     img = self.getVehicleImage(detection, frame)
-                    self.vehicle_count_signal.emit(class_id, int(uid), cnt, img)
+                    # self.vehicle_count_signal.emit(class_id, int(uid), cnt, img, '02')
                     return True
         return False
 
@@ -264,8 +263,8 @@ class Model(QObject):
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             frame = cv2.bitwise_and(frame, frame, mask=self.imgMask)
 
-            for detection in frame_data:
-                self.countVehicles(frame, frame_num, detection)
+            # for detection in frame_data:
+            #     self.countVehicles(frame, frame_num, detection)
                         
         self.process_done_signal.emit()
                 
@@ -290,7 +289,7 @@ class Model(QObject):
                 x_max = detection[4]
                 y_max = detection[5]
 
-                detected = self.countVehicles(frame, self.frame_counter, detection)
+                # detected = self.countVehicles(frame, self.frame_counter, detection)
                 frame = self.drawBoundingBox(frame_original, class_name, uid, x_min, y_min, x_max, y_max, detected)
 
             self.frame_counter += 1
@@ -388,13 +387,14 @@ class Model(QObject):
                 'dist': 0,
                 'counted': False,
                 'in_cardinal_side':None,
-                'out_cardinal_side':None
+                'out_cardinal_side':None,
+                'row_id':False
             }
         
         object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
 
-        if uid == '6':
-            print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
+        # if uid == '6':
+        #     print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
 
         if not tracker_dict[uid]['counted']:
             # compute distance traveled
@@ -413,9 +413,18 @@ class Model(QObject):
                 # intersect = cardinal_side_polygon.intersection(object_polygon).area / cardinal_side_polygon.union(object_polygon).area
                 is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
                 if is_intersects:
-                    if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 150:
+                    if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
                         tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                        row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
+                        tracker_dict[uid]['row_id'] = row_id
                         tracker_dict[uid]['counted'] = True
+                        print('ROW ID:  ', row_id)
+                        print('UID: ', uid)
+                        print('Distance', tracker_dict[uid]['dist'])
+                        print('************************')
+                        cnt = sum([param['counted'] for id, param in tracker_dict.items() if param['row_id'] == row_id])
+                        img = self.getVehicleImage(detection, frame)
+                        self.vehicle_count_signal.emit(class_id, int(uid), cnt, img, row_id)
                     else:
                         tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                     break
@@ -638,8 +647,8 @@ class Model(QObject):
 
                 # Count vehicles
                 # print('I am in')
-                detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
                 self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
+                detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
                 original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)

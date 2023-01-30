@@ -36,6 +36,7 @@ class ViewController(QWidget, Ui_Form):
         self.visualizeMarkerEnd = QPoint(500,500)
         self.visualizeMarker = pg.LineROI(self.visualizeMarkerStart, self.visualizeMarkerEnd, 50)
         self.finishLine = pg.RectROI((200,200), (200,200), rotatable=True, resizable=True)
+        # self.CARDINAL_SIDES = ['North', 'East', 'West', 'South']
 
         self.setupSignalSlots()
 
@@ -201,18 +202,265 @@ class ViewController(QWidget, Ui_Form):
 
 
     @Slot(int,int,int,np.ndarray)
-    def updateVehicleCount(self, class_id, uid, count, img):
-        if class_id == 1:
-            self.truckCount.display(count)
-            table = self.truckPreviewTable
-        elif class_id == 2:
-            self.carCount.display(count)
-            table = self.carPreviewTable
-        elif class_id == 3:
-            self.busCount.display(count)
-            table = self.busPreviewTable
-        else:
-            return
+    def updateVehicleCount(self, class_id, uid, count, img, row_num):
+        # self.truckCount.display(count)
+        # self.carCount.display(count)
+        # self.busCount.display(count)
+        # self.NEtruckCount.display(count)
+        # self.NEcarCount.display(count)
+        # self.NEbusCount.display(count)
+        # self.NWtruckCount.display(count)
+        # self.NWcarCount.display(count)
+        # self.NWbusCount.display(count)
+        # self.NStruckCount.display(count)
+        # self.NScarCount.display(count)
+        # self.NSbusCount.display(count)
+        # self.ENtruckCount.display(count)
+        # self.ENcarCount.display(count)
+        # self.ENbusCount.display(count)
+        # self.EEtruckCount.display(count)
+        # self.EEcarCount.display(count)
+        # self.EEbusCount.display(count)
+        # self.EWtruckCount.display(count)
+        # self.EWcarCount.display(count)
+        # self.EWbusCount.display(count)
+        # self.EStruckCount.display(count)
+        # self.EScarCount.display(count)
+        # self.ESbusCount.display(count)
+        # self.WNtruckCount.display(count)
+        # self.WNcarCount.display(count)
+        # self.WNbusCount.display(count)
+        # self.WEtruckCount.display(count)
+        # self.WEcarCount.display(count)
+        # self.WEbusCount.display(count)
+        # self.WWtruckCount.display(count)
+        # self.WWcarCount.display(count)
+        # self.WWbusCount.display(count)
+        # self.WStruckCount.display(count)
+        # self.WScarCount.display(count)
+        # self.WSbusCount.display(count)
+        # self.SNtruckCount.display(count)
+        # self.SNcarCount.display(count)
+        # self.SNbusCount.display(count)
+        # self.SEtruckCount.display(count)
+        # self.SEcarCount.display(count)
+        # self.SEbusCount.display(count)
+        # self.SWtruckCount.display(count)
+        # self.SWcarCount.display(count)
+        # self.SWbusCount.display(count)
+        # self.SStruckCount.display(count)
+        # self.SScarCount.display(count)
+        # self.SSbusCount.display(count)
+
+        print('I am in update function')
+        if row_num == '00':  # NN
+            if class_id == 1:
+                self.truckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.carCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.busCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '01':  # NE
+            if class_id == 1:
+                self.NEtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.NEcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.NEbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '02':  # NW
+            if class_id == 1:
+                self.NWtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.NWcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.NWbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '03':  # NS
+            if class_id == 1:
+                self.NStruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.NScarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.NSbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '10':  # EN
+            if class_id == 1:
+                self.ENtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.ENcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.ENbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '11':  # EE
+            if class_id == 1:
+                self.EEtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.EEcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.EEbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '12':  # EW
+            if class_id == 1:
+                self.EWtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.EWcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.EWbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '13':  # ES
+            if class_id == 1:
+                self.EStruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.EScarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.ESbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '20':  # WN
+            if class_id == 1:
+                self.WNtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.WNcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.WNbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '21':  # WE
+            if class_id == 1:
+                self.WEtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.WEcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.WEbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '22':  # WW
+            print('I am in row 22')
+            if class_id == 1:
+                print('Before truck count')
+                self.WWtruckCount.display(count)
+                print('After truck count')
+                table = self.truckPreviewTable
+                print('After table update')
+            elif class_id == 2:
+                self.WWcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.WWbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '23':  # WS
+            if class_id == 1:
+                self.WStruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.WScarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.WSbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '30':  # SN
+            if class_id == 1:
+                self.SNtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.SNcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.SNbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '31':  # SE
+            if class_id == 1:
+                self.SEtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.SEcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.SEbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '32':  # SW
+            if class_id == 1:
+                self.SWtruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.SWcarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.SWbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        elif row_num == '33':  # SS
+            if class_id == 1:
+                self.SStruckCount.display(count)
+                table = self.truckPreviewTable
+            elif class_id == 2:
+                self.SScarCount.display(count)
+                table = self.carPreviewTable
+            elif class_id == 3:
+                self.SSbusCount.display(count)
+                table = self.busPreviewTable
+            else:
+                return
+        
+        # if class_id == 1:
+        #     self.truckCount.display(count)
+        #     table = self.truckPreviewTable
+        # elif class_id == 2:
+        #     self.carCount.display(count)
+        #     table = self.carPreviewTable
+        # elif class_id == 3:
+        #     self.busCount.display(count)
+        #     table = self.busPreviewTable
+        # else:
+        #     return
 
         item = QTableWidgetItem()
         pixmap = self.convert_cv_qt(img, 100, 100)
