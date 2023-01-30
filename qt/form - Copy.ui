@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1107</width>
+    <width>1033</width>
     <height>820</height>
    </rect>
   </property>
@@ -748,57 +748,8 @@
      </property>
      <item>
       <widget class="QWidget" name="widget_2" native="true">
-       <property name="enabled">
-        <bool>true</bool>
-       </property>
        <layout class="QGridLayout" name="gridLayout">
-        <item row="1" column="0">
-         <widget class="QLabel" name="label_8">
-          <property name="text">
-           <string>NN</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Trucks</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="2" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_2">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Cars</string>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="3" alignment="Qt::AlignHCenter">
-         <widget class="QLabel" name="label_15">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
-          <property name="text">
-           <string>Bus</string>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="2">
+        <item row="1" column="1">
          <widget class="QLCDNumber" name="carCount">
           <property name="lineWidth">
            <number>0</number>
@@ -814,140 +765,33 @@
           </property>
          </widget>
         </item>
-        <item row="1" column="3">
-         <widget class="QLCDNumber" name="busCount">
-          <property name="lineWidth">
-           <number>0</number>
+        <item row="0" column="0" alignment="Qt::AlignHCenter">
+         <widget class="QLabel" name="label">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-          <property name="intValue" stdset="0">
-           <number>0</number>
+          <property name="text">
+           <string>Trucks</string>
           </property>
          </widget>
         </item>
-        <item row="16" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_42">
-          <property name="lineWidth">
-           <number>0</number>
+        <item row="0" column="1" alignment="Qt::AlignHCenter">
+         <widget class="QLabel" name="label_2">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
           </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="15" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_38">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
+          <property name="text">
+           <string>Cars</string>
           </property>
          </widget>
         </item>
-        <item row="15" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_37">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="15" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_39">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="16" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_41">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="16" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_40">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_45">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_43">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_44">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
+        <item row="1" column="0">
          <widget class="QLCDNumber" name="truckCount">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
@@ -969,78 +813,21 @@
           </property>
          </widget>
         </item>
-        <item row="11" column="0">
-         <widget class="QLabel" name="label_24">
+        <item row="0" column="2" alignment="Qt::AlignHCenter">
+         <widget class="QLabel" name="label_15">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <property name="text">
-           <string>WW</string>
+           <string>Bus</string>
           </property>
          </widget>
         </item>
-        <item row="5" column="0">
-         <widget class="QLabel" name="label_22">
-          <property name="text">
-           <string>NS</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QLabel" name="label_20">
-          <property name="text">
-           <string>NW</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="0">
-         <widget class="QLabel" name="label_21">
-          <property name="text">
-           <string>NE</string>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="0">
-         <widget class="QLabel" name="label_23">
-          <property name="text">
-           <string>WN</string>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="0">
-         <widget class="QLabel" name="label_25">
-          <property name="text">
-           <string>WE</string>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="0">
-         <widget class="QLabel" name="label_26">
-          <property name="text">
-           <string>WS</string>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="0">
-         <widget class="QLabel" name="label_31">
-          <property name="text">
-           <string>SN</string>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="0">
-         <widget class="QLabel" name="label_29">
-          <property name="text">
-           <string>EW</string>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="0">
-         <widget class="QLabel" name="label_28">
-          <property name="text">
-           <string>EE</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QLCDNumber" name="lcdNumber">
+        <item row="1" column="2">
+         <widget class="QLCDNumber" name="busCount">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1050,495 +837,8 @@
           <property name="segmentStyle">
            <enum>QLCDNumber::Flat</enum>
           </property>
-         </widget>
-        </item>
-        <item row="6" column="0">
-         <widget class="QLabel" name="label_27">
-          <property name="text">
-           <string>EN</string>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="0">
-         <widget class="QLabel" name="label_30">
-          <property name="text">
-           <string>ES</string>
-          </property>
-         </widget>
-        </item>
-        <item row="15" column="0">
-         <widget class="QLabel" name="label_32">
-          <property name="text">
-           <string>SE</string>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_3">
-          <property name="lineWidth">
+          <property name="intValue" stdset="0">
            <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_2">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="17" column="0">
-         <widget class="QLabel" name="label_34">
-          <property name="text">
-           <string>SS</string>
-          </property>
-         </widget>
-        </item>
-        <item row="16" column="0">
-         <widget class="QLabel" name="label_33">
-          <property name="text">
-           <string>SW</string>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_4">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_5">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_6">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_7">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_8">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="5" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_9">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_14">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_11">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_12">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_13">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="6" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_10">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="7" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_15">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_17">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_16">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_20">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="8" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_18">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_19">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_24">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_25">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_26">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="9" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_21">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_22">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="10" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_23">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_28">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="11" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_27">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_29">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_31">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="12" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_30">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_32">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="13" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_33">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="3">
-         <widget class="QLCDNumber" name="lcdNumber_36">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="2">
-         <widget class="QLCDNumber" name="lcdNumber_35">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
-          </property>
-         </widget>
-        </item>
-        <item row="14" column="1">
-         <widget class="QLCDNumber" name="lcdNumber_34">
-          <property name="lineWidth">
-           <number>0</number>
-          </property>
-          <property name="digitCount">
-           <number>3</number>
-          </property>
-          <property name="segmentStyle">
-           <enum>QLCDNumber::Flat</enum>
           </property>
          </widget>
         </item>
@@ -1600,16 +900,16 @@
            <attribute name="horizontalHeaderVisible">
             <bool>true</bool>
            </attribute>
-           <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>110</number>
-           </attribute>
            <attribute name="horizontalHeaderMinimumSectionSize">
             <number>110</number>
            </attribute>
-           <attribute name="verticalHeaderDefaultSectionSize">
+           <attribute name="horizontalHeaderDefaultSectionSize">
             <number>110</number>
            </attribute>
            <attribute name="verticalHeaderMinimumSectionSize">
+            <number>110</number>
+           </attribute>
+           <attribute name="verticalHeaderDefaultSectionSize">
             <number>110</number>
            </attribute>
            <row/>
@@ -1682,16 +982,16 @@
            <property name="columnCount">
             <number>2</number>
            </property>
-           <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>110</number>
-           </attribute>
            <attribute name="horizontalHeaderMinimumSectionSize">
             <number>110</number>
            </attribute>
-           <attribute name="verticalHeaderDefaultSectionSize">
+           <attribute name="horizontalHeaderDefaultSectionSize">
             <number>110</number>
            </attribute>
            <attribute name="verticalHeaderMinimumSectionSize">
+            <number>110</number>
+           </attribute>
+           <attribute name="verticalHeaderDefaultSectionSize">
             <number>110</number>
            </attribute>
            <row/>
@@ -1749,16 +1049,16 @@
            <property name="columnCount">
             <number>2</number>
            </property>
-           <attribute name="horizontalHeaderDefaultSectionSize">
-            <number>110</number>
-           </attribute>
            <attribute name="horizontalHeaderMinimumSectionSize">
             <number>110</number>
            </attribute>
-           <attribute name="verticalHeaderDefaultSectionSize">
+           <attribute name="horizontalHeaderDefaultSectionSize">
             <number>110</number>
            </attribute>
            <attribute name="verticalHeaderMinimumSectionSize">
+            <number>110</number>
+           </attribute>
+           <attribute name="verticalHeaderDefaultSectionSize">
             <number>110</number>
            </attribute>
            <row/>

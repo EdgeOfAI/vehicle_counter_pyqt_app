@@ -338,3 +338,4 @@ class ViewController(QWidget, Ui_Form):
         convert_to_Qt_format = QImage(rgb_image.data, w, h, bytes_per_line, QImage.Format_RGB888)
         p = convert_to_Qt_format.scaled(width, height, Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
+

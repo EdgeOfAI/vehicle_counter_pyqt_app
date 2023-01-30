@@ -396,7 +396,7 @@ class Model(QObject):
         if uid == '6':
             print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
 
-        if not tracker_dict[uid]['out_cardinal_side']:
+        if not tracker_dict[uid]['counted']:
             # compute distance traveled
             prev_centroid = tracker_dict[uid]['prev_centroid']
             if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
