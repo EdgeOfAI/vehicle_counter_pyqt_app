@@ -202,7 +202,7 @@ class ViewController(QWidget, Ui_Form):
 
 
     @Slot(int,int,int,np.ndarray)
-    def updateVehicleCount(self, class_id, uid, count, img, row_num):
+    def updateVehicleCount(self, class_id, uid, count, img, row_num, preview_num):
         # self.truckCount.display(count)
         # self.carCount.display(count)
         # self.busCount.display(count)
@@ -253,6 +253,7 @@ class ViewController(QWidget, Ui_Form):
         # self.SSbusCount.display(count)
 
         # print('I am in update function')
+        print(class_id, uid, count, row_num, preview_num)
         if row_num == '00':  # NN
             if class_id == 1:
                 self.truckCount.display(count)
@@ -461,13 +462,13 @@ class ViewController(QWidget, Ui_Form):
         #     table = self.busPreviewTable
         # else:
         #     return
-
+        print(preview_num, 'preview_num')
         item = QTableWidgetItem()
         pixmap = self.convert_cv_qt(img, 100, 100)
         item.setData(Qt.DecorationRole, pixmap)
-        table.setItem(count-1,0,item)
+        table.setItem(preview_num-1,0,item)
         item = QTableWidgetItem(str(uid))
-        table.setItem(count-1,1,item)
+        table.setItem(preview_num-1,1,item)
 
 #================== Inference Functions ======================
 

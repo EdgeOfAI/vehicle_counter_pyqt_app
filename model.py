@@ -61,7 +61,7 @@ class Model(QObject):
     max_frame_update_signal = Signal(int)
     process_done_signal = Signal()
     error_signal = Signal(str)
-    vehicle_count_signal = Signal(int,int,int,np.ndarray,str)
+    vehicle_count_signal = Signal(int,int,int,np.ndarray,str,int)
 
     def __init__(self):
         super().__init__()
@@ -90,6 +90,7 @@ class Model(QObject):
         self.cardinal_direction_points = []
         self.counted_ids = []
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
+        self.vehicle_counter = {'1':0, '2':0, '3':0}  # 0 truck, 1 car, 2 bus
         self.initialize_counting()
 
         #initialize color map
@@ -435,7 +436,12 @@ class Model(QObject):
                         img = self.getVehicleImage(detection, frame)
                         self.counted_ids.append(uid)
                         del tracker_dict[uid]
-                        self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id)
+                        print(class_id, type(class_id))
+                        print(str(class_id))
+                        self.vehicle_counter[str(class_id)] +=  + 1
+                        print('vehicle added')
+                        print(class_id, int(uid), self.cardinal_vehicle_counter[row_id], row_id, self.vehicle_counter[str(class_id)])
+                        self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
                     else:
                         tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                     break
