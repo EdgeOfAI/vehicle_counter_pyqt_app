@@ -252,7 +252,7 @@ class ViewController(QWidget, Ui_Form):
         # self.SScarCount.display(count)
         # self.SSbusCount.display(count)
 
-        print('I am in update function')
+        # print('I am in update function')
         if row_num == '00':  # NN
             if class_id == 1:
                 self.truckCount.display(count)

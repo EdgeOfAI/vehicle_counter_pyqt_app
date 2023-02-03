@@ -86,7 +86,9 @@ class Model(QObject):
         self.stop_counting = True
         self.count_method = 0
         self.imgMask = None
+        self.cardinal_vehicle_counter = dict()
         self.cardinal_direction_points = []
+        self.counted_ids = []
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         self.initialize_counting()
 
@@ -379,7 +381,7 @@ class Model(QObject):
         tracker_dict = self.detected_vehicles[str(class_id)]
 
         # detecting for the first time
-        if uid not in tracker_dict.keys():
+        if uid not in tracker_dict.keys() and uid not in self.cardinal_vehicle_counter.keys():
             tracker_dict[uid] = {
                 'initial_centroid' : [cx, cy], 
                 'prev_centroid': [cx, cy],
@@ -390,15 +392,17 @@ class Model(QObject):
                 'out_cardinal_side':None,
                 'row_id':False
             }
+
+        # if uid == '1':
+        #     print(tracker_dict.get(uid))
         
         object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
 
         # if uid == '6':
         #     print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
-
-        if not tracker_dict[uid]['counted']:
+        if uid not in self.counted_ids:
             # compute distance traveled
-            prev_centroid = tracker_dict[uid]['prev_centroid']
+            prev_centroid = tracker_dict[uid]['prev_centroid'] 
             if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
                 tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
             tracker_dict[uid]['prev_centroid'] = centroid
@@ -416,15 +420,22 @@ class Model(QObject):
                     if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
                         tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
-                        tracker_dict[uid]['row_id'] = row_id
-                        tracker_dict[uid]['counted'] = True
-                        print('ROW ID:  ', row_id)
-                        print('UID: ', uid)
-                        print('Distance', tracker_dict[uid]['dist'])
-                        print('************************')
-                        cnt = sum([param['counted'] for id, param in tracker_dict.items() if param['row_id'] == row_id])
+                        print(row_id)
+                        # tracker_dict[uid]['row_id'] = row_id
+                        # tracker_dict[uid]['counted'] = True
+                        if self.cardinal_vehicle_counter.get(row_id):
+                            self.cardinal_vehicle_counter[row_id] += 1
+                        else:
+                            self.cardinal_vehicle_counter[row_id] = 1
+                        # print('ROW ID:  ', row_id)
+                        # print('UID: ', uid)
+                        # print('Distance', tracker_dict[uid]['dist'])
+                        # print('************************')
+                        # cnt = sum([param['counted'] for id, param in tracker_dict.items() if param['row_id'] == row_id])
                         img = self.getVehicleImage(detection, frame)
-                        self.vehicle_count_signal.emit(class_id, int(uid), cnt, img, row_id)
+                        self.counted_ids.append(uid)
+                        del tracker_dict[uid]
+                        self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id)
                     else:
                         tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                     break
@@ -551,6 +562,7 @@ class Model(QObject):
 
         for path, im, im0s, vid_cap, s in dataset:
             if self.stop_counting:
+                self.counted_ids = []
                 break
             original_frame = im0s.copy()
             frame_num += 1
@@ -596,6 +608,7 @@ class Model(QObject):
             # loop through objects and use class index to get class name, allow only classes in allowed_classes list
             names = []
             deleted_indx = []
+            # print(' I am here')
             for i in range(num_objects):
                 class_indx = int(classes[i])
                 class_name = class_names[class_indx]
@@ -605,6 +618,8 @@ class Model(QObject):
                     names.append(class_name)
             names = np.array(names)
             count = len(names)
+
+            # print('Not I am here')
 
             # delete detections that are not in allowed_classes
             bboxes = np.delete(bboxes, deleted_indx, axis=0)
@@ -627,6 +642,7 @@ class Model(QObject):
             # print(tracker.tracks)
 
             obj_num = 0
+            # print('befoore track')
             # update tracks
             for track in tracker.tracks:
                 # print('HERE I am ', track.is_confirmed(), track.time_since_update)
@@ -648,22 +664,25 @@ class Model(QObject):
                 # Count vehicles
                 # print('I am in')
                 self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
-                detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
+                # detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen
-                original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
+                original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max)
                 
                 obj_num = obj_num +  1
+            # print('after track')
 
             result = np.asarray(original_frame)
             result = cv2.cvtColor(original_frame, cv2.COLOR_RGB2BGR)
             out.write(result)
 
             cache.append(frame_data)
+            # print('Before line drawings')
 
             for cardinal_direction_positions in self.cardinal_direction_points:
                 original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255,  255), 3)
 
+            # print('After drawing')
             # update frame on UI
             self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
 
