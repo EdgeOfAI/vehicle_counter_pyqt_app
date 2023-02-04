@@ -418,6 +418,8 @@ class Model(QObject):
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
                         tracker_dict[uid]['row_id'] = row_id
                         tracker_dict[uid]['counted'] = True
+                        
+                        print(tracker_dict)
                         print('ROW ID:  ', row_id)
                         print('UID: ', uid)
                         print('Distance', tracker_dict[uid]['dist'])
