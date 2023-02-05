@@ -19,7 +19,7 @@ class ViewController(QWidget, Ui_Form):
     startCountingSignal = Signal()
     startCountingAnalysisSignal = Signal()
 
-    def __init__(self, model):
+    def __init__(self, model, conn, cur):
         super().__init__()
         self.model = model
         self.setupUi(self)
@@ -41,6 +41,10 @@ class ViewController(QWidget, Ui_Form):
         self.visualizeMarker = pg.LineROI(self.visualizeMarkerStart, self.visualizeMarkerEnd, 50)
         self.finishLine = pg.RectROI((200,200), (200,200), rotatable=True, resizable=True)
         # self.CARDINAL_SIDES = ['North', 'East', 'West', 'South']
+
+        # sqlite3 db files
+        self.db_conn = conn
+        self.db_cur = cur
 
         self.setupSignalSlots()
 
@@ -75,7 +79,7 @@ class ViewController(QWidget, Ui_Form):
 #====================== File Dialog Functions =====================
     def openAddCamWindow(self):
         print('Opening camera add window')
-        self.add_cam_window = AddCameraWindow()
+        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
 
     def openVideoFile(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open Video", '', "mp4 (*.mp4)")

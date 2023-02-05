@@ -1,4 +1,5 @@
 import sys
+import sqlite3
 from PySide2.QtCore import Qt, QThread
 from PySide2.QtWidgets import QApplication
 from qt.view_controller import ViewController
@@ -13,13 +14,30 @@ pg.setConfigOptions(imageAxisOrder='row-major') #pyqtgraph default uses column m
 class App(QApplication):
     def __init__(self, sys_argv):
         super().__init__()
+        # create database
+        conn = sqlite3.connect("main.db")
+        cur = conn.cursor()
+
+        # create tables
+        try:
+            cur.execute("""CREATE TABLE cameras (
+                    id integer, 
+                    ip text, 
+                    username text,
+                    password text,
+                    name text
+                )""")
+        except Exception as err:
+            print('Error:  ', err)
+        conn.commit()
+
         self.modelThread = QThread()
         self.model = Model()
         self.model.moveToThread(self.modelThread)
         self.modelThread.start()
         self.modelThread.setPriority(QThread.HighestPriority)
 
-        self.viewController = ViewController(self.model)
+        self.viewController = ViewController(self.model, conn, cur)
         self.viewController.show()
 
 if __name__ == '__main__':
