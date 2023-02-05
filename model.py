@@ -58,7 +58,7 @@ class_id_map.update({item[1]: item[0] for item in class_id_map.items()})
 
 class Model(QObject):
     frame_update_signal = Signal(np.ndarray, int)
-    max_frame_update_signal = Signal(int)
+    # max_frame_update_signal = Signal(int)
     process_done_signal = Signal()
     error_signal = Signal(str)
     vehicle_count_signal = Signal(int,int,int,np.ndarray,str,int)
@@ -122,7 +122,7 @@ class Model(QObject):
     def setCacheDataPath(self, path):
         self.cache_data_path = path
 
-        # parse Model path and send signal with max frame num
+        # parse Model path and send signal with max frame num # Shakh
         # cache = h5py.File(self.cache_data_path, 'r')
         # cache_data = cache.get('dataset_1')
         # self.cache_data = np.array(cache_data)
@@ -550,7 +550,7 @@ class Model(QObject):
 
         # go to first frame
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
-        self.max_frame_update_signal.emit(total_frames)
+        # self.max_frame_update_signal.emit(total_frames)
 
         # get video ready to save locally 
         # by default VideoCapture returns float instead of int
@@ -740,7 +740,7 @@ class Model(QObject):
 
         # begin video capture
         total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
-        self.max_frame_update_signal.emit(total_frames)
+        # self.max_frame_update_signal.emit(total_frames)
 
         # go to first frame
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)

@@ -2,12 +2,16 @@
 from typing import Tuple
 from PySide2.QtCore import QPoint, QUrl, Signal, Slot
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QFileDialog, QMessageBox, QTableWidgetItem, QWidget
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QTableWidgetItem, QWidget, QMainWindow
 from PySide2.QtGui import QImage, QPixmap, Qt, QIcon
 from qt.Ui_Form import Ui_Form
 import numpy as np
 import cv2, os, math
 import pyqtgraph as pg
+
+from model import Model
+
+from qt.add_camera_view_controller import AddCameraWindow
 
 
 class ViewController(QWidget, Ui_Form):
@@ -24,7 +28,7 @@ class ViewController(QWidget, Ui_Form):
         self.outputDataFile = ''
         self.cacheDataFile = ''
         self.maskFile = ''
-        # self.carPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
+        # self.carPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID']) # Shakh
         # self.truckPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
         self.frameView.ui.histogram.hide()
         self.frameView.ui.roiBtn.hide()
@@ -46,8 +50,9 @@ class ViewController(QWidget, Ui_Form):
         # self.setOutputFileBtn.clicked.connect(self.getOutputFileName)
         self.startInferenceBtn.clicked.connect(self.startInference)
         self.startInferenceSignal.connect(self.model.startInference)
+        self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
-        self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
+        # self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
         # self.loadCacheBtn.clicked.connect(self.openCacheFile)
         # self.countBtn.clicked.connect(self.startCounting)
         # self.startCountingSignal.connect(self.model.startCounting)
@@ -68,6 +73,9 @@ class ViewController(QWidget, Ui_Form):
         # self.finishLineChk.toggled.connect(self.showFinishLine)
 
 #====================== File Dialog Functions =====================
+    def openAddCamWindow(self):
+        print('Opening camera add window')
+        self.add_cam_window = AddCameraWindow()
 
     def openVideoFile(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open Video", '', "mp4 (*.mp4)")
