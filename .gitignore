@@ -2,7 +2,6 @@
 checkpoints/*
 
 # video files
-*.mp4
 *.avi
 
 # Byte-compiled / optimized / DLL files

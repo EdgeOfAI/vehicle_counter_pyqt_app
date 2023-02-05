@@ -24,8 +24,8 @@ class ViewController(QWidget, Ui_Form):
         self.outputDataFile = ''
         self.cacheDataFile = ''
         self.maskFile = ''
-        self.carPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
-        self.truckPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
+        # self.carPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
+        # self.truckPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
         self.frameView.ui.histogram.hide()
         self.frameView.ui.roiBtn.hide()
         self.frameView.ui.menuBtn.hide()
@@ -41,31 +41,31 @@ class ViewController(QWidget, Ui_Form):
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
-        self.loadVideoBtn.clicked.connect(self.openVideoFile)
+        # self.loadVideoBtn.clicked.connect(self.openVideoFile)
 
-        self.setOutputFileBtn.clicked.connect(self.getOutputFileName)
+        # self.setOutputFileBtn.clicked.connect(self.getOutputFileName)
         self.startInferenceBtn.clicked.connect(self.startInference)
         self.startInferenceSignal.connect(self.model.startInference)
         self.model.frame_update_signal.connect(self.updateFrame)
         self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
-        self.loadCacheBtn.clicked.connect(self.openCacheFile)
-        self.countBtn.clicked.connect(self.startCounting)
-        self.startCountingSignal.connect(self.model.startCounting)
-        self.countAnalyzeBtn.clicked.connect(self.startCountingAnalysis)
-        self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
+        # self.loadCacheBtn.clicked.connect(self.openCacheFile)
+        # self.countBtn.clicked.connect(self.startCounting)
+        # self.startCountingSignal.connect(self.model.startCounting)
+        # self.countAnalyzeBtn.clicked.connect(self.startCountingAnalysis)
+        # self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
-        self.model.process_done_signal.connect(self.onProcessDone)
-        self.stopProcessBtn.clicked.connect(self.stopProcess)
-        self.drawMaskBtn.clicked.connect(self.drawMask)
-        self.resetMaskBtn.clicked.connect(self.resetMask)
-        self.setMaskFileBtn.clicked.connect(self.openMaskFile)
-        self.saveMaskBtn.clicked.connect(self.saveMask)
+        # self.model.process_done_signal.connect(self.onProcessDone)
+        # self.stopProcessBtn.clicked.connect(self.stopProcess)
+        # self.drawMaskBtn.clicked.connect(self.drawMask)
+        # self.resetMaskBtn.clicked.connect(self.resetMask)
+        # self.setMaskFileBtn.clicked.connect(self.openMaskFile)
+        # self.saveMaskBtn.clicked.connect(self.saveMask)
 
-        self.yFilterVectorSpn.valueChanged.connect(self.updateVectorDirectionLabel)
-        self.countMethodCmb.currentIndexChanged.connect(self.countingMethodSwitcher.setCurrentIndex)
-        self.frameSlider.valueChanged.connect(self.model.previewFrame)
-        self.visualizeChk.toggled.connect(self.visualizeCountingParam)
-        self.finishLineChk.toggled.connect(self.showFinishLine)
+        # self.yFilterVectorSpn.valueChanged.connect(self.updateVectorDirectionLabel)
+        # self.countMethodCmb.currentIndexChanged.connect(self.countingMethodSwitcher.setCurrentIndex)
+        # self.frameSlider.valueChanged.connect(self.model.previewFrame)
+        # self.visualizeChk.toggled.connect(self.visualizeCountingParam)
+        # self.finishLineChk.toggled.connect(self.showFinishLine)
 
 #====================== File Dialog Functions =====================
 
@@ -257,121 +257,121 @@ class ViewController(QWidget, Ui_Form):
         if row_num == '00':  # NN
             if class_id == 1:
                 self.truckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.carCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.busCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '01':  # NE
             if class_id == 1:
                 self.NEtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.NEcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.NEbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '02':  # NW
             if class_id == 1:
                 self.NWtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.NWcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.NWbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '03':  # NS
             if class_id == 1:
                 self.NStruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.NScarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.NSbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '10':  # EN
             if class_id == 1:
                 self.ENtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.ENcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.ENbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '11':  # EE
             if class_id == 1:
                 self.EEtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.EEcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.EEbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '12':  # EW
             if class_id == 1:
                 self.EWtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.EWcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.EWbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '13':  # ES
             if class_id == 1:
                 self.EStruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.EScarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.ESbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '20':  # WN
             if class_id == 1:
                 self.WNtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.WNcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.WNbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '21':  # WE
             if class_id == 1:
                 self.WEtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.WEcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.WEbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '22':  # WW
@@ -380,74 +380,74 @@ class ViewController(QWidget, Ui_Form):
                 print('Before truck count')
                 self.WWtruckCount.display(count)
                 print('After truck count')
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
                 print('After table update')
             elif class_id == 2:
                 self.WWcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.WWbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '23':  # WS
             if class_id == 1:
                 self.WStruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.WScarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.WSbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '30':  # SN
             if class_id == 1:
                 self.SNtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.SNcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.SNbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '31':  # SE
             if class_id == 1:
                 self.SEtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.SEcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.SEbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '32':  # SW
             if class_id == 1:
                 self.SWtruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.SWcarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.SWbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         elif row_num == '33':  # SS
             if class_id == 1:
                 self.SStruckCount.display(count)
-                table = self.truckPreviewTable
+                # table = self.truckPreviewTable
             elif class_id == 2:
                 self.SScarCount.display(count)
-                table = self.carPreviewTable
+                # table = self.carPreviewTable
             elif class_id == 3:
                 self.SSbusCount.display(count)
-                table = self.busPreviewTable
+                # table = self.busPreviewTable
             else:
                 return
         
@@ -462,13 +462,13 @@ class ViewController(QWidget, Ui_Form):
         #     table = self.busPreviewTable
         # else:
         #     return
-        print(preview_num, 'preview_num')
-        item = QTableWidgetItem()
-        pixmap = self.convert_cv_qt(img, 100, 100)
-        item.setData(Qt.DecorationRole, pixmap)
-        table.setItem(preview_num-1,0,item)
-        item = QTableWidgetItem(str(uid))
-        table.setItem(preview_num-1,1,item)
+        # print(preview_num, 'preview_num')
+        # item = QTableWidgetItem()
+        # pixmap = self.convert_cv_qt(img, 100, 100)
+        # item.setData(Qt.DecorationRole, pixmap)
+        # table.setItem(preview_num-1,0,item)
+        # item = QTableWidgetItem(str(uid))
+        # table.setItem(preview_num-1,1,item)
 
 #================== Inference Functions ======================
 
@@ -524,26 +524,25 @@ class ViewController(QWidget, Ui_Form):
 
     def prepareforAnalysis(self):
         # set parameters
-        self.model.setParams(
-            {
-                'mask'          : self.imgMask,
-                'count_method'  : self.countMethodCmb.currentIndex(),
-                'iou_thresh'    : self.iouThreshSpn.value(),
-                'score_thresh'  : self.scoreThreshSpn.value(),
-                'cos_dist'      : self.cosineDistSpn.value(),
-                'x_vect'        : self.xFilterVectorSpn.value(),
-                'y_vect'        : self.yFilterVectorSpn.value(),
-                'filt_width'    : self.widthFilterVectorSpn.value(),
-                'filt_dist'     : self.distFilterSpn.value(),
-                'filt_frames'   : self.skipFrameFilterSpn.value(),
-                'finish_frames' : self.finishLineFramesSpn.value(),
-                'finish_line'   : self.getFinishLineBounds(),
-            }
-        )
+        # self.model.setParams(
+        #     {
+        #         'mask'          : self.imgMask,
+        #         'iou_thresh'    : self.iouThreshSpn.value(),
+        #         'score_thresh'  : self.scoreThreshSpn.value(),
+        #         'cos_dist'      : self.cosineDistSpn.value(),
+        #         'x_vect'        : self.xFilterVectorSpn.value(),
+        #         'y_vect'        : self.yFilterVectorSpn.value(),
+        #         'filt_width'    : self.widthFilterVectorSpn.value(),
+        #         'filt_dist'     : self.distFilterSpn.value(),
+        #         'filt_frames'   : self.skipFrameFilterSpn.value(),
+        #         'finish_frames' : self.finishLineFramesSpn.value(),
+        #         'finish_line'   : self.getFinishLineBounds(),
+        #     }
+        # )
 
         # clear the preview table
-        self.carPreviewTable.clear()
-        self.truckPreviewTable.clear()
+        # self.carPreviewTable.clear()
+        # self.truckPreviewTable.clear()
 
         self.enableControls(False)
 
@@ -561,11 +560,7 @@ class ViewController(QWidget, Ui_Form):
 
     def enableControls(self, state=True):
         self.mediaGBox.setEnabled(state)
-        self.inferenceGBox.setEnabled(state)
-        self.countingGBox.setEnabled(state)
-        self.maskingGBox.setEnabled(state)
-        self.frameSlider.setEnabled(state)
-        self.stopProcessBtn.setEnabled(not state)
+        # self.countingGBox.setEnabled(state)
 
     def onProcessDone(self):
         self.enableControls(True)
@@ -580,7 +575,7 @@ class ViewController(QWidget, Ui_Form):
         self.frameView.view.setXRange(0, cv_img.shape[1])
         self.frameView.view.setYRange(0, cv_img.shape[0])
         self.frameView.imageItem.setImage(cv_img)
-        self.frameNum.setText(str(frame_num))
+        # self.frameNum.setText(str(frame_num))
     
     def convert_cv_qt(self, rgb_image, width, height):
         h, w, ch = rgb_image.shape

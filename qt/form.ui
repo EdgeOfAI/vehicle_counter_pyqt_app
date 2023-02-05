@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1107</width>
-    <height>820</height>
+    <width>1221</width>
+    <height>778</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -30,7 +30,7 @@
     <number>8</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,1,0">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,1,0">
      <property name="spacing">
       <number>15</number>
      </property>
@@ -41,11 +41,18 @@
       <number>0</number>
      </property>
      <item>
-      <widget class="QPushButton" name="pushButton">
-       <property name="text">
-        <string>Add Camera</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="horizontalLayout_4">
+       <item>
+        <widget class="QPushButton" name="addCamBtn">
+         <property name="text">
+          <string>Add Camera</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3"/>
      </item>
      <item>
       <widget class="QGroupBox" name="videoSwitcher">
@@ -56,7 +63,7 @@
         </sizepolicy>
        </property>
        <property name="title">
-        <string>Video</string>
+        <string/>
        </property>
        <layout class="QVBoxLayout" name="verticalLayout_4">
         <property name="spacing">
@@ -107,7 +114,7 @@
        <item>
         <widget class="QGroupBox" name="mediaGBox">
          <property name="title">
-          <string>Media</string>
+          <string/>
          </property>
          <layout class="QGridLayout" name="gridLayout_2">
           <property name="spacing">
@@ -137,7 +144,7 @@
                <bool>true</bool>
               </property>
               <property name="currentText">
-               <string>Camera 1</string>
+               <string/>
               </property>
               <property name="currentIndex">
                <number>-1</number>

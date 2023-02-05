@@ -111,7 +111,7 @@ class Model(QObject):
         self.frame_update_signal.emit(frame, 0)
 
         # draw cardinal coordinates
-        cv2.imshow('image', self.draw_line_widget.show_image())
+        # cv2.imshow('image', self.draw_line_widget.show_image())
 
     def setOutputVideoPath(self, path):
         self.output_video_path = path
@@ -421,7 +421,7 @@ class Model(QObject):
                     if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
                         tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
-                        print(row_id)
+                        # print(row_id)
                         # tracker_dict[uid]['row_id'] = row_id
                         # tracker_dict[uid]['counted'] = True
                         if self.cardinal_vehicle_counter.get(row_id):
@@ -436,11 +436,11 @@ class Model(QObject):
                         img = self.getVehicleImage(detection, frame)
                         self.counted_ids.append(uid)
                         del tracker_dict[uid]
-                        print(class_id, type(class_id))
-                        print(str(class_id))
+                        # print(class_id, type(class_id))
+                        # print(str(class_id))
                         self.vehicle_counter[str(class_id)] +=  + 1
-                        print('vehicle added')
-                        print(class_id, int(uid), self.cardinal_vehicle_counter[row_id], row_id, self.vehicle_counter[str(class_id)])
+                        # print('vehicle added')
+                        # print(class_id, int(uid), self.cardinal_vehicle_counter[row_id], row_id, self.vehicle_counter[str(class_id)])
                         self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
                     else:
                         tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
@@ -477,18 +477,26 @@ class Model(QObject):
 
     @Slot()
     def startInference(self):
+        self.input_video_path = './videos/test.mp4'
+        self.vid = cv2.VideoCapture(self.input_video_path)
+        _, frame = self.vid.read()
+        # self.draw_line_widget = DrawLineWidget(frame)
+        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        self.frame_update_signal.emit(frame, 0)
+        # self.cardinal_direction_points = self.draw_line_widget.list_coordinates
+
         if self.vid is None:
             self.error_signal.emit('No input video specified')
             return
         # print('Cache data path:  ', self.cache_data_path)
         # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
-        weights = [self.cache_data_path]  # model path or triton URL
-        source = [self.input_video_path]  # file/dir/URL/glob/screen/0(webcam)
+        weights = ['./weights/vehicle.pt']  # model path or triton URL
+        source = ['./videos/test.mp4']  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
-        conf_thres=self.score_thresh  # confidence threshold
-        iou_thres=self.iou_thresh  # NMS IOU threshold
+        conf_thres=0.5  # confidence threshold
+        iou_thres=0.4  # NMS IOU threshold
         max_det=1000  # maximum detections per image
         device='cuda:0'  # cuda device, i.e. 0 or 0,1,2,3 or cpu
         classes=None  # filter by class: --class 0, or --class 0 2 3
@@ -503,7 +511,8 @@ class Model(QObject):
         vid_stride=1  # video frame-rate stride
         bs = 1
 
-        self.cardinal_direction_points = self.draw_line_widget.list_coordinates
+        # draw cardinal coordinates
+        self.cardinal_direction_points = [[[322, 367], [610, 253]], [[700, 265], [1031, 391]], [[894, 513], [665, 679]], [[446, 638], [273, 456]]]
 
         print('COORDINATES', self.cardinal_direction_points)
 
