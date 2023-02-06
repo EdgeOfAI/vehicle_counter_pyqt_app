@@ -29,6 +29,20 @@ class App(QApplication):
                 )""")
         except Exception as err:
             print('Error:  ', err)
+
+        conn.commit()
+
+        try:
+            cur.execute("""CREATE TABLE vehicles (
+                    id integer, 
+                    direction text, 
+                    type text,
+                    time timestamp,
+                    camera_id text
+                )""")
+        except Exception as err:
+            print('Error:  ', err)
+
         conn.commit()
 
         self.modelThread = QThread()
