@@ -56,6 +56,7 @@ class ViewController(QWidget, Ui_Form):
         self.startInferenceSignal.connect(self.model.startInference)
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
+        self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
         # self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
         # self.loadCacheBtn.clicked.connect(self.openCacheFile)
         # self.countBtn.clicked.connect(self.startCounting)
@@ -80,6 +81,12 @@ class ViewController(QWidget, Ui_Form):
     def openAddCamWindow(self):
         print('Opening camera add window')
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
+    
+    def updateCameraDropDown(self):
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        camera_names = [row[-1] for row in self.db_cur.fetchall()]
+        self.comboBox.addItems(camera_names)
+        self.db_conn.commit()
 
     def openVideoFile(self):
         file_path, _ = QFileDialog.getOpenFileName(self, "Open Video", '', "mp4 (*.mp4)")

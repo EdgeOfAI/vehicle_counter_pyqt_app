@@ -81,6 +81,12 @@ class Ui_Form(object):
 
         self.gridLayout_2.addWidget(self.label_5, 0, 0, 1, 1)
 
+        self.horizontalLayout_10 = QHBoxLayout()
+        self.horizontalLayout_10.setSpacing(0)
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+
+        self.gridLayout_2.addLayout(self.horizontalLayout_10, 2, 2, 1, 1)
+
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setSpacing(0)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
@@ -88,23 +94,22 @@ class Ui_Form(object):
         self.horizontalLayout_9.setContentsMargins(-1, -1, 0, -1)
         self.comboBox = QComboBox(self.mediaGBox)
         self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setEditable(True)
+        self.comboBox.setEditable(False)
 
         self.horizontalLayout_9.addWidget(self.comboBox)
 
 
-        self.gridLayout_2.addLayout(self.horizontalLayout_9, 0, 1, 1, 1)
+        self.gridLayout_2.addLayout(self.horizontalLayout_9, 0, 2, 1, 1)
 
         self.startInferenceBtn = QPushButton(self.mediaGBox)
         self.startInferenceBtn.setObjectName(u"startInferenceBtn")
 
-        self.gridLayout_2.addWidget(self.startInferenceBtn, 3, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.startInferenceBtn, 3, 0, 1, 1)
 
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setSpacing(0)
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.refreshCamerasBtn = QPushButton(self.mediaGBox)
+        self.refreshCamerasBtn.setObjectName(u"refreshCamerasBtn")
 
-        self.gridLayout_2.addLayout(self.horizontalLayout_10, 2, 1, 1, 1)
+        self.gridLayout_2.addWidget(self.refreshCamerasBtn, 3, 2, 1, 1)
 
 
         self.horizontalLayout_2.addWidget(self.mediaGBox)
@@ -957,6 +962,7 @@ class Ui_Form(object):
         self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))
         self.comboBox.setCurrentText("")
         self.startInferenceBtn.setText(QCoreApplication.translate("Form", u"START", None))
+        self.refreshCamerasBtn.setText(QCoreApplication.translate("Form", u"Refresh", None))
         self.label_8.setText(QCoreApplication.translate("Form", u"NN", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Cars", None))
         self.label.setText(QCoreApplication.translate("Form", u"Trucks", None))

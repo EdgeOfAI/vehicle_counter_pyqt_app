@@ -17,6 +17,8 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def setupSignalSlots(self):
         self.addCamBtn.clicked.connect(self.add_cam)
+    
+    
 
     def add_cam(self):
         # self.inputCamIP.text()
