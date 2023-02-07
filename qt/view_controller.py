@@ -2,7 +2,7 @@
 from typing import Tuple
 from PySide2.QtCore import QPoint, QUrl, Signal, Slot
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QFileDialog, QMessageBox, QTableWidgetItem, QWidget, QMainWindow
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QErrorMessage, QWidget, QMainWindow
 from PySide2.QtGui import QImage, QPixmap, Qt, QIcon
 from qt.Ui_Form import Ui_Form
 import numpy as np
@@ -78,8 +78,22 @@ class ViewController(QWidget, Ui_Form):
         # self.finishLineChk.toggled.connect(self.showFinishLine)
 
 #====================== File Dialog Functions =====================
+    def showPopup(self, message):
+        msg = QMessageBox()
+        msg.setWindowTitle('Ogohlantirish!')
+        msg.setText(message)
+        msg.setIcon(QMessageBox.Warning)
+
+        x = msg.exec_()
+        
     def openAddCamWindow(self):
         print('Opening camera add window')
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        num_added_cameras = len(self.db_cur.fetchall())
+        print(type(num_added_cameras), num_added_cameras)
+        if num_added_cameras > 3:
+            self.showPopup('Kameralar soni 3 dan ko\'p. Boshqa kamera qo\'sha olmaysiz')
+            return None
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
     
     def updateCameraDropDown(self):
