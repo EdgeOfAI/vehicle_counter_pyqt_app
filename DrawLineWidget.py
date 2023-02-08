@@ -44,24 +44,25 @@ class DrawLineWidget(object):
             cv2.line(self.clone2, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)
 
             num_coordinates = len(self.list_coordinates)
-            if num_coordinates == 0:
+            if num_coordinates == 1:
                 coordinal_side_text = 'NORTH'
-            elif num_coordinates == 1:
+                update_cardial_sides_query = ''
+            elif num_coordinates == 2:
                 coordinal_side_text = 'EAST'
                 # write north coordinates into database
                 update_cardial_sides_query = f'Update cameras set nx1 = {self.image_coordinates[0][0]}, ny1 = {self.image_coordinates[0][1]}, nx2 = {self.image_coordinates[1][0]}, ny2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
-            elif num_coordinates == 2:
+            elif num_coordinates == 3:
                 coordinal_side_text = 'WEST'
                 # write east coordinates into database
                 update_cardial_sides_query = f'Update cameras set ex1 = {self.image_coordinates[0][0]}, ey1 = {self.image_coordinates[0][1]}, ex2 = {self.image_coordinates[1][0]}, ey2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
-            elif num_coordinates == 3:
+            elif num_coordinates == 4:
                 coordinal_side_text = 'SOUTH'
                 # write west coordinates into database
                 update_cardial_sides_query = f'Update cameras set wx1 = {self.image_coordinates[0][0]}, wy1 = {self.image_coordinates[0][1]}, wx2 = {self.image_coordinates[1][0]}, wy2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
-            elif num_coordinates == 4:
+            elif num_coordinates == 5:
                 coordinal_side_text = ''
                 # write south coordinates into database
                 update_cardial_sides_query = f'Update cameras set sx1 = {self.image_coordinates[0][0]}, sy1 = {self.image_coordinates[0][1]}, sx2 = {self.image_coordinates[1][0]}, sy2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
