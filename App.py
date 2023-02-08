@@ -62,7 +62,7 @@ class App(QApplication):
         conn.commit()
 
         self.modelThread = QThread()
-        self.model = Model()
+        self.model = Model(conn, cur)
         self.model.moveToThread(self.modelThread)
         self.modelThread.start()
         self.modelThread.setPriority(QThread.HighestPriority)

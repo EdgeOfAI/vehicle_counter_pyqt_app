@@ -65,7 +65,7 @@ class Model(QObject):
     error_signal = Signal(str)
     vehicle_count_signal = Signal(int,int,int,np.ndarray,str,int)
 
-    def __init__(self):
+    def __init__(self, conn, cur):
         super().__init__()
         # Definition of the parameters
         self.sess = None
@@ -94,6 +94,9 @@ class Model(QObject):
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         self.vehicle_counter = {'1':0, '2':0, '3':0}  # 0 truck, 1 car, 2 bus
         self.initialize_counting()
+
+        self.db_conn = conn 
+        self.db_cur = cur 
 
         #initialize color map
         cmap = plt.get_cmap('tab20b')
@@ -129,7 +132,10 @@ class Model(QObject):
         # cache_data = cache.get('dataset_1')
         # self.cache_data = np.array(cache_data)
 
-        # self.max_frame_update_signal.emit(self.cache_data.shape[0])        
+        # self.max_frame_update_signal.emit(self.cache_data.shape[0])
+ 
+    def setCameraId(self, id):
+        self.cam_id = id
 
     def setMaskFile(self, path):
         self.mask_path = path
@@ -479,12 +485,12 @@ class Model(QObject):
 
     @Slot()
     def startInference(self):
-        self.input_video_path = './videos/test.mp4'
-        self.vid = cv2.VideoCapture(self.input_video_path)
-        _, frame = self.vid.read()
+        # self.input_video_path = './videos/test.mp4'
+        # self.vid = cv2.VideoCapture(self.input_video_path)
+        # _, frame = self.vid.read()
         # self.draw_line_widget = DrawLineWidget(frame)
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        self.frame_update_signal.emit(frame, 0)
+        # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        # self.frame_update_signal.emit(frame, 0)
         # self.cardinal_direction_points = self.draw_line_widget.list_coordinates
 
         if self.vid is None:
@@ -512,6 +518,11 @@ class Model(QObject):
         dnn=False  # use OpenCV DNN for ONNX inference
         vid_stride=1  # video frame-rate stride
         bs = 1
+
+        # get camera info from database
+
+        # self.db_cur.execute(f"SELECT * FROM cameras where id = {}")
+        # num_added_cameras = len(self.db_cur.fetchall())
 
         # draw cardinal coordinates
         self.cardinal_direction_points = [[[322, 367], [610, 253]], [[700, 265], [1031, 391]], [[894, 513], [665, 679]], [[446, 638], [273, 456]]]
@@ -575,14 +586,11 @@ class Model(QObject):
 
         frame_num = 0
         self.stop_counting = False
-        print('Before iteration')
 
         for path, im, im0s in dataset:
-            print(path)
             if self.stop_counting:
                 self.counted_ids = []
                 break
-            print('Stop looping')
             original_frame = im0s.copy()
             frame_num += 1
             frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)

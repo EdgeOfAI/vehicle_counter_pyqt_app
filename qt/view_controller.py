@@ -57,6 +57,7 @@ class ViewController(QWidget, Ui_Form):
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
         self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
+        self.comboBox.activated[str].connect(self.onActivated)
         # self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
         # self.loadCacheBtn.clicked.connect(self.openCacheFile)
         # self.countBtn.clicked.connect(self.startCounting)
@@ -78,6 +79,11 @@ class ViewController(QWidget, Ui_Form):
         # self.finishLineChk.toggled.connect(self.showFinishLine)
 
 #====================== File Dialog Functions =====================
+    def onActivated(self, text):
+        cam_id = text.split('.')[0]
+        print(cam_id)
+        # self.model.setCameraId()
+
     def showPopup(self, message):
         msg = QMessageBox()
         msg.setWindowTitle('Ogohlantirish!')
