@@ -17,6 +17,7 @@ from multiprocessing.pool import Pool, ThreadPool
 from pathlib import Path
 from threading import Thread
 from urllib.parse import urlparse
+from hikvisionapi import Client
 
 import numpy as np
 import psutil
@@ -315,7 +316,7 @@ class LoadImages:
             im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
             im = np.ascontiguousarray(im)  # contiguous
 
-        return path, im, im0, self.cap, s
+        return path, im, im0
 
     def _new_video(self, path):
         # Create a new video capture object
@@ -337,6 +338,52 @@ class LoadImages:
 
     def __len__(self):
         return self.nf  # number of files
+
+
+class LoadHikvisionCamera:
+    def __init__(self, ip, username, password, display_name, cam_id, imgsz, stride, auto):
+        self.ip = ip
+        self.username = username
+        self.password = password
+        self.cam_display_name = display_name
+        self.cam_id = cam_id
+        self.imgsz = imgsz
+        self.stride = stride
+        self.auto = auto
+        print('before client initialized')
+
+        self.cam = Client(self.ip, self.username, self.password)
+        print('Client initialized')
+        
+    def get_frame(self):
+        vid = self.cam.Streaming.channels[101].picture(method ='get', type = 'opaque_data')
+        bytes = b''
+        # with open('screen.jpg', 'wb') as f:
+        for chunk in vid.iter_content(chunk_size=1024):
+            bytes += chunk
+            a = bytes.find(b'\xff\xd8')
+            b = bytes.find(b'\xff\xd9')
+            if a != -1 and b != -1:
+                jpg = bytes[a:b+2]
+                bytes = bytes[b+2:]
+                frame = cv2.imdecode(np.fromstring(jpg, dtype=np.uint8), cv2.IMREAD_COLOR)
+
+        return frame
+    
+    def __iter__(self):
+        self.count = -1
+        return self
+    
+    def __next__(self):
+        print('Before get image')
+        im0 = self.get_frame()
+        print('Got image successfully')
+
+        im = letterbox(im0, self.imgsz, stride=self.stride, auto=self.auto)[0]  # padded resize
+        im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        im = np.ascontiguousarray(im)  # contiguous
+
+        return 'runs/detect/', im, im0
 
 
 class LoadStreams:

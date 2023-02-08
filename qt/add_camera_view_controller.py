@@ -2,6 +2,7 @@
 import sys
 from PySide2 import QtWidgets
 from qt.Add_Camera import Ui_MainWindow
+from DrawLineWidget import DrawLineWidget
 
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):

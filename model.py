@@ -34,7 +34,7 @@ import core.utils as utils
 from tools import generate_detections as gdet
 
 from yolov5.models.common import DetectMultiBackend
-from yolov5.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams
+from yolov5.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams, LoadHikvisionCamera
 from yolov5.utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
 from yolov5.utils.plots import Annotator, colors, save_one_box
@@ -52,7 +52,9 @@ class_id_map = {
     'none'  : '0',
     'truck' : '1',
     'car'   : '2',
-    'bus'   : '3'
+    'bus'   : '3',
+    'bicycle': '4',
+    'motorcycle': '5'
 }
 class_id_map.update({item[1]: item[0] for item in class_id_map.items()})
 
@@ -523,7 +525,8 @@ class Model(QObject):
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
         # Load dataset
-        dataset = LoadImages(source, img_size=imgsz, stride=stride, auto=pt, vid_stride=vid_stride)
+        dataset = LoadHikvisionCamera(ip='http://192.168.1.65', username='admin', password='Admin2022', display_name='Camera 1', cam_id=0, imgsz=imgsz, stride=stride, auto=pt)
+        print('Dataset initializded')
         vid_path, vid_writer = [None] * bs, [None] * bs
 
         model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
@@ -545,11 +548,11 @@ class Model(QObject):
         self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
 
 
-        # begin video capture
-        total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
+        # # begin video capture
+        # total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # go to first frame
-        self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
+        # self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
         # self.max_frame_update_signal.emit(total_frames)
 
         # get video ready to save locally 
@@ -561,8 +564,6 @@ class Model(QObject):
         out = cv2.VideoWriter(self.output_video_path, codec, fps, (width, height))
 
         print('TOTAL FRAMS: ', fps)
-        save_dir = increment_path(Path(project) / name, exist_ok=exist_ok)  # increment run
-
         # initialize buffer to store cache
         cache = []
 
@@ -574,11 +575,14 @@ class Model(QObject):
 
         frame_num = 0
         self.stop_counting = False
+        print('Before iteration')
 
-        for path, im, im0s, vid_cap, s in dataset:
+        for path, im, im0s in dataset:
+            print(path)
             if self.stop_counting:
                 self.counted_ids = []
                 break
+            print('Stop looping')
             original_frame = im0s.copy()
             frame_num += 1
             frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
@@ -589,8 +593,7 @@ class Model(QObject):
                 im = im[None]  # expand for batch dim
 
             # Inference
-            visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
-            pred = model(im, augment=augment, visualize=visualize)
+            pred = model(im, augment=augment, visualize=False)
 
             # NMS
             pred = non_max_suppression(pred, conf_thres, iou_thres, None, agnostic_nms, max_det=max_det)
@@ -618,7 +621,7 @@ class Model(QObject):
                         xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
                         bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
-            allowed_classes = ['truck', 'car', 'bus']
+            allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
 
             # loop through objects and use class index to get class name, allow only classes in allowed_classes list
             names = []
