@@ -25,7 +25,23 @@ class App(QApplication):
                     ip text, 
                     username text,
                     password text,
-                    name text
+                    name text,
+                    nx1 integer,
+                    ny1 integer,
+                    nx2 integer,
+                    ny2 integer,
+                    ex1 integer,
+                    ey1 integer,
+                    ex2 integer,
+                    ey2 integer,
+                    wx1 integer,
+                    wy1 integer,
+                    wx2 integer,
+                    wy2 integer,
+                    sx1 integer,
+                    sy1 integer,
+                    sx2 integer,
+                    sy2 integer
                 )""")
         except Exception as err:
             print('Error:  ', err)
