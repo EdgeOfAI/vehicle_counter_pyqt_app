@@ -45,6 +45,7 @@ class ViewController(QWidget, Ui_Form):
         # sqlite3 db files
         self.db_conn = conn
         self.db_cur = cur
+        self.is_refresh_clicked = 0
 
         self.setupSignalSlots()
 
@@ -107,9 +108,10 @@ class ViewController(QWidget, Ui_Form):
         camera_names = [row[4] for row in self.db_cur.fetchall()]
         existing_names = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
         add_names = [name for name in camera_names if name not in existing_names]
-        if len(camera_names) == 1:
+        if not self.is_refresh_clicked:
             print('Refresh pressed and camera id set to : ', camera_names[0].split('.')[0])
             self.model.setCameraId(camera_names[0].split('.')[0])
+            self.is_refresh_clicked = 1
         self.comboBox.addItems(add_names)
         self.db_conn.commit()
 

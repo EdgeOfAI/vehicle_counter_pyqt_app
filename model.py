@@ -523,10 +523,11 @@ class Model(QObject):
 
         # get camera info from database
         print('000000000')
-        print('Query command', f"SELECT * FROM cameras where id = {self.cam_id}")
-        self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {self.cam_id}")
+        print('Query command', f"SELECT * FROM cameras")
+        print(self.db_cur, 'cursor')
+        self.db_cur.execute("SELECT * FROM cameras")
         print('111111111')
-        camera_info = self.db_cur.fetchall()
+        camera_info = [row for row in self.db_cur.fetchall() if row[4] == self.cam_id]
         print('2222222222')
         self.db_conn.commit()
         print(camera_info)
@@ -543,7 +544,7 @@ class Model(QObject):
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
         # Load dataset
-        dataset = LoadHikvisionCamera(ip='http://192.168.1.65', username='admin', password='Admin2022', display_name='Camera 1', cam_id=0, imgsz=imgsz, stride=stride, auto=pt)
+        dataset = LoadHikvisionCamera(ip='http://192.168.0.65', username='admin', password='Admin2022', display_name='Camera 1', cam_id=0, imgsz=imgsz, stride=stride, auto=pt)
         print('Dataset initializded')
         vid_path, vid_writer = [None] * bs, [None] * bs
 
@@ -553,17 +554,21 @@ class Model(QObject):
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
 
+        print('333333333333333333')
         # calculate cosine distance metric
         metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
         # initialize tracker
         tracker = Tracker(metric)
+        print('111111111111111111')
 
         # load standard tensorflow saved model for YOLO and Deepsort
         # load configuration for object detector
+        print('hello world')
         config = ConfigProto()
         config.gpu_options.allow_growth = True
         self.sess = Session(config=config)
         self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
+        print('22222222222')
 
         # # begin video capture
         # total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -572,15 +577,6 @@ class Model(QObject):
         # self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
         # self.max_frame_update_signal.emit(total_frames)
 
-        # get video ready to save locally 
-        # by default VideoCapture returns float instead of int
-        width = int(self.vid.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fps = int(self.vid.get(cv2.CAP_PROP_FPS))
-        codec = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter(self.output_video_path, codec, fps, (width, height))
-
-        print('TOTAL FRAMS: ', fps)
         # initialize buffer to store cache
         cache = []
 
@@ -706,7 +702,6 @@ class Model(QObject):
 
             result = np.asarray(original_frame)
             result = cv2.cvtColor(original_frame, cv2.COLOR_RGB2BGR)
-            out.write(result)
 
             cache.append(frame_data)
             # print('Before line drawings')
