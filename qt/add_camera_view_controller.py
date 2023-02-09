@@ -32,6 +32,7 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         if not last_id:
             last_id = 0
 
+        print('Cam ID:  ', f'{last_id + 1}. {self.inputCamDisplayName.text()}')
         self.db_cur.execute(f"INSERT INTO cameras VALUES ({last_id + 1}, '{self.inputCamIP.text()}', '{self.inputCamUsername.text()}', '{self.inputCamPassword.text()}', '{last_id + 1}. {self.inputCamDisplayName.text()}', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)")
         self.db_conn.commit()
         self.hide()

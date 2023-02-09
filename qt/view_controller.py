@@ -82,7 +82,7 @@ class ViewController(QWidget, Ui_Form):
     def onActivated(self, text):
         cam_id = text.split('.')[0]
         print(cam_id)
-        # self.model.setCameraId()
+        self.model.setCameraId(cam_id)
 
     def showPopup(self, message):
         msg = QMessageBox()
@@ -97,15 +97,20 @@ class ViewController(QWidget, Ui_Form):
         self.db_cur.execute(f"SELECT * FROM cameras")
         num_added_cameras = len(self.db_cur.fetchall())
         print(type(num_added_cameras), num_added_cameras)
-        if num_added_cameras > 3:
-            self.showPopup('Kameralar soni 3 dan ko\'p. Boshqa kamera qo\'sha olmaysiz')
+        if num_added_cameras >= 3:
+            self.showPopup('Kameralar soni 3taga teng. Boshqa kamera qo\'sha olmaysiz')
             return None
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
     
     def updateCameraDropDown(self):
         self.db_cur.execute(f"SELECT * FROM cameras")
-        camera_names = [row[-1] for row in self.db_cur.fetchall()]
-        self.comboBox.addItems(camera_names)
+        camera_names = [row[4] for row in self.db_cur.fetchall()]
+        existing_names = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
+        add_names = [name for name in camera_names if name not in existing_names]
+        if len(camera_names) == 1:
+            print('Refresh pressed and camera id set to : ', camera_names[0].split('.')[0])
+            self.model.setCameraId(camera_names[0].split('.')[0])
+        self.comboBox.addItems(add_names)
         self.db_conn.commit()
 
     def openVideoFile(self):
@@ -513,7 +518,10 @@ class ViewController(QWidget, Ui_Form):
 
     def startInference(self):
         self.prepareforAnalysis()
-        self.startInferenceSignal.emit()
+        self.enableControls(False)
+        is_running = self.startInferenceSignal.emit()
+        if not is_running:
+            self.enableControls(True)
     
     def stopProcess(self):
         self.model.stopInference()
@@ -583,7 +591,8 @@ class ViewController(QWidget, Ui_Form):
         # self.carPreviewTable.clear()
         # self.truckPreviewTable.clear()
 
-        self.enableControls(False)
+        # self.enableControls(False)
+        return False
 
     def getFinishLineBounds(self):
         pos = self.finishLine.viewPos()

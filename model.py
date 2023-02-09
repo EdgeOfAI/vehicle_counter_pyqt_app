@@ -90,6 +90,7 @@ class Model(QObject):
         self.imgMask = None
         self.cardinal_vehicle_counter = dict()
         self.cardinal_direction_points = []
+        self.cam_id = 0
         self.counted_ids = []
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         self.vehicle_counter = {'1':0, '2':0, '3':0}  # 0 truck, 1 car, 2 bus
@@ -492,10 +493,11 @@ class Model(QObject):
         # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # self.frame_update_signal.emit(frame, 0)
         # self.cardinal_direction_points = self.draw_line_widget.list_coordinates
-
-        if self.vid is None:
-            self.error_signal.emit('No input video specified')
-            return
+        print('Inferece cam id', self.cam_id)
+        if not self.cam_id:
+            self.stop_counting = True
+            self.error_signal.emit('Camera not selected or not added!')
+            return False
         # print('Cache data path:  ', self.cache_data_path)
         # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
@@ -520,9 +522,14 @@ class Model(QObject):
         bs = 1
 
         # get camera info from database
-
-        # self.db_cur.execute(f"SELECT * FROM cameras where id = {}")
-        # num_added_cameras = len(self.db_cur.fetchall())
+        print('000000000')
+        print('Query command', f"SELECT * FROM cameras where id = {self.cam_id}")
+        self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {self.cam_id}")
+        print('111111111')
+        camera_info = self.db_cur.fetchall()
+        print('2222222222')
+        self.db_conn.commit()
+        print(camera_info)
 
         # draw cardinal coordinates
         self.cardinal_direction_points = [[[322, 367], [610, 253]], [[700, 265], [1031, 391]], [[894, 513], [665, 679]], [[446, 638], [273, 456]]]
@@ -557,7 +564,6 @@ class Model(QObject):
         config.gpu_options.allow_growth = True
         self.sess = Session(config=config)
         self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
-
 
         # # begin video capture
         # total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
