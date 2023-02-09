@@ -31,15 +31,25 @@ class Ui_Form(object):
         self.verticalLayout_2.setSpacing(15)
         self.verticalLayout_2.setObjectName(u"verticalLayout_2")
         self.verticalLayout_2.setContentsMargins(-1, 0, 0, -1)
-        self.horizontalLayout_4 = QHBoxLayout()
-        self.horizontalLayout_4.setObjectName(u"horizontalLayout_4")
+        self.cameraEditBox = QHBoxLayout()
+        self.cameraEditBox.setObjectName(u"cameraEditBox")
         self.addCamBtn = QPushButton(Form)
         self.addCamBtn.setObjectName(u"addCamBtn")
 
-        self.horizontalLayout_4.addWidget(self.addCamBtn)
+        self.cameraEditBox.addWidget(self.addCamBtn)
+
+        self.editCameraBtn = QPushButton(Form)
+        self.editCameraBtn.setObjectName(u"editCameraBtn")
+
+        self.cameraEditBox.addWidget(self.editCameraBtn)
+
+        self.removeCameraBtn = QPushButton(Form)
+        self.removeCameraBtn.setObjectName(u"removeCameraBtn")
+
+        self.cameraEditBox.addWidget(self.removeCameraBtn)
 
 
-        self.verticalLayout_2.addLayout(self.horizontalLayout_4)
+        self.verticalLayout_2.addLayout(self.cameraEditBox)
 
         self.verticalLayout_3 = QVBoxLayout()
         self.verticalLayout_3.setObjectName(u"verticalLayout_3")
@@ -116,6 +126,11 @@ class Ui_Form(object):
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+
+        self.stopProcessBtn = QPushButton(Form)
+        self.stopProcessBtn.setObjectName(u"stopProcessBtn")
+
+        self.verticalLayout_2.addWidget(self.stopProcessBtn)
 
         self.verticalLayout_2.setStretch(2, 1)
 
@@ -957,12 +972,15 @@ class Ui_Form(object):
     def retranslateUi(self, Form):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Traffic Vehicle Counter", None))
         self.addCamBtn.setText(QCoreApplication.translate("Form", u"Add Camera", None))
+        self.editCameraBtn.setText(QCoreApplication.translate("Form", u"Edit Camera", None))
+        self.removeCameraBtn.setText(QCoreApplication.translate("Form", u"PushButton", None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")
         self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))
         self.comboBox.setCurrentText("")
         self.startInferenceBtn.setText(QCoreApplication.translate("Form", u"START", None))
         self.refreshCamerasBtn.setText(QCoreApplication.translate("Form", u"Refresh", None))
+        self.stopProcessBtn.setText(QCoreApplication.translate("Form", u"STOP", None))
         self.label_8.setText(QCoreApplication.translate("Form", u"NN", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Cars", None))
         self.label.setText(QCoreApplication.translate("Form", u"Trucks", None))

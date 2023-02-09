@@ -604,10 +604,6 @@ class Model(QObject):
             im /= 255  # 0 - 255 to 0.0 - 1.0
             if len(im.shape) == 3:
                 im = im[None]  # expand for batch dim
-            if frame_num == 10:
-                self.stop_counting = True
-                self.process_done_signal.emit()
-                break
 
             # Inference
             pred = model(im, augment=augment, visualize=False)
@@ -722,11 +718,7 @@ class Model(QObject):
 
             # print('Frame #: ', frame_num)
 
-        # Save cache file as hdf file
-        cache_data = h5py.File(self.output_data_path, 'w')
-        cache = np.asarray(cache, dtype=int)
-        cache_data.create_dataset('dataset_1', data=cache)
-        cache_data.close()
+        print('INFERENCE STOPPED')
 
         self.process_done_signal.emit()
 

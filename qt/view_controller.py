@@ -67,7 +67,7 @@ class ViewController(QWidget, Ui_Form):
         # self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
         self.model.process_done_signal.connect(self.onProcessDone)
-        # self.stopProcessBtn.clicked.connect(self.stopProcess)
+        self.stopProcessBtn.clicked.connect(self.stopProcess)
         # self.drawMaskBtn.clicked.connect(self.drawMask)
         # self.resetMaskBtn.clicked.connect(self.resetMask)
         # self.setMaskFileBtn.clicked.connect(self.openMaskFile)
@@ -626,7 +626,7 @@ class ViewController(QWidget, Ui_Form):
 
     def enableControls(self, state=True):
         self.mediaGBox.setEnabled(state)
-        self.addCamBtn.setEnabled(state)
+        self.cameraEditBox.setEnabled(state)
         # self.countingGBox.setEnabled(state)
 
     def onProcessDone(self):
