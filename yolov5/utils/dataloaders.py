@@ -350,10 +350,8 @@ class LoadHikvisionCamera:
         self.imgsz = imgsz
         self.stride = stride
         self.auto = auto
-        print('before client initialized')
 
         self.cam = Client(self.ip, self.username, self.password)
-        print('Client initialized')
         
     def get_frame(self):
         vid = self.cam.Streaming.channels[101].picture(method ='get', type = 'opaque_data')
@@ -375,9 +373,7 @@ class LoadHikvisionCamera:
         return self
     
     def __next__(self):
-        print('Before get image')
         im0 = self.get_frame()
-        print('Got image successfully')
 
         im = letterbox(im0, self.imgsz, stride=self.stride, auto=self.auto)[0]  # padded resize
         im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB

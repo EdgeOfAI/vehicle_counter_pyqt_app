@@ -41,11 +41,25 @@
       <number>0</number>
      </property>
      <item>
-      <layout class="QHBoxLayout" name="horizontalLayout_4">
+      <layout class="QHBoxLayout" name="cameraEditBox">
        <item>
         <widget class="QPushButton" name="addCamBtn">
          <property name="text">
           <string>Add Camera</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="editCameraBtn">
+         <property name="text">
+          <string>Edit Camera</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="removeCameraBtn">
+         <property name="text">
+          <string>PushButton</string>
          </property>
         </widget>
        </item>

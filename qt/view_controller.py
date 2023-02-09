@@ -66,7 +66,7 @@ class ViewController(QWidget, Ui_Form):
         # self.countAnalyzeBtn.clicked.connect(self.startCountingAnalysis)
         # self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
-        # self.model.process_done_signal.connect(self.onProcessDone)
+        self.model.process_done_signal.connect(self.onProcessDone)
         # self.stopProcessBtn.clicked.connect(self.stopProcess)
         # self.drawMaskBtn.clicked.connect(self.drawMask)
         # self.resetMaskBtn.clicked.connect(self.resetMask)
@@ -83,7 +83,16 @@ class ViewController(QWidget, Ui_Form):
     def onActivated(self, text):
         cam_id = text.split('.')[0]
         print(cam_id)
-        self.model.setCameraId(cam_id)
+        self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
+        camera_info = self.db_cur.fetchall()
+        print(camera_info)
+        cardinal_direction_points = [
+                                        [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
+                                        [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
+                                        [[camera_info[0][13], camera_info[0][14]], [camera_info[0][15],camera_info[0][16]]], # west
+                                        [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
+                                    ]
+        self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
 
     def showPopup(self, message):
         msg = QMessageBox()
@@ -99,18 +108,25 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(self.db_cur.fetchall())
         print(type(num_added_cameras), num_added_cameras)
         if num_added_cameras >= 3:
-            self.showPopup('Kameralar soni 3taga teng. Boshqa kamera qo\'sha olmaysiz')
+            self.showPopup('Kameralar soni 4taga teng. Boshqa kamera qo\'sha olmaysiz')
             return None
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
     
     def updateCameraDropDown(self):
         self.db_cur.execute(f"SELECT * FROM cameras")
-        camera_names = [row[4] for row in self.db_cur.fetchall()]
+        cameras = self.db_cur.fetchall()
+        camera_names = [row[4] for row in cameras]
         existing_names = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
         add_names = [name for name in camera_names if name not in existing_names]
-        if not self.is_refresh_clicked:
+        if not self.is_refresh_clicked and cameras:
             print('Refresh pressed and camera id set to : ', camera_names[0].split('.')[0])
-            self.model.setCameraId(camera_names[0].split('.')[0])
+            cardinal_direction_points = [
+                                            [[cameras[0][5], cameras[0][6]], [cameras[0][7], cameras[0][8]]], # north
+                                            [[cameras[0][9], cameras[0][10]], [cameras[0][11], cameras[0][12]]], # east
+                                            [[cameras[0][13], cameras[0][14]], [cameras[0][15],cameras[0][16]]], # west
+                                            [[cameras[0][17], cameras[0][18]], [cameras[0][19], cameras[0][20]]] # south
+                                        ]
+            self.model.setCameraInfo(cameras[0][0], cameras[0][1], cameras[0][2], cameras[0][3], cameras[0][4], cardinal_direction_points)
             self.is_refresh_clicked = 1
         self.comboBox.addItems(add_names)
         self.db_conn.commit()
@@ -610,6 +626,7 @@ class ViewController(QWidget, Ui_Form):
 
     def enableControls(self, state=True):
         self.mediaGBox.setEnabled(state)
+        self.addCamBtn.setEnabled(state)
         # self.countingGBox.setEnabled(state)
 
     def onProcessDone(self):

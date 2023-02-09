@@ -135,8 +135,13 @@ class Model(QObject):
 
         # self.max_frame_update_signal.emit(self.cache_data.shape[0])
  
-    def setCameraId(self, id):
+    def setCameraInfo(self, id, ip, username, password, camera_name, cardinal_direction_points):
         self.cam_id = id
+        self.cam_ip = ip
+        self.cam_username = username
+        self.cam_password = password
+        self.cam_name = camera_name
+        self.cardinal_direction_points = cardinal_direction_points
 
     def setMaskFile(self, path):
         self.mask_path = path
@@ -522,19 +527,17 @@ class Model(QObject):
         bs = 1
 
         # get camera info from database
-        print('000000000')
-        print('Query command', f"SELECT * FROM cameras")
-        print(self.db_cur, 'cursor')
-        self.db_cur.execute("SELECT * FROM cameras")
-        print('111111111')
-        camera_info = [row for row in self.db_cur.fetchall() if row[4] == self.cam_id]
-        print('2222222222')
-        self.db_conn.commit()
-        print(camera_info)
+        # print('000000000')
+        # print('Query command', f"SELECT * FROM cameras")
+        # print(self.db_cur, 'cursor')
+        # self.db_cur.execute("SELECT * FROM cameras")
+        # print('111111111')
+        # camera_info = [row for row in self.db_cur.fetchall() if row[4] == self.cam_id]
+        # print('2222222222')
+        # self.db_conn.commit()
+        # print(camera_info)
 
         # draw cardinal coordinates
-        self.cardinal_direction_points = [[[322, 367], [610, 253]], [[700, 265], [1031, 391]], [[894, 513], [665, 679]], [[446, 638], [273, 456]]]
-
         print('COORDINATES', self.cardinal_direction_points)
 
         # Load model
@@ -601,6 +604,10 @@ class Model(QObject):
             im /= 255  # 0 - 255 to 0.0 - 1.0
             if len(im.shape) == 3:
                 im = im[None]  # expand for batch dim
+            if frame_num == 10:
+                self.stop_counting = True
+                self.process_done_signal.emit()
+                break
 
             # Inference
             pred = model(im, augment=augment, visualize=False)
