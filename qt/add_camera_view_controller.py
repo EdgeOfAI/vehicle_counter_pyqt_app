@@ -1,24 +1,29 @@
 # Shakh)
 import sys
 from PySide2 import QtWidgets
+from PySide2.QtCore import Signal
 from qt.Add_Camera import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
+from PySide2.QtWidgets import QMessageBox
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
-
+    process_done_signal = Signal()
     def __init__(self, db_conn, db_cur):
         super(AddCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.setupUi(self)
-        self.show()
 
         self.setupSignalSlots()
     
     def setupSignalSlots(self):
         self.addCamBtn.clicked.connect(self.add_cam)
+    
+    def set_db_conn_cur(self, db_conn, db_cur):
+        self.db_conn = db_conn
+        self.db_cur = db_cur
 
     def add_cam(self):
         # self.inputCamIP.text()
@@ -50,3 +55,13 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         frame = dataset.get_frame()
         self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1)
         self.cardinal_direction_points = self.draw_line_widget.list_coordinates
+
+        msg = QMessageBox()
+        msg.setWindowTitle('Ogohlantirish!')
+        msg.setText(f'{last_id + 1} id ga ega bo\'lgan kamera bazaga qo\'shildi!')
+        msg.setIcon(QMessageBox.Warning)
+
+        x = msg.exec_()
+
+        self.process_done_signal.emit()
+

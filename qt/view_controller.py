@@ -12,6 +12,7 @@ import pyqtgraph as pg
 from model import Model
 
 from qt.add_camera_view_controller import AddCameraWindow
+from qt.remove_camera_view_controller import RemoveCameraWindow
 
 
 class ViewController(QWidget, Ui_Form):
@@ -47,6 +48,8 @@ class ViewController(QWidget, Ui_Form):
         self.db_cur = cur
         self.is_refresh_clicked = 0
 
+        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
+        self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur)
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
@@ -56,6 +59,8 @@ class ViewController(QWidget, Ui_Form):
         self.startInferenceBtn.clicked.connect(self.startInference)
         self.startInferenceSignal.connect(self.model.startInference)
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
+        # self.editCameraBtn.clicked.connect(self.openEditCamWindow)
+        self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
         self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
         self.comboBox.activated[str].connect(self.onActivated)
@@ -67,6 +72,8 @@ class ViewController(QWidget, Ui_Form):
         # self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
         self.model.process_done_signal.connect(self.onProcessDone)
+        self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
+        self.remove_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.stopProcessBtn.clicked.connect(self.stopProcess)
         # self.drawMaskBtn.clicked.connect(self.drawMask)
         # self.resetMaskBtn.clicked.connect(self.resetMask)
@@ -101,6 +108,25 @@ class ViewController(QWidget, Ui_Form):
         msg.setIcon(QMessageBox.Warning)
 
         x = msg.exec_()
+    
+    def onCamBtnsClosed(self):
+        # self.showPopup(message)
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        if cameras:
+            first_cam_id = cameras[0][0]
+            self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {first_cam_id}")
+            camera_info = self.db_cur.fetchall()
+            print(camera_info)
+            cardinal_direction_points = [
+                                            [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
+                                            [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
+                                            [[camera_info[0][13], camera_info[0][14]], [camera_info[0][15],camera_info[0][16]]], # west
+                                            [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
+                                        ]
+            self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
+        else:
+            self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
         
     def openAddCamWindow(self):
         print('Opening camera add window')
@@ -110,14 +136,42 @@ class ViewController(QWidget, Ui_Form):
         if num_added_cameras >= 3:
             self.showPopup('Kameralar soni 4taga teng. Boshqa kamera qo\'sha olmaysiz')
             return None
-        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
+        self.add_cam_window.set_db_conn_cur(self.db_conn, self.db_cur)
+        self.add_cam_window.show()
+    
+    def openRemoveCamWindow(self):
+        print('Opening camera remove window')
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        num_added_cameras = len(cameras)
+        print(type(num_added_cameras), num_added_cameras)
+        if not num_added_cameras:
+            self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
+            return None
+        first_cam_id = cameras[0][0]
+        self.remove_camera_window.setCamId(first_cam_id)
+        self.remove_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
+        self.remove_camera_window.show()
+        
+    
+    # def openEditCamWindow(self):
+    #     print('Opening camera remove window')
+    #     self.db_cur.execute(f"SELECT * FROM cameras")
+    #     cameras = self.db_cur.fetchall()
+    #     num_added_cameras = len(cameras)
+    #     print(type(num_added_cameras), num_added_cameras)
+    #     if not num_added_cameras:
+    #         self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
+    #         return None
+    #     first_cam_id = cameras[0][0]
+    #     self.remove_camera_window.setCamId(first_cam_id)
+    #     self.remove_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
+    #     self.remove_camera_window.show()
     
     def updateCameraDropDown(self):
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()
         camera_names = [row[4] for row in cameras]
-        existing_names = [self.comboBox.itemText(i) for i in range(self.comboBox.count())]
-        add_names = [name for name in camera_names if name not in existing_names]
         if not self.is_refresh_clicked and cameras:
             print('Refresh pressed and camera id set to : ', camera_names[0].split('.')[0])
             cardinal_direction_points = [
@@ -128,7 +182,8 @@ class ViewController(QWidget, Ui_Form):
                                         ]
             self.model.setCameraInfo(cameras[0][0], cameras[0][1], cameras[0][2], cameras[0][3], cameras[0][4], cardinal_direction_points)
             self.is_refresh_clicked = 1
-        self.comboBox.addItems(add_names)
+        self.comboBox.clear()
+        self.comboBox.addItems(camera_names)
         self.db_conn.commit()
 
     def openVideoFile(self):
