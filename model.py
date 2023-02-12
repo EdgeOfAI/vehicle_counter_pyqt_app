@@ -547,7 +547,9 @@ class Model(QObject):
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
         # Load dataset
-        dataset = LoadHikvisionCamera(ip='http://192.168.0.65', username='admin', password='Admin2022', display_name='Camera 1', cam_id=0, imgsz=imgsz, stride=stride, auto=pt)
+        print('Loading camera....', self.cam_ip, self.cam_username, self.cam_password)
+        print(self.cam_ip, self.cam_username, self.cam_password, self.cam_name, self.cam_id)
+        dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
         print('Dataset initializded')
         vid_path, vid_writer = [None] * bs, [None] * bs
 
