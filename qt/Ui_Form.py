@@ -973,7 +973,7 @@ class Ui_Form(object):
         Form.setWindowTitle(QCoreApplication.translate("Form", u"Traffic Vehicle Counter", None))
         self.addCamBtn.setText(QCoreApplication.translate("Form", u"Add Camera", None))
         self.editCameraBtn.setText(QCoreApplication.translate("Form", u"Edit Camera", None))
-        self.removeCameraBtn.setText(QCoreApplication.translate("Form", u"PushButton", None))
+        self.removeCameraBtn.setText(QCoreApplication.translate("Form", u"Remove Camera", None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")
         self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))

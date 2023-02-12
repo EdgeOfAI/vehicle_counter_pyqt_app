@@ -59,7 +59,7 @@
        <item>
         <widget class="QPushButton" name="removeCameraBtn">
          <property name="text">
-          <string>PushButton</string>
+          <string>Remove Camera</string>
          </property>
         </widget>
        </item>

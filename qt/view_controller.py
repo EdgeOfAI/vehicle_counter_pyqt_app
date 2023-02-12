@@ -684,7 +684,9 @@ class ViewController(QWidget, Ui_Form):
     def enableControls(self, state=True):
         self.mediaGBox.setEnabled(state)
         self.cameraEditBox.setEnabled(state)
-        # self.countingGBox.setEnabled(state)
+        self.addCamBtn.setEnabled(state)
+        self.editCameraBtn.setEnabled(state)
+        self.removeCameraBtn.setEnabled(state)
 
     def onProcessDone(self):
         self.enableControls(True)
