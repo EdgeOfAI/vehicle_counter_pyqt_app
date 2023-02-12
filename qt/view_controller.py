@@ -13,6 +13,7 @@ from model import Model
 
 from qt.add_camera_view_controller import AddCameraWindow
 from qt.remove_camera_view_controller import RemoveCameraWindow
+from qt.edit_camera_view_controller import EditCameraWindow
 
 
 class ViewController(QWidget, Ui_Form):
@@ -50,6 +51,7 @@ class ViewController(QWidget, Ui_Form):
 
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur)
+        self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur)
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
@@ -59,7 +61,7 @@ class ViewController(QWidget, Ui_Form):
         self.startInferenceBtn.clicked.connect(self.startInference)
         self.startInferenceSignal.connect(self.model.startInference)
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
-        # self.editCameraBtn.clicked.connect(self.openEditCamWindow)
+        self.editCameraBtn.clicked.connect(self.openEditCamWindow)
         self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
         self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
@@ -152,21 +154,21 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window.setCamId(first_cam_id)
         self.remove_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.remove_camera_window.show()
-        
     
-    # def openEditCamWindow(self):
-    #     print('Opening camera remove window')
-    #     self.db_cur.execute(f"SELECT * FROM cameras")
-    #     cameras = self.db_cur.fetchall()
-    #     num_added_cameras = len(cameras)
-    #     print(type(num_added_cameras), num_added_cameras)
-    #     if not num_added_cameras:
-    #         self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
-    #         return None
-    #     first_cam_id = cameras[0][0]
-    #     self.remove_camera_window.setCamId(first_cam_id)
-    #     self.remove_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
-    #     self.remove_camera_window.show()
+    def openEditCamWindow(self):
+        print('Opening camera Edit window')
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        num_added_cameras = len(cameras)
+        print(type(num_added_cameras), num_added_cameras)
+        if not num_added_cameras:
+            self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
+            return None
+        first_cam_id = cameras[0][0]
+        self.edit_camera_window.setCamId(first_cam_id)
+        self.edit_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
+        self.edit_camera_window.setCameraInfos()
+        self.edit_camera_window.show()
     
     def updateCameraDropDown(self):
         self.db_cur.execute(f"SELECT * FROM cameras")
