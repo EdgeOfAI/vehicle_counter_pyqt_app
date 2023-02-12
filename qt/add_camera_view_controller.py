@@ -4,7 +4,7 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import Signal
 from qt.Add_Camera import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
-from PySide2.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox, QAction
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
@@ -14,12 +14,18 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         super(AddCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
+        self.aboutToQuit = QAction("Quit", self)
         self.setupUi(self)
 
         self.setupSignalSlots()
     
     def setupSignalSlots(self):
         self.addCamBtn.clicked.connect(self.add_cam)
+        self.aboutToQuit.triggered.connect(self.closeEvent)
+    
+    def closeEvent(self, event):
+        self.process_done_signal.emit()
+        event.accept()
     
     def set_db_conn_cur(self, db_conn, db_cur):
         self.db_conn = db_conn

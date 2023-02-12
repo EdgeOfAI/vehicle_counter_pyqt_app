@@ -76,6 +76,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.process_done_signal.connect(self.onProcessDone)
         self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.remove_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
+        self.edit_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.stopProcessBtn.clicked.connect(self.stopProcess)
         # self.drawMaskBtn.clicked.connect(self.drawMask)
         # self.resetMaskBtn.clicked.connect(self.resetMask)
@@ -115,6 +116,7 @@ class ViewController(QWidget, Ui_Form):
         # self.showPopup(message)
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()
+        self.enableControls(False)
         if cameras:
             first_cam_id = cameras[0][0]
             self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {first_cam_id}")
@@ -139,6 +141,7 @@ class ViewController(QWidget, Ui_Form):
             self.showPopup('Kameralar soni 4taga teng. Boshqa kamera qo\'sha olmaysiz')
             return None
         self.add_cam_window.set_db_conn_cur(self.db_conn, self.db_cur)
+        self.enableControls(False)
         self.add_cam_window.show()
     
     def openRemoveCamWindow(self):
@@ -153,6 +156,7 @@ class ViewController(QWidget, Ui_Form):
         first_cam_id = cameras[0][0]
         self.remove_camera_window.setCamId(first_cam_id)
         self.remove_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
+        self.enableControls(False)
         self.remove_camera_window.show()
     
     def openEditCamWindow(self):
@@ -168,6 +172,7 @@ class ViewController(QWidget, Ui_Form):
         self.edit_camera_window.setCamId(first_cam_id)
         self.edit_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.edit_camera_window.setCameraInfos()
+        self.enableControls(False)
         self.edit_camera_window.show()
     
     def updateCameraDropDown(self):

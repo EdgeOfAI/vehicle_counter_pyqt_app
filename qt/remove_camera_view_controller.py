@@ -4,7 +4,7 @@ from PySide2 import QtWidgets
 from PySide2.QtCore import Signal
 from qt.RemoveCameraUI import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
-from PySide2.QtWidgets import QMessageBox
+from PySide2.QtWidgets import QMessageBox, QAction
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
@@ -15,6 +15,7 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.remove_cam_id = -1
+        self.aboutToQuit = QAction("Quit", self)
         self.setupUi(self)
         # self.show()
         self.db_cur.execute(f"SELECT * FROM cameras")
@@ -27,6 +28,10 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def setCamId(self, cam_id):
         self.remove_cam_id = cam_id
+    
+    def closeEvent(self, event):
+        self.process_done_signal.emit()
+        event.accept()
 
     def set_db_conn_cur(self, db_conn, db_cur):
         self.db_conn = db_conn
@@ -41,6 +46,7 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def setupSignalSlots(self):
         self.addCamBtn.clicked.connect(self.remove_cam)
         self.comboBox.activated[str].connect(self.onActivated)
+        self.aboutToQuit.triggered.connect(self.closeEvent)
     
     def onActivated(self, text):
         cam_id = text.split('.')[0]
