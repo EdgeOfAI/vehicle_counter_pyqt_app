@@ -504,7 +504,7 @@ class Model(QObject):
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_infos[2])}{self.CARDINAL_DIRECTIONS.index(out_cardinal_side)}"
                         try:
                             self.db_cur.execute(f"""Update vehicles set 
-                                                            out_cardinal_side = {out_cardinal_side}, 
+                                                            out_cardinal_side = '{out_cardinal_side}', 
                                                             row_id = {row_id}
                                                             where id = {uid}""")
                         except Exception as err:
@@ -535,7 +535,7 @@ class Model(QObject):
                         in_cardinal_side = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         try:
                             self.db_cur.execute(f"""UPDATE vehicles SET 
-                                                            in_cardinal_side = {in_cardinal_side} 
+                                                            in_cardinal_side = '{in_cardinal_side}'
                                                             WHERE id = {uid}""")
                         except Exception as err:
                             print('Error:********541', err)
