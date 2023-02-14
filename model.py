@@ -398,37 +398,64 @@ class Model(QObject):
         cy = y_min + (height / 2)
         centroid = [cx, cy]
         # tracker_dict = self.detected_vehicles[str(class_id)]
-        print('Before vehicles selection')
-        self.db_cur.execute(f"SELECT * FROM vehicles")
-        print('Before fetching all')
+        # print('Cursor:  ', self.db_cur)
+        # print('Before vehicles selection')
+        try:
+            self.db_cur.execute(f"SELECT * FROM vehicles")
+        except Exception as err:
+            print('Error', err)
+        # self.db_cur.execute(f"SELECT * FROM vehicles")
+        # print('Before fetching all')
+        # cameras = self.db_cur.fetchall()
         vehicles = self.db_cur.fetchall()
-        print('Before getting tracking uids')
+        # names = list(map(lambda x: x[0], self.db_cur.description))
+        # print('vehicles:  ', vehicles)
+        # print('Before getting tracking uids', names)
         tracking_uids = [row[0] for row in vehicles]
-        print('Before committing into db')
+        # print('Before committing into db')
         self.db_conn.commit()
-        print(tracking_uids)
+        # print(tracking_uids)
 
         # detecting for the first time
         if uid not in tracking_uids and uid not in self.cardinal_vehicle_counter.keys():
-            print('BEfore inserting new row')
-            self.db_cur.execute(f"""INSERT INTO vehicles VALUES (
-                                                                id = {uid},
-                                                                initial_centroid_x = {cx},
-                                                                initial_centroid_y = {cy},
-                                                                prev_centroid_x = {cx},
-                                                                prev_centroid_y = {cy},
-                                                                prev_frame_num = {frame_num},
-                                                                dist = {0},
-                                                                counted = FALSE,
-                                                                in_cardinal_side = '',
-                                                                out_cardinal_side = '',
-                                                                type = {class_id},
-                                                                time = {datetime.datetime.now() + datetime.timedelta(hours=2, seconds=3)},
-                                                                camera_id = {self.cam_id},
-                                                                row_id = ''
-                                                                )""")
+            # print('BEfore inserting new row', uid, cx, cy, cx, cy, frame_num, class_id, self.cam_id, datetime.datetime.now() + datetime.timedelta(hours=2, seconds=3))
+            try:
+                self.db_cur.execute(f"""INSERT INTO vehicles(
+                                                                id,
+                                                                initial_centroid_x,
+                                                                initial_centroid_y,
+                                                                prev_centroid_x,
+                                                                prev_centroid_y,
+                                                                prev_frame_num,
+                                                                dist,
+                                                                counted,
+                                                                in_cardinal_side,
+                                                                out_cardinal_side,
+                                                                type,
+                                                                time,
+                                                                camera_id,
+                                                                row_id 
+                                                            ) VALUES (
+                                                                {uid},
+                                                                {int(cx)},
+                                                                {int(cy)},
+                                                                {int(cx)},
+                                                                {int(cy)},
+                                                                {frame_num},
+                                                                {0},
+                                                                FALSE,
+                                                                '',
+                                                                '',
+                                                                {class_id},
+                                                                '{datetime.datetime.now()}',
+                                                                {self.cam_id},
+                                                                ''
+                                                            )"""
+                                    )
+            except Exception as err:
+                print('Error:  ', err)
             self.db_conn.commit()
-        print('After inserting new row')
+        # print('After inserting new row')
         # if uid == '1':
         #     print(tracker_dict.get(uid))
         
@@ -436,23 +463,30 @@ class Model(QObject):
 
         # if uid == '6':
         #     print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
-        print('Before counting tracker')
+        # print('Before counting tracker')
         if uid not in self.counted_ids:
             # compute distance traveled
-            self.db_cur.execute(f"""SELECT prev_centroid_x, prev_centroid_y, in_cardinal_side, dist FROM vehicles WHERE id = {uid})""")
+            try:
+                self.db_cur.execute(f"""SELECT prev_centroid_x, prev_centroid_y, in_cardinal_side, dist FROM vehicles WHERE id = {uid}""")
+            except Exception as err:
+                print('ERROR:**************472', err)
             tracker_infos = self.db_cur.fetchall()[0]
+            # print(tracker_infos)
             prev_centroid = [tracker_infos[0], tracker_infos[1]]
             self.db_conn.commit()
-
+            new_dist = tracker_infos[3]
             if math.dist(prev_centroid, centroid) > 1 and tracker_infos[2]:
                 new_dist = tracker_infos[3] + math.dist(prev_centroid, centroid)
             
-            self.db_cur.execute(f"""Update vehicles set 
-                                                        dist = {new_dist}, 
-                                                        prev_centroid_x = {centroid[0]},
-                                                        prev_centroid_y = {centroid[1]},
-                                                        prev_frame_num = {frame_num}
+            try:
+                self.db_cur.execute(f"""Update vehicles SET 
+                                                            dist = {new_dist}, 
+                                                            prev_centroid_x = {centroid[0]},
+                                                            prev_centroid_y = {centroid[1]},
+                                                            prev_frame_num = {frame_num}
                                                         where id = {uid}""")
+            except Exception as err:
+                print('Error:**************489', err)
             self.db_conn.commit()
             
             for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
@@ -468,10 +502,13 @@ class Model(QObject):
                     if tracker_infos[2] and tracker_infos[3] > 300:
                         out_cardinal_side = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_infos[2])}{self.CARDINAL_DIRECTIONS.index(out_cardinal_side)}"
-                        self.db_cur.execute(f"""Update vehicles set 
-                                                        out_cardinal_side = {out_cardinal_side}, 
-                                                        row_id = {row_id}
-                                                        where id = {uid}""")
+                        try:
+                            self.db_cur.execute(f"""Update vehicles set 
+                                                            out_cardinal_side = {out_cardinal_side}, 
+                                                            row_id = {row_id}
+                                                            where id = {uid}""")
+                        except Exception as err:
+                            print('Error511:************', err)
                         self.db_conn.commit()
                         # print(row_id)
                         # tracker_dict[uid]['row_id'] = row_id
@@ -496,9 +533,12 @@ class Model(QObject):
                         self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
                     else:
                         in_cardinal_side = self.CARDINAL_DIRECTIONS[cardinal_side_id]
-                        self.db_cur.execute(f"""Update vehicles set 
-                                                        in_cardinal_side = {in_cardinal_side}, 
-                                                        where id = {uid}""")
+                        try:
+                            self.db_cur.execute(f"""UPDATE vehicles SET 
+                                                            in_cardinal_side = {in_cardinal_side} 
+                                                            WHERE id = {uid}""")
+                        except Exception as err:
+                            print('Error:********541', err)
                     break
                     # if uid == '2':
                     #     self.stop_counting = True
@@ -548,7 +588,7 @@ class Model(QObject):
         # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
-        source = ['../test_vehicle_count_videos/23/hiv00001.mp4']  # file/dir/URL/glob/screen/0(webcam)
+        source = ['./videos/hiv00001.mp4']  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -577,17 +617,17 @@ class Model(QObject):
         # print('2222222222')
         # self.db_conn.commit()
         # print(camera_info)
-
+        self.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [439, 809]], [[397, 901], [2461, 921]]]
         # draw cardinal coordinates
-        print('COORDINATES', self.cardinal_direction_points)
+        # print('COORDINATES', self.cardinal_direction_points)
 
         # Load model
         device = select_device()
-        print('Device selected')
+        # print('Device selected')
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
-        print('Model initialized')
+        # print('Model initialized')
         stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
-        print('some variables initialized')
+        # print('some variables initialized')
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
         # Load dataset
@@ -595,7 +635,7 @@ class Model(QObject):
         # print(self.cam_ip, self.cam_username, self.cam_password, self.cam_name, self.cam_id)
         dataset = LoadImages(source, imgsz, stride, pt)
         # dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
-        print('Dataset initializded')
+        # print('Dataset initializded')
         vid_path, vid_writer = [None] * bs, [None] * bs
 
         model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
@@ -604,21 +644,21 @@ class Model(QObject):
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
 
-        print('333333333333333333')
+        # print('333333333333333333')
         # calculate cosine distance metric
         metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
         # initialize tracker
         tracker = Tracker(metric)
-        print('111111111111111111')
+        # print('111111111111111111')
 
         # load standard tensorflow saved model for YOLO and Deepsort
         # load configuration for object detector
-        print('hello world')
+        # print('hello world')
         config = ConfigProto()
         config.gpu_options.allow_growth = True
         self.sess = Session(config=config)
         self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
-        print('22222222222')
+        # print('22222222222')
 
         # # begin video capture
         # total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
@@ -640,6 +680,7 @@ class Model(QObject):
         self.stop_counting = False
 
         for path, im, im0s in dataset:
+            cv2.imwrite('image.png', im0s.copy())
             if self.stop_counting:
                 self.counted_ids = []
                 break
@@ -660,7 +701,7 @@ class Model(QObject):
 
             bboxes, scores, classes = [], [], []
 
-            print('Predictions', pred)
+            # print('Predictions', pred)
             # Process predictions
             for i, det in enumerate(pred):  # per image
                 seen += 1
@@ -682,7 +723,7 @@ class Model(QObject):
                         bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
             allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
-            print('Allowed classes: ', allowed_classes)
+            # print('Allowed classes: ', allowed_classes)
             # loop through objects and use class index to get class name, allow only classes in allowed_classes list
             names = []
             deleted_indx = []
@@ -722,7 +763,7 @@ class Model(QObject):
             obj_num = 0
             # print('befoore track')
             # update tracks
-            print('Before tracking')
+            # print('Before tracking')
             for track in tracker.tracks:
                 # print('HERE I am ', track.is_confirmed(), track.time_since_update)
                 if not track.is_confirmed() or track.time_since_update > 1:
@@ -742,9 +783,9 @@ class Model(QObject):
 
                 # Count vehicles
                 # print('I am in')
-                print('Before custom vehicles count')
+                # print('Before custom vehicles count')
                 self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
-                print('After custom vehicle count')
+                # print('After custom vehicle count')
                 # detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                 # draw bbox on screen

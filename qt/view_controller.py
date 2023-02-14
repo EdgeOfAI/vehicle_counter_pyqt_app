@@ -60,6 +60,7 @@ class ViewController(QWidget, Ui_Form):
         # self.setOutputFileBtn.clicked.connect(self.getOutputFileName)
         self.startInferenceBtn.clicked.connect(self.startInference)
         self.startInferenceSignal.connect(self.model.startInference)
+        # self.updateDbSignal.connect(self.update_db)
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.editCameraBtn.clicked.connect(self.openEditCamWindow)
         self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
@@ -103,6 +104,10 @@ class ViewController(QWidget, Ui_Form):
                                         [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
                                     ]
         self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
+
+    def update_db(self, query):
+        self.db_cur.execute(query)
+        self.db_conn.commit()
 
     def showPopup(self, message):
         msg = QMessageBox()
@@ -599,14 +604,13 @@ class ViewController(QWidget, Ui_Form):
     def startInference(self):
         self.prepareforAnalysis()
         self.enableControls(False)
+        print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
-        is_running = self.startInferenceSignal.emit()
-        if not is_running:
-            self.enableControls(True)
+        self.startInferenceSignal.emit()
     
     def stopProcess(self):
         self.db_conn = self.model.db_conn
-        self.db_cur = self.dmodel.db_cur
+        self.db_cur = self.model.db_cur
         self.model.stopInference()
         self.model.stopCountingAnalysis()
         self.enableControls(True)

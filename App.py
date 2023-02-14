@@ -15,7 +15,7 @@ class App(QApplication):
     def __init__(self, sys_argv):
         super().__init__()
         # create database
-        conn = sqlite3.connect("main.db")
+        conn = sqlite3.connect("main.db", check_same_thread=False)
         cur = conn.cursor()
 
         # create tables
