@@ -599,11 +599,14 @@ class ViewController(QWidget, Ui_Form):
     def startInference(self):
         self.prepareforAnalysis()
         self.enableControls(False)
+        self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         is_running = self.startInferenceSignal.emit()
         if not is_running:
             self.enableControls(True)
     
     def stopProcess(self):
+        self.db_conn = self.model.db_conn
+        self.db_cur = self.dmodel.db_cur
         self.model.stopInference()
         self.model.stopCountingAnalysis()
         self.enableControls(True)

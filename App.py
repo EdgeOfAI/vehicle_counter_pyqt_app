@@ -51,10 +51,19 @@ class App(QApplication):
         try:
             cur.execute("""CREATE TABLE vehicles (
                     id integer, 
-                    direction text, 
-                    type text,
+                    initial_centroid_x int,
+                    initial_centroid_y int,
+                    prev_centroid_x int,
+                    prev_centroid_y int,
+                    prev_frame_num int,
+                    dist int,
+                    counted BOOLEAN,
+                    in_cardinal_side text, 
+                    out_cardinal_side text,
+                    type int,
                     time timestamp,
-                    camera_id text
+                    camera_id int,
+                    row_id text
                 )""")
         except Exception as err:
             print('Error:  ', err)
