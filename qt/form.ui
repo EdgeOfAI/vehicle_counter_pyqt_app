@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1221</width>
-    <height>778</height>
+    <width>1107</width>
+    <height>645</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -60,6 +60,13 @@
         <widget class="QPushButton" name="removeCameraBtn">
          <property name="text">
           <string>Remove Camera</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="showDataBtn">
+         <property name="text">
+          <string>Show Data</string>
          </property>
         </widget>
        </item>

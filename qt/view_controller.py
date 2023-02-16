@@ -14,6 +14,7 @@ from model import Model
 from qt.add_camera_view_controller import AddCameraWindow
 from qt.remove_camera_view_controller import RemoveCameraWindow
 from qt.edit_camera_view_controller import EditCameraWindow
+from qt.show_calendar_view_controller import ShowCalendarWindow
 
 
 class ViewController(QWidget, Ui_Form):
@@ -52,6 +53,7 @@ class ViewController(QWidget, Ui_Form):
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur)
+        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur)
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
@@ -64,6 +66,7 @@ class ViewController(QWidget, Ui_Form):
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.editCameraBtn.clicked.connect(self.openEditCamWindow)
         self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
+        self.showDataBtn.clicked.connect(self.openShowCalendarWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
         self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
         self.comboBox.activated[str].connect(self.onActivated)
@@ -104,6 +107,10 @@ class ViewController(QWidget, Ui_Form):
                                         [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
                                     ]
         self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
+
+    def openShowCalendarWindow(self):
+        self.show_calendar_window.set_db_conn_cur(self.db_conn, self.db_cur)
+        self.show_calendar_window.show()
 
     def update_db(self, query):
         self.db_cur.execute(query)

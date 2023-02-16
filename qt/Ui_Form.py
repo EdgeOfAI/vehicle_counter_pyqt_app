@@ -22,7 +22,7 @@ class Ui_Form(object):
     def setupUi(self, Form):
         if not Form.objectName():
             Form.setObjectName(u"Form")
-        Form.resize(1221, 778)
+        Form.resize(1107, 645)
         self.horizontalLayout = QHBoxLayout(Form)
         self.horizontalLayout.setSpacing(5)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
@@ -47,6 +47,11 @@ class Ui_Form(object):
         self.removeCameraBtn.setObjectName(u"removeCameraBtn")
 
         self.cameraEditBox.addWidget(self.removeCameraBtn)
+
+        self.showDataBtn = QPushButton(Form)
+        self.showDataBtn.setObjectName(u"showDataBtn")
+
+        self.cameraEditBox.addWidget(self.showDataBtn)
 
 
         self.verticalLayout_2.addLayout(self.cameraEditBox)
@@ -104,7 +109,7 @@ class Ui_Form(object):
         self.horizontalLayout_9.setContentsMargins(-1, -1, 0, -1)
         self.comboBox = QComboBox(self.mediaGBox)
         self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setEditable(False)
+        self.comboBox.setEditable(True)
 
         self.horizontalLayout_9.addWidget(self.comboBox)
 
@@ -974,6 +979,7 @@ class Ui_Form(object):
         self.addCamBtn.setText(QCoreApplication.translate("Form", u"Add Camera", None))
         self.editCameraBtn.setText(QCoreApplication.translate("Form", u"Edit Camera", None))
         self.removeCameraBtn.setText(QCoreApplication.translate("Form", u"Remove Camera", None))
+        self.showDataBtn.setText(QCoreApplication.translate("Form", u"Show Data", None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")
         self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))
