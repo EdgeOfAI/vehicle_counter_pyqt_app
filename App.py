@@ -3,6 +3,7 @@ import sqlite3
 from PySide2.QtCore import Qt, QThread
 from PySide2.QtWidgets import QApplication
 from qt.view_controller import ViewController
+from PySide2 import QtCore, QtGui
 from model import Model
 import pyqtgraph as pg
 import qtmodern.styles
@@ -14,6 +15,9 @@ pg.setConfigOptions(imageAxisOrder='row-major') #pyqtgraph default uses column m
 class App(QApplication):
     def __init__(self, sys_argv):
         super().__init__()
+        qss_file = QtCore.QFile("style.qss")
+        qss = QtCore.QTextStream(qss_file)
+        self.setStyle(qss.readAll())
         # create database
         conn = sqlite3.connect("main.db", check_same_thread=False)
         cur = conn.cursor()
