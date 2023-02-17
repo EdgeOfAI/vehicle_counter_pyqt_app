@@ -94,7 +94,7 @@ class Model(QObject):
         self.cam_id = 0
         self.counted_ids = []
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
-        self.vehicle_counter = {'1':0, '2':0, '3':0}  # 0 truck, 1 car, 2 bus
+        self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
 
         self.db_conn = conn 
@@ -627,136 +627,139 @@ class Model(QObject):
         self.time_now = datetime.datetime(2022, 2, 12, 2, 56, 36)
         self.add_time = datetime.timedelta(seconds=1/25)
 
-        for path, im, im0s in dataset:
-            # print(path)
-            if self.stop_counting:
-                self.counted_ids = []
-                break
-            self.time_now += self.add_time
-            original_frame = im0s.copy()
-            frame_num += 1
-            frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
-            im = torch.from_numpy(im).to(model.device)
-            im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
-            im /= 255  # 0 - 255 to 0.0 - 1.0
-            if len(im.shape) == 3:
-                im = im[None]  # expand for batch dim
+        try:
+            for path, im, im0s in dataset:
+                # print(path)
+                if self.stop_counting:
+                    self.counted_ids = []
+                    break
+                self.time_now += self.add_time
+                original_frame = im0s.copy()
+                frame_num += 1
+                frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
+                im = torch.from_numpy(im).to(model.device)
+                im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
+                im /= 255  # 0 - 255 to 0.0 - 1.0
+                if len(im.shape) == 3:
+                    im = im[None]  # expand for batch dim
 
-            # Inference
-            pred = model(im, augment=augment, visualize=False)
+                # Inference
+                pred = model(im, augment=augment, visualize=False)
 
-            # NMS
-            pred = non_max_suppression(pred, conf_thres, iou_thres, None, agnostic_nms, max_det=max_det)
+                # NMS
+                pred = non_max_suppression(pred, conf_thres, iou_thres, None, agnostic_nms, max_det=max_det)
 
-            bboxes, scores, classes = [], [], []
+                bboxes, scores, classes = [], [], []
 
-            # print('Predictions', pred)
-            # Process predictions
-            for i, det in enumerate(pred):  # per image
-                seen += 1
-                p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
-                num_objects = len(det)
+                # print('Predictions', pred)
+                # Process predictions
+                for i, det in enumerate(pred):  # per image
+                    seen += 1
+                    p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
+                    num_objects = len(det)
 
-                if len(det):
-                    # print('Detes', det)
-                    # Rescale boxes from img_size to im0 size
-                    det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
-                    # Write results
-                    for *xyxy, conf, cls in reversed(det):
-                        scores.append(conf.cpu())
-                        classes.append(cls.cpu())
-                        # print(xyxy)
-                        xmin, ymin, xmax, ymax = xyxy
-                        # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
-                        xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
-                        bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
+                    if len(det):
+                        # print('Detes', det)
+                        # Rescale boxes from img_size to im0 size
+                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
+                        # Write results
+                        for *xyxy, conf, cls in reversed(det):
+                            scores.append(conf.cpu())
+                            classes.append(cls.cpu())
+                            # print(xyxy)
+                            xmin, ymin, xmax, ymax = xyxy
+                            # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
+                            xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
+                            bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
-            allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
-            # print('Allowed classes: ', allowed_classes)
-            # loop through objects and use class index to get class name, allow only classes in allowed_classes list
-            names = []
-            deleted_indx = []
-            # print(' I am here')
-            for i in range(num_objects):
-                class_indx = int(classes[i])
-                class_name = class_names[class_indx]
-                if class_name not in allowed_classes:
-                    deleted_indx.append(i)
-                else:
-                    names.append(class_name)
-            names = np.array(names)
-            count = len(names)
+                allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
+                # print('Allowed classes: ', allowed_classes)
+                # loop through objects and use class index to get class name, allow only classes in allowed_classes list
+                names = []
+                deleted_indx = []
+                # print(' I am here')
+                for i in range(num_objects):
+                    class_indx = int(classes[i])
+                    class_name = class_names[class_indx]
+                    if class_name not in allowed_classes:
+                        deleted_indx.append(i)
+                    else:
+                        names.append(class_name)
+                names = np.array(names)
+                count = len(names)
 
-            # print('Not I am here')
+                # print('Not I am here')
 
-            # delete detections that are not in allowed_classes
-            bboxes = np.delete(bboxes, deleted_indx, axis=0)
-            scores = np.delete(scores, deleted_indx, axis=0)
+                # delete detections that are not in allowed_classes
+                bboxes = np.delete(bboxes, deleted_indx, axis=0)
+                scores = np.delete(scores, deleted_indx, axis=0)
 
-            # encode yolo detections and feed to tracker
-            features = self.encoder(original_frame, bboxes)
-            detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
+                # encode yolo detections and feed to tracker
+                features = self.encoder(original_frame, bboxes)
+                detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
 
-            # run non-maxima supression
-            boxs = np.array([d.tlwh for d in detections])
-            scores = np.array([d.confidence for d in detections])
-            classes = np.array([d.class_name for d in detections])
-            indices = preprocessing.non_max_suppression(boxs, classes, nms_max_overlap, scores)
-            detections = [detections[i] for i in indices]  
-            
-            # Call the tracker
-            tracker.predict()
-            tracker.update(detections)
-            # print(tracker.tracks)
-
-            obj_num = 0
-            # print('befoore track')
-            # update tracks
-            # print('Before tracking')
-            for track in tracker.tracks:
-                # print('HERE I am ', track.is_confirmed(), track.time_since_update)
-                if not track.is_confirmed() or track.time_since_update > 1:
-                    continue 
-                bbox = track.to_tlbr()
-                class_name = track.get_class()
-
-                x_min = int(bbox[0])
-                y_min = int(bbox[1])
-                x_max = int(bbox[2])
-                y_max = int(bbox[3])
-                id = int(track.track_id)
-
-                # add to hdf buffer
-                class_id = self.getClassId(class_name)
-                frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
-
-                # Count vehicles
-                # print('I am in')
-                # print('Before custom vehicles count')
-                self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
-                # print('After custom vehicle count')
-                # detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
-
-                # draw bbox on screen
-                original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max)
+                # run non-maxima supression
+                boxs = np.array([d.tlwh for d in detections])
+                scores = np.array([d.confidence for d in detections])
+                classes = np.array([d.class_name for d in detections])
+                indices = preprocessing.non_max_suppression(boxs, classes, nms_max_overlap, scores)
+                detections = [detections[i] for i in indices]  
                 
-                obj_num = obj_num +  1
-            # print('after track')
+                # Call the tracker
+                tracker.predict()
+                tracker.update(detections)
+                # print(tracker.tracks)
 
-            result = np.asarray(original_frame)
-            result = cv2.cvtColor(original_frame, cv2.COLOR_RGB2BGR)
+                obj_num = 0
+                # print('befoore track')
+                # update tracks
+                # print('Before tracking')
+                for track in tracker.tracks:
+                    # print('HERE I am ', track.is_confirmed(), track.time_since_update)
+                    if not track.is_confirmed() or track.time_since_update > 1:
+                        continue 
+                    bbox = track.to_tlbr()
+                    class_name = track.get_class()
 
-            cache.append(frame_data)
-            # print('Before line drawings')
+                    x_min = int(bbox[0])
+                    y_min = int(bbox[1])
+                    x_max = int(bbox[2])
+                    y_max = int(bbox[3])
+                    id = int(track.track_id)
 
-            for cardinal_direction_positions in self.cardinal_direction_points:
-                original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255,  255), 3)
+                    # add to hdf buffer
+                    class_id = self.getClassId(class_name)
+                    frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
 
-            # print('After drawing')
-            # update frame on UI
-            self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
+                    # Count vehicles
+                    # print('I am in')
+                    # print('Before custom vehicles count')
+                    self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
+                    # print('After custom vehicle count')
+                    # detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
-            # print('Frame #: ', frame_num)
+                    # draw bbox on screen
+                    original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max)
+                    
+                    obj_num = obj_num +  1
+                # print('after track')
+
+                result = np.asarray(original_frame)
+                result = cv2.cvtColor(original_frame, cv2.COLOR_RGB2BGR)
+
+                cache.append(frame_data)
+                # print('Before line drawings')
+
+                for cardinal_direction_positions in self.cardinal_direction_points:
+                    original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255,  255), 3)
+
+                # print('After drawing')
+                # update frame on UI
+                self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
+
+                # print('Frame #: ', frame_num)
+        except Exception as err:
+            print('Inference stopped with error:  ', err)
 
         print('INFERENCE STOPPED')
 

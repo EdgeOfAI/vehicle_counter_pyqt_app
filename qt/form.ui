@@ -221,7 +221,7 @@
        </property>
        <layout class="QGridLayout" name="gridLayout">
         <item row="17" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_32">
+         <widget class="QLCDNumber" name="SSmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -234,7 +234,7 @@
          </widget>
         </item>
         <item row="2" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_18">
+         <widget class="QLCDNumber" name="NEmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -263,7 +263,7 @@
          </widget>
         </item>
         <item row="14" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_29">
+         <widget class="QLCDNumber" name="SNmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -276,7 +276,7 @@
          </widget>
         </item>
         <item row="3" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_19">
+         <widget class="QLCDNumber" name="NWmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -289,7 +289,7 @@
          </widget>
         </item>
         <item row="13" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_28">
+         <widget class="QLCDNumber" name="WSmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1448,7 +1448,7 @@
          </widget>
         </item>
         <item row="5" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_20">
+         <widget class="QLCDNumber" name="NSmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1461,7 +1461,7 @@
          </widget>
         </item>
         <item row="12" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_27">
+         <widget class="QLCDNumber" name="WEmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1474,7 +1474,7 @@
          </widget>
         </item>
         <item row="6" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_21">
+         <widget class="QLCDNumber" name="ENmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1487,7 +1487,7 @@
          </widget>
         </item>
         <item row="16" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_31">
+         <widget class="QLCDNumber" name="SWmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1500,7 +1500,7 @@
          </widget>
         </item>
         <item row="9" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_24">
+         <widget class="QLCDNumber" name="ESmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1513,7 +1513,7 @@
          </widget>
         </item>
         <item row="8" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_23">
+         <widget class="QLCDNumber" name="EWmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1526,7 +1526,7 @@
          </widget>
         </item>
         <item row="11" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_26">
+         <widget class="QLCDNumber" name="WWmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1539,7 +1539,7 @@
          </widget>
         </item>
         <item row="15" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_30">
+         <widget class="QLCDNumber" name="SEmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1552,7 +1552,7 @@
          </widget>
         </item>
         <item row="7" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_22">
+         <widget class="QLCDNumber" name="EEmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>
@@ -1565,7 +1565,7 @@
          </widget>
         </item>
         <item row="10" column="7">
-         <widget class="QLCDNumber" name="lcdNumber_25">
+         <widget class="QLCDNumber" name="WNmcycle">
           <property name="lineWidth">
            <number>0</number>
           </property>

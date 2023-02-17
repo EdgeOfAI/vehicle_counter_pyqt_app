@@ -400,6 +400,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.busCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.NNbicycleCount.display(count)
+            elif class_id == 5:
+                self.NNmcycle.display(count)
             else:
                 return
         elif row_num == '01':  # NE
@@ -412,6 +416,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.NEbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.NEbicycleCount.display(count)
+            elif class_id == 5:
+                self.NEmcycle.display(count)
             else:
                 return
         elif row_num == '02':  # NW
@@ -424,6 +432,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.NWbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.NWbicycleCount.display(count)
+            elif class_id == 5:
+                self.NWmcycle.display(count)
             else:
                 return
         elif row_num == '03':  # NS
@@ -436,6 +448,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.NSbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.NSbicycleCount.display(count)
+            elif class_id == 5:
+                self.NSmcycle.display(count)
             else:
                 return
         elif row_num == '10':  # EN
@@ -448,6 +464,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.ENbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.ENbicycleCount.display(count)
+            elif class_id == 5:
+                self.ENmcycle.display(count)
             else:
                 return
         elif row_num == '11':  # EE
@@ -460,6 +480,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.EEbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.EEbicycleCount.display(count)
+            elif class_id == 5:
+                self.EEmcycle.display(count)
             else:
                 return
         elif row_num == '12':  # EW
@@ -472,6 +496,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.EWbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.EWbicycleCount.display(count)
+            elif class_id == 5:
+                self.EWmcycle.display(count)
             else:
                 return
         elif row_num == '13':  # ES
@@ -484,6 +512,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.ESbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.ESbicycleCount.display(count)
+            elif class_id == 5:
+                self.ESmcycle.display(count)
             else:
                 return
         elif row_num == '20':  # WN
@@ -496,6 +528,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.WNbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.WNbicycleCount.display(count)
+            elif class_id == 5:
+                self.WNmcycle.display(count)
             else:
                 return
         elif row_num == '21':  # WE
@@ -508,6 +544,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.WEbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.WEbicycleCount.display(count)
+            elif class_id == 5:
+                self.WEmcycle.display(count)
             else:
                 return
         elif row_num == '22':  # WW
@@ -524,6 +564,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.WWbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.WWbicycleCount.display(count)
+            elif class_id == 5:
+                self.WWmcycle.display(count)
             else:
                 return
         elif row_num == '23':  # WS
@@ -536,6 +580,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.WSbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.WSbicycleCount.display(count)
+            elif class_id == 5:
+                self.WSmcycle.display(count)
             else:
                 return
         elif row_num == '30':  # SN
@@ -548,6 +596,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.SNbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.SNbicycleCount.display(count)
+            elif class_id == 5:
+                self.SNmcycle.display(count)
             else:
                 return
         elif row_num == '31':  # SE
@@ -560,6 +612,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.SEbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.SEbicycleCount.display(count)
+            elif class_id == 5:
+                self.SEmcycle.display(count)
             else:
                 return
         elif row_num == '32':  # SW
@@ -572,6 +628,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.SWbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.SWbicycleCount.display(count)
+            elif class_id == 5:
+                self.SWmcycle.display(count)
             else:
                 return
         elif row_num == '33':  # SS
@@ -584,6 +644,10 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 3:
                 self.SSbusCount.display(count)
                 # table = self.busPreviewTable
+            elif class_id == 4:
+                self.SSbicycleCount.display(count)
+            elif class_id == 5:
+                self.SSmcycle.display(count)
             else:
                 return
         
