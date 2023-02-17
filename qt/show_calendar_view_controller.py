@@ -1,4 +1,5 @@
 import sys
+import datetime
 import pyqtgraph as pg
 from PySide2 import QtWidgets
 from PySide2.QtCore import Signal
@@ -16,6 +17,11 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.setupUi(self)
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        camera_names = [row[4] for row in cameras]
+        self.comboBox.clear()
+        self.comboBox.addItems(camera_names)
         self.setupSignalSlots()
     
     def setCamId(self, cam_id):
@@ -44,5 +50,152 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def showLineChart(self):
         print('Button clicked')
-        self.chart_window = ChartWindow()
+        cam_name = self.comboBox.currentText()
+        cam_id = cam_name.split('.')[0]
+        selected_date = self.calendarWidget.selectedDate().toString()
+        selected_date = datetime.datetime.strptime(' '.join(selected_date.split(' ')[1:]), '%b %d %Y')
+        self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = 0")
+        vehicles = self.db_cur.fetchall()
+        vehicles = [vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        car_hour_0 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 0 and vehicle[10] == 2])
+        car_hour_1= len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 1 and vehicle[10] == 2])
+        car_hour_2 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 2 and vehicle[10] == 2])
+        car_hour_3 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 3 and vehicle[10] == 2])
+        car_hour_4 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 4 and vehicle[10] == 2])
+        car_hour_5 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 5 and vehicle[10] == 2])
+        car_hour_6 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 6 and vehicle[10] == 2])
+        car_hour_7 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 7 and vehicle[10] == 2])
+        car_hour_8 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 8 and vehicle[10] == 2])
+        car_hour_9 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 9 and vehicle[10] == 2])
+        car_hour_10 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 10 and vehicle[10] == 2])
+        car_hour_11 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 11 and vehicle[10] == 2])
+        car_hour_12 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 12 and vehicle[10] == 2])
+        car_hour_13 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 13 and vehicle[10] == 2])
+        car_hour_14 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 14 and vehicle[10] == 2])
+        car_hour_15 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 15 and vehicle[10] == 2])
+        car_hour_16 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 16 and vehicle[10] == 2])
+        car_hour_17 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 17 and vehicle[10] == 2])
+        car_hour_18 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 18 and vehicle[10] == 2])
+        car_hour_19 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 19 and vehicle[10] == 2])
+        car_hour_20 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 20 and vehicle[10] == 2])
+        car_hour_21 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 21 and vehicle[10] == 2])
+        car_hour_22 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 22 and vehicle[10] == 2])
+        car_hour_23 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 23 and vehicle[10] == 2])
+
+        truck_hour_0 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 0 and vehicle[10] == 1])
+        truck_hour_1= len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 1 and vehicle[10] == 1])
+        truck_hour_2 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 2 and vehicle[10] == 1])
+        truck_hour_3 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 3 and vehicle[10] == 1])
+        truck_hour_4 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 4 and vehicle[10] == 1])
+        truck_hour_5 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 5 and vehicle[10] == 1])
+        truck_hour_6 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 6 and vehicle[10] == 1])
+        truck_hour_7 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 7 and vehicle[10] == 1])
+        truck_hour_8 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 8 and vehicle[10] == 1])
+        truck_hour_9 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 9 and vehicle[10] == 1])
+        truck_hour_10 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 10 and vehicle[10] == 1])
+        truck_hour_11 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 11 and vehicle[10] == 1])
+        truck_hour_12 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 12 and vehicle[10] == 1])
+        truck_hour_13 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 13 and vehicle[10] == 1])
+        truck_hour_14 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 14 and vehicle[10] == 1])
+        truck_hour_15 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 15 and vehicle[10] == 1])
+        truck_hour_16 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 16 and vehicle[10] == 1])
+        truck_hour_17 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 17 and vehicle[10] == 1])
+        truck_hour_18 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 18 and vehicle[10] == 1])
+        truck_hour_19 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 19 and vehicle[10] == 1])
+        truck_hour_20 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 20 and vehicle[10] == 1])
+        truck_hour_21 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 21 and vehicle[10] == 1])
+        truck_hour_22 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 22 and vehicle[10] == 1])
+        truck_hour_23 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 23 and vehicle[10] == 1])
+
+        bus_hour_0 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 0 and vehicle[10] == 3])
+        bus_hour_1= len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 1 and vehicle[10] == 3])
+        bus_hour_2 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 2 and vehicle[10] == 3])
+        bus_hour_3 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 3 and vehicle[10] == 3])
+        bus_hour_4 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 4 and vehicle[10] == 3])
+        bus_hour_5 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 5 and vehicle[10] == 3])
+        bus_hour_6 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 6 and vehicle[10] == 3])
+        bus_hour_7 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 7 and vehicle[10] == 3])
+        bus_hour_8 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 8 and vehicle[10] == 3])
+        bus_hour_9 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 9 and vehicle[10] == 3])
+        bus_hour_10 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 10 and vehicle[10] == 3])
+        bus_hour_11 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 11 and vehicle[10] == 3])
+        bus_hour_12 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 12 and vehicle[10] == 3])
+        bus_hour_13 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 13 and vehicle[10] == 3])
+        bus_hour_14 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 14 and vehicle[10] == 3])
+        bus_hour_15 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 15 and vehicle[10] == 3])
+        bus_hour_16 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 16 and vehicle[10] == 3])
+        bus_hour_17 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 17 and vehicle[10] == 3])
+        bus_hour_18 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 18 and vehicle[10] == 3])
+        bus_hour_19 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 19 and vehicle[10] == 3])
+        bus_hour_20 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 20 and vehicle[10] == 3])
+        bus_hour_21 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 21 and vehicle[10] == 3])
+        bus_hour_22 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 22 and vehicle[10] == 3])
+        bus_hour_23 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 23 and vehicle[10] == 3])
+
+        bicycle_hour_0 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 0 and vehicle[10] == 4])
+        bicycle_hour_1= len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 1 and vehicle[10] == 4])
+        bicycle_hour_2 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 2 and vehicle[10] == 4])
+        bicycle_hour_3 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 3 and vehicle[10] == 4])
+        bicycle_hour_4 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 4 and vehicle[10] == 4])
+        bicycle_hour_5 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 5 and vehicle[10] == 4])
+        bicycle_hour_6 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 6 and vehicle[10] == 4])
+        bicycle_hour_7 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 7 and vehicle[10] == 4])
+        bicycle_hour_8 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 8 and vehicle[10] == 4])
+        bicycle_hour_9 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 9 and vehicle[10] == 4])
+        bicycle_hour_10 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 10 and vehicle[10] == 4])
+        bicycle_hour_11 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 11 and vehicle[10] == 4])
+        bicycle_hour_12 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 12 and vehicle[10] == 4])
+        bicycle_hour_13 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 13 and vehicle[10] == 4])
+        bicycle_hour_14 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 14 and vehicle[10] == 4])
+        bicycle_hour_15 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 15 and vehicle[10] == 4])
+        bicycle_hour_16 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 16 and vehicle[10] == 4])
+        bicycle_hour_17 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 17 and vehicle[10] == 4])
+        bicycle_hour_18 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 18 and vehicle[10] == 4])
+        bicycle_hour_19 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 19 and vehicle[10] == 4])
+        bicycle_hour_20 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 20 and vehicle[10] == 4])
+        bicycle_hour_21 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 21 and vehicle[10] == 4])
+        bicycle_hour_22 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 22 and vehicle[10] == 4])
+        bicycle_hour_23 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 23 and vehicle[10] == 4])
+
+        mcycle_hour_0 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 0 and vehicle[10] == 5])
+        mcycle_hour_1= len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 1 and vehicle[10] == 5])
+        mcycle_hour_2 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 2 and vehicle[10] == 5])
+        mcycle_hour_3 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 3 and vehicle[10] == 5])
+        mcycle_hour_4 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 4 and vehicle[10] == 5])
+        mcycle_hour_5 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 5 and vehicle[10] == 5])
+        mcycle_hour_6 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 6 and vehicle[10] == 5])
+        mcycle_hour_7 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 7 and vehicle[10] == 5])
+        mcycle_hour_8 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 8 and vehicle[10] == 5])
+        mcycle_hour_9 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 9 and vehicle[10] == 5])
+        mcycle_hour_10 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 10 and vehicle[10] == 5])
+        mcycle_hour_11 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 11 and vehicle[10] == 5])
+        mcycle_hour_12 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 12 and vehicle[10] == 5])
+        mcycle_hour_13 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 13 and vehicle[10] == 5])
+        mcycle_hour_14 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 14 and vehicle[10] == 5])
+        mcycle_hour_15 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 15 and vehicle[10] == 5])
+        mcycle_hour_16 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 16 and vehicle[10] == 5])
+        mcycle_hour_17 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 17 and vehicle[10] == 5])
+        mcycle_hour_18 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 18 and vehicle[10] == 5])
+        mcycle_hour_19 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 19 and vehicle[10] == 5])
+        mcycle_hour_20 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 20 and vehicle[10] == 5])
+        mcycle_hour_21 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 21 and vehicle[10] == 5])
+        mcycle_hour_22 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 22 and vehicle[10] == 5])
+        mcycle_hour_23 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 23 and vehicle[10] == 5])
+        # print(times)
+        # times = [ for vehicle in vehicles]
+        print(
+            len([car_hour_0,car_hour_1,car_hour_2, car_hour_3, car_hour_4, car_hour_5, car_hour_6, car_hour_7, car_hour_8, car_hour_9, car_hour_10, car_hour_11, car_hour_12, car_hour_13, car_hour_14, car_hour_15, car_hour_16, car_hour_17, car_hour_18, car_hour_19, car_hour_20, car_hour_21, car_hour_22, car_hour_23]),
+            len([truck_hour_0, truck_hour_1, truck_hour_2, truck_hour_3, truck_hour_4, truck_hour_5, truck_hour_6, truck_hour_7, truck_hour_8, truck_hour_9, truck_hour_10, truck_hour_11, truck_hour_12, truck_hour_13, truck_hour_14, truck_hour_15, truck_hour_16, truck_hour_17, truck_hour_18, truck_hour_19, truck_hour_20, truck_hour_21, truck_hour_22, truck_hour_23]),
+            len([bus_hour_0, bus_hour_1, bus_hour_2, bus_hour_3, bus_hour_4, bus_hour_5, bus_hour_6, bus_hour_7, bus_hour_8, bus_hour_9, bus_hour_10, bus_hour_11, bus_hour_12, bus_hour_13, bus_hour_14, bus_hour_15, bus_hour_16, bus_hour_17, bus_hour_18, bus_hour_19, bus_hour_20, bus_hour_21, bus_hour_22, bus_hour_23]),
+            len([bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23]),
+            len([mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23])
+        )
+        self.chart_window = ChartWindow(
+                                        cam_name if cam_name else 'No Cam',
+                                        [car_hour_0,car_hour_1,car_hour_2, car_hour_3, car_hour_4, car_hour_5, car_hour_6, car_hour_7, car_hour_8, car_hour_9, car_hour_10, car_hour_11, car_hour_12, car_hour_13, car_hour_14, car_hour_15, car_hour_16, car_hour_17, car_hour_18, car_hour_19, car_hour_20, car_hour_21, car_hour_22, car_hour_23],
+                                        [truck_hour_0, truck_hour_1, truck_hour_2, truck_hour_3, truck_hour_4, truck_hour_5, truck_hour_6, truck_hour_7, truck_hour_8, truck_hour_9, truck_hour_10, truck_hour_11, truck_hour_12, truck_hour_13, truck_hour_14, truck_hour_15, truck_hour_16, truck_hour_17, truck_hour_18, truck_hour_19, truck_hour_20, truck_hour_21, truck_hour_22, truck_hour_23],
+                                        [bus_hour_0, bus_hour_1, bus_hour_2, bus_hour_3, bus_hour_4, bus_hour_5, bus_hour_6, bus_hour_7, bus_hour_8, bus_hour_9, bus_hour_10, bus_hour_11, bus_hour_12, bus_hour_13, bus_hour_14, bus_hour_15, bus_hour_16, bus_hour_17, bus_hour_18, bus_hour_19, bus_hour_20, bus_hour_21, bus_hour_22, bus_hour_23],
+                                        [bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23],
+                                        [mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23]
+                                        )
         self.chart_window.show()

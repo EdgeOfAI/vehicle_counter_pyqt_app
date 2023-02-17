@@ -20,22 +20,27 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(450, 345)
-        MainWindow.setMinimumSize(QSize(450, 345))
-        MainWindow.setMaximumSize(QSize(450, 345))
+        MainWindow.resize(450, 390)
+        MainWindow.setMinimumSize(QSize(450, 390))
+        MainWindow.setMaximumSize(QSize(450, 390))
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setMinimumSize(QSize(450, 294))
-        self.centralwidget.setMaximumSize(QSize(450, 360))
+        self.centralwidget.setMaximumSize(QSize(450, 400))
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
-        self.frame.setGeometry(QRect(0, 0, 441, 301))
+        self.frame.setGeometry(QRect(0, 0, 441, 341))
         self.frame.setMinimumSize(QSize(441, 301))
-        self.frame.setMaximumSize(QSize(441, 360))
+        self.frame.setMaximumSize(QSize(441, 400))
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout = QVBoxLayout(self.frame)
         self.verticalLayout.setObjectName(u"verticalLayout")
+        self.comboBox = QComboBox(self.frame)
+        self.comboBox.setObjectName(u"comboBox")
+
+        self.verticalLayout.addWidget(self.comboBox)
+
         self.calendarWidget = QCalendarWidget(self.frame)
         self.calendarWidget.setObjectName(u"calendarWidget")
 
