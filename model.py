@@ -436,6 +436,8 @@ class Model(QObject):
                 # intersect = cardinal_side_polygon.intersection(object_polygon).area / cardinal_side_polygon.union(object_polygon).area
                 is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
                 if is_intersects:
+                    if uid == '29' or uid == '42':
+                        print(tracker_dict[uid]['dist'])
                     if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
                         tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
@@ -483,7 +485,7 @@ class Model(QObject):
                                                             '{tracker_dict[uid]['in_cardinal_side']}',
                                                             '{tracker_dict[uid]['out_cardinal_side']}',
                                                             {class_id},
-                                                            '{datetime.datetime.now()}',
+                                                            '{self.time_now}',
                                                             {self.cam_id},
                                                             '{row_id}'
                                                         )"""
@@ -532,7 +534,7 @@ class Model(QObject):
         # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
-        source = ['./videos/hiv00001.mp4']  # file/dir/URL/glob/screen/0(webcam)
+        source = ['C:\\Users\\shahz\\projects\\write_mp4\\23']  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -561,7 +563,7 @@ class Model(QObject):
         # print('2222222222')
         # self.db_conn.commit()
         # print(camera_info)
-        self.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [439, 809]], [[397, 901], [2461, 921]]]
+        self.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         # draw cardinal coordinates
         # print('COORDINATES', self.cardinal_direction_points)
 
@@ -622,12 +624,15 @@ class Model(QObject):
 
         frame_num = 0
         self.stop_counting = False
+        self.time_now = datetime.datetime(2022, 2, 12, 2, 56, 36)
+        self.add_time = datetime.timedelta(seconds=1/25)
 
         for path, im, im0s in dataset:
-            cv2.imwrite('image.png', im0s.copy())
+            # print(path)
             if self.stop_counting:
                 self.counted_ids = []
                 break
+            self.time_now += self.add_time
             original_frame = im0s.copy()
             frame_num += 1
             frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
