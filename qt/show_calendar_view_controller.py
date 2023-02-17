@@ -1,7 +1,9 @@
 import sys
+import pyqtgraph as pg
 from PySide2 import QtWidgets
 from PySide2.QtCore import Signal
 from qt.Show_Calendar import Ui_MainWindow
+from qt.ChartWindow import ChartWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
 from yolov5.utils.dataloaders import LoadHikvisionCamera
@@ -42,3 +44,5 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def showLineChart(self):
         print('Button clicked')
+        self.chart_window = ChartWindow()
+        self.chart_window.show()
