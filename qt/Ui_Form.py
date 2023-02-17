@@ -91,17 +91,6 @@ class Ui_Form(object):
         self.gridLayout_2 = QGridLayout(self.mediaGBox)
         self.gridLayout_2.setSpacing(5)
         self.gridLayout_2.setObjectName(u"gridLayout_2")
-        self.label_5 = QLabel(self.mediaGBox)
-        self.label_5.setObjectName(u"label_5")
-
-        self.gridLayout_2.addWidget(self.label_5, 0, 0, 1, 1)
-
-        self.horizontalLayout_10 = QHBoxLayout()
-        self.horizontalLayout_10.setSpacing(0)
-        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
-
-        self.gridLayout_2.addLayout(self.horizontalLayout_10, 2, 2, 1, 1)
-
         self.horizontalLayout_9 = QHBoxLayout()
         self.horizontalLayout_9.setSpacing(0)
         self.horizontalLayout_9.setObjectName(u"horizontalLayout_9")
@@ -116,21 +105,31 @@ class Ui_Form(object):
 
         self.gridLayout_2.addLayout(self.horizontalLayout_9, 0, 2, 1, 1)
 
-        self.startInferenceBtn = QPushButton(self.mediaGBox)
-        self.startInferenceBtn.setObjectName(u"startInferenceBtn")
+        self.label_5 = QLabel(self.mediaGBox)
+        self.label_5.setObjectName(u"label_5")
 
-        self.gridLayout_2.addWidget(self.startInferenceBtn, 3, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.label_5, 0, 0, 1, 1)
 
         self.refreshCamerasBtn = QPushButton(self.mediaGBox)
         self.refreshCamerasBtn.setObjectName(u"refreshCamerasBtn")
 
-        self.gridLayout_2.addWidget(self.refreshCamerasBtn, 3, 2, 1, 1)
+        self.gridLayout_2.addWidget(self.refreshCamerasBtn, 0, 3, 1, 1)
 
 
         self.horizontalLayout_2.addWidget(self.mediaGBox)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
+
+        self.checkBox = QCheckBox(Form)
+        self.checkBox.setObjectName(u"checkBox")
+
+        self.verticalLayout_2.addWidget(self.checkBox)
+
+        self.startInferenceBtn = QPushButton(Form)
+        self.startInferenceBtn.setObjectName(u"startInferenceBtn")
+
+        self.verticalLayout_2.addWidget(self.startInferenceBtn)
 
         self.stopProcessBtn = QPushButton(Form)
         self.stopProcessBtn.setObjectName(u"stopProcessBtn")
@@ -982,10 +981,11 @@ class Ui_Form(object):
         self.showDataBtn.setText(QCoreApplication.translate("Form", u"Show Data", None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")
-        self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))
         self.comboBox.setCurrentText("")
-        self.startInferenceBtn.setText(QCoreApplication.translate("Form", u"START", None))
+        self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))
         self.refreshCamerasBtn.setText(QCoreApplication.translate("Form", u"Refresh", None))
+        self.checkBox.setText(QCoreApplication.translate("Form", u"Use Video", None))
+        self.startInferenceBtn.setText(QCoreApplication.translate("Form", u"START", None))
         self.stopProcessBtn.setText(QCoreApplication.translate("Form", u"STOP", None))
         self.label_8.setText(QCoreApplication.translate("Form", u"NN", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Cars", None))

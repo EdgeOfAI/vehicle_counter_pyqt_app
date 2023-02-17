@@ -30,7 +30,7 @@
     <number>8</number>
    </property>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,1,0,0">
+    <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0,1,0,0,0,0">
      <property name="spacing">
       <number>15</number>
      </property>
@@ -141,20 +141,6 @@
           <property name="spacing">
            <number>5</number>
           </property>
-          <item row="0" column="0">
-           <widget class="QLabel" name="label_5">
-            <property name="text">
-             <string>IP</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <layout class="QHBoxLayout" name="horizontalLayout_10">
-            <property name="spacing">
-             <number>0</number>
-            </property>
-           </layout>
-          </item>
           <item row="0" column="2">
            <layout class="QHBoxLayout" name="horizontalLayout_9">
             <property name="spacing">
@@ -181,14 +167,14 @@
             </item>
            </layout>
           </item>
-          <item row="3" column="0">
-           <widget class="QPushButton" name="startInferenceBtn">
+          <item row="0" column="0">
+           <widget class="QLabel" name="label_5">
             <property name="text">
-             <string>START</string>
+             <string>IP</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="2">
+          <item row="0" column="3">
            <widget class="QPushButton" name="refreshCamerasBtn">
             <property name="text">
              <string>Refresh</string>
@@ -199,6 +185,20 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <widget class="QCheckBox" name="checkBox">
+       <property name="text">
+        <string>Use Video</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="startInferenceBtn">
+       <property name="text">
+        <string>START</string>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QPushButton" name="stopProcessBtn">

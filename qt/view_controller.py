@@ -48,6 +48,7 @@ class ViewController(QWidget, Ui_Form):
         # sqlite3 db files
         self.db_conn = conn
         self.db_cur = cur
+        self.use_video = False
         self.is_refresh_clicked = 0
 
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
@@ -76,6 +77,7 @@ class ViewController(QWidget, Ui_Form):
         # self.startCountingSignal.connect(self.model.startCounting)
         # self.countAnalyzeBtn.clicked.connect(self.startCountingAnalysis)
         # self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
+        self.checkBox.stateChanged.connect(self.checkboxChanged)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
         self.model.process_done_signal.connect(self.onProcessDone)
         self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
@@ -107,6 +109,16 @@ class ViewController(QWidget, Ui_Form):
                                         [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
                                     ]
         self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
+    
+    def checkboxChanged(self):
+        if self.checkBox.isChecked():
+            self.use_video = False
+            self.enableControls(False)
+            self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
+            self.startInferenceBtn.setEnabled(True)
+        else:
+            self.use_video = True
+            self.enableControls(True)
 
     def openShowCalendarWindow(self):
         self.show_calendar_window.set_db_conn_cur(self.db_conn, self.db_cur)
@@ -551,13 +563,9 @@ class ViewController(QWidget, Ui_Form):
             else:
                 return
         elif row_num == '22':  # WW
-            print('I am in row 22')
             if class_id == 1:
-                print('Before truck count')
                 self.WWtruckCount.display(count)
-                print('After truck count')
                 # table = self.truckPreviewTable
-                print('After table update')
             elif class_id == 2:
                 self.WWcarCount.display(count)
                 # table = self.carPreviewTable
@@ -677,6 +685,7 @@ class ViewController(QWidget, Ui_Form):
         self.enableControls(False)
         print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
+        self.model.use_video = self.checkBox.isChecked()
         self.startInferenceSignal.emit()
     
     def stopProcess(self):
@@ -766,10 +775,12 @@ class ViewController(QWidget, Ui_Form):
 
     def enableControls(self, state=True):
         self.mediaGBox.setEnabled(state)
+        self.startInferenceBtn.setEnabled(state)
         self.cameraEditBox.setEnabled(state)
         self.addCamBtn.setEnabled(state)
         self.editCameraBtn.setEnabled(state)
         self.removeCameraBtn.setEnabled(state)
+        self.showDataBtn.setEnabled(state)
 
     def onProcessDone(self):
         self.enableControls(True)

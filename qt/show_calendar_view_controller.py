@@ -30,6 +30,11 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def set_db_conn_cur(self, db_conn, db_cur):
         self.db_conn = db_conn
         self.db_cur = db_cur
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        camera_names = [row[4] for row in cameras]
+        self.comboBox.clear()
+        self.comboBox.addItems(camera_names)
 
     def setupSignalSlots(self):
         self.showDataBtn.clicked.connect(self.showLineChart)

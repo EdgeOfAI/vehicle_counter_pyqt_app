@@ -87,6 +87,7 @@ class Model(QObject):
         self.finishLine = (0,0,0,0)
         self.stop_inference = True
         self.stop_counting = True
+        self.use_video = False
         self.count_method = 0
         self.imgMask = None
         self.cardinal_vehicle_counter = dict()
@@ -526,6 +527,7 @@ class Model(QObject):
         # self.frame_update_signal.emit(frame, 0)
         # self.cardinal_direction_points = self.draw_line_widget.list_coordinates
         print('Inferece cam id', self.cam_id)
+        print('using video:  ', self.use_video)
         # if not self.cam_id:
         #     self.stop_counting = True
         #     self.error_signal.emit('Camera not selected or not added!')
@@ -534,7 +536,7 @@ class Model(QObject):
         # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
-        source = ['C:\\Users\\shahz\\projects\\write_mp4\\23']  # file/dir/URL/glob/screen/0(webcam)
+        source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -563,7 +565,6 @@ class Model(QObject):
         # print('2222222222')
         # self.db_conn.commit()
         # print(camera_info)
-        self.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         # draw cardinal coordinates
         # print('COORDINATES', self.cardinal_direction_points)
 
@@ -579,8 +580,11 @@ class Model(QObject):
         # Load dataset
         # print('Loading camera....', self.cam_ip, self.cam_username, self.cam_password)
         # print(self.cam_ip, self.cam_username, self.cam_password, self.cam_name, self.cam_id)
-        dataset = LoadImages(source, imgsz, stride, pt)
-        # dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
+        if self.use_video:
+            print(source, 'Source')
+            dataset = LoadImages(source, imgsz, stride, pt)
+        else:
+            dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
         # print('Dataset initializded')
         vid_path, vid_writer = [None] * bs, [None] * bs
 
@@ -626,10 +630,9 @@ class Model(QObject):
         self.stop_counting = False
         self.time_now = datetime.datetime(2022, 2, 12, 2, 56, 36)
         self.add_time = datetime.timedelta(seconds=1/25)
-
         try:
             for path, im, im0s in dataset:
-                # print(path)
+                print(path)
                 if self.stop_counting:
                     self.counted_ids = []
                     break
