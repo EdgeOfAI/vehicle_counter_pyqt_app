@@ -16,8 +16,9 @@ class App(QApplication):
     def __init__(self, sys_argv):
         super().__init__()
         qss_file = QtCore.QFile("style.qss")
-        qss = QtCore.QTextStream(qss_file)
-        self.setStyle(qss.readAll())
+        # qss = QtCore.QTextStream(qss_file)
+        # print(qss.readAll())
+        # self.setStyleSheet(qss.readAll())
         # create database
         conn = sqlite3.connect("main.db", check_same_thread=False)
         cur = conn.cursor()
@@ -79,8 +80,9 @@ class App(QApplication):
         self.model.moveToThread(self.modelThread)
         self.modelThread.start()
         self.modelThread.setPriority(QThread.HighestPriority)
-
-        self.viewController = ViewController(self.model, conn, cur)
+        qss_file = open('style.qss').read()
+        self.viewController = ViewController(self.model, conn, cur, qss_file)
+        # self.viewController.setStyleSheet(open('style.qss').read())
         self.viewController.show()
 
 if __name__ == '__main__':

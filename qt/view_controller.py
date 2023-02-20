@@ -23,9 +23,10 @@ class ViewController(QWidget, Ui_Form):
     startCountingSignal = Signal()
     startCountingAnalysisSignal = Signal()
 
-    def __init__(self, model, conn, cur):
+    def __init__(self, model, conn, cur, qss_file):
         super().__init__()
         self.model = model
+        self.setStyleSheet(qss_file)
         self.setupUi(self)
         self.inputVideoFile = ''
         self.outputVideoFile = ''
@@ -55,7 +56,12 @@ class ViewController(QWidget, Ui_Form):
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur)
-        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur)
+        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file)
+
+        self.add_cam_window.setStyleSheet(qss_file)
+        self.remove_camera_window.setStyleSheet(qss_file)
+        self.edit_camera_window.setStyleSheet(qss_file)
+        self.show_calendar_window.setStyleSheet(qss_file)
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
