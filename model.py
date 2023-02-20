@@ -97,6 +97,7 @@ class Model(QObject):
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
+        self.images_root = None
 
         self.db_conn = conn 
         self.db_cur = cur 
@@ -455,6 +456,16 @@ class Model(QObject):
                         # print('************************')
                         # cnt = sum([param['counted'] for id, param in tracker_dict.items() if param['row_id'] == row_id])
                         img = self.getVehicleImage(detection, frame)
+                        exps = os.listdir('./images')
+                        if not self.images_root:
+                            self.images_root = os.path.join('./images', str(len(exps)))
+                        if not Path(self.images_root).exists():
+                            os.makedirs(self.images_root)
+                        image_path = os.path.join(self.images_root, str(class_id))
+                        if not Path(image_path).exists():
+                            os.makedirs(image_path)
+                        image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+                        cv2.imwrite(os.path.join(image_save_path), img)
                         self.counted_ids.append(uid)
                         # print(class_id, type(class_id))
                         # print(str(class_id))

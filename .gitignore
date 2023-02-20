@@ -1,5 +1,6 @@
 # checkpoints
 checkpoints/*
+images/*
 
 # video files
 *.avi
