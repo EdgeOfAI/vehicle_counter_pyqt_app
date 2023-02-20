@@ -11,6 +11,7 @@ import pyqtgraph as pg
 
 from model import Model
 
+from DrawLineWidget import DrawLineWidget
 from qt.add_camera_view_controller import AddCameraWindow
 from qt.remove_camera_view_controller import RemoveCameraWindow
 from qt.edit_camera_view_controller import EditCameraWindow
@@ -114,7 +115,12 @@ class ViewController(QWidget, Ui_Form):
         if self.checkBox.isChecked():
             self.use_video = False
             self.enableControls(False)
-            self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
+            source = os.path.join('./videos', os.listdir('videos')[0])
+            f = cv2.VideoCapture(source)
+            rval, frame = f.read()
+            f.release()
+            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur)
+            # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
         else:
             self.use_video = True
@@ -686,6 +692,7 @@ class ViewController(QWidget, Ui_Form):
         print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
+        self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates
         self.startInferenceSignal.emit()
     
     def stopProcess(self):
@@ -693,7 +700,11 @@ class ViewController(QWidget, Ui_Form):
         self.db_cur = self.model.db_cur
         self.model.stopInference()
         self.model.stopCountingAnalysis()
-        self.enableControls(True)
+        if self.use_video:
+            self.enableControls(False)
+            self.startInferenceBtn.setEnabled(True)
+        else:
+            self.enableControls(True)
 
 #================== Masking Functions ======================
 

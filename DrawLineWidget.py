@@ -71,7 +71,7 @@ class DrawLineWidget(object):
                 coordinal_side_text = ''
                 update_cardial_sides_query = None
             
-            if update_cardial_sides_query:
+            if update_cardial_sides_query and self.cam_id > 0:
                 self.db_cur.execute(update_cardial_sides_query)
                 self.db_conn.commit()
             
