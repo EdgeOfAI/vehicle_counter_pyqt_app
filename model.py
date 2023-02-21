@@ -2,6 +2,7 @@ import os
 import sys
 import torch
 import datetime
+from time import time
 from pathlib import Path
 from DrawLineWidget import DrawLineWidget
 
@@ -180,89 +181,6 @@ class Model(QObject):
 
 #==================== Counting Functions ========================
 
-    def countVehicles(self, frame, frame_num, detection) -> bool:
-        class_id = detection[0]
-        uid = str(detection[1])
-
-        # xmin, ymin, xmax, ymax
-        x_min = detection[2]
-        y_min = detection[3]
-        x_max = detection[4]
-        y_max = detection[5]
-        width = x_max - x_min
-        height = y_max - y_min
-        cx = x_min + (width / 2)
-        cy = y_min + (height / 2)
-        centroid = [cx, cy]
-        tracker_dict = self.detected_vehicles[str(class_id)]
-
-        # # detecting for the first time
-        # if uid not in tracker_dict.keys():
-        #     tracker_dict[uid] = {
-        #         'initial_centroid' : [cx, cy], 
-        #         'prev_centroid': [cx, cy],
-        #         'prev_frame_num': frame_num,
-        #         'dist': 0,
-        #         'counted': False,
-        #         'in_cardinal_side':None,
-        #         'out_cardinal_side':None
-        #         }
-        #     return False
-
-        # # already counted this car, skip
-        # elif tracker_dict[uid]['counted'] == True:
-        #     return True
-
-        # count with vector filter method
-        if self.count_method == 0:
-            # reset distance travelled if previous detected frame is too far off
-            if frame_num - tracker_dict[uid]['prev_frame_num'] > self.filt_frame:
-                tracker_dict[uid]['prev_centroid'] = centroid
-
-            # compute distance traveled
-            prev_centroid = tracker_dict[uid]['prev_centroid']
-            tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
-            tracker_dict[uid]['prev_centroid'] = centroid
-            tracker_dict[uid]['prev_frame_num'] = frame_num
-
-            # count the object if distance traveled exceeds a threshold
-            if tracker_dict[uid]['dist'] > self.filt_dist:
-                # computer direction vector
-                initial_centroid = tracker_dict[uid]['initial_centroid']
-                vect = [cx - initial_centroid[0], cy - initial_centroid[1]]
-
-                # only count vehicles travelling south
-                x_min = self.filt_x_vec - self.filt_width
-                x_max = self.filt_x_vec + self.filt_width
-
-                if (x_min < vect[0] < x_max) and (vect[1] > 0) == (self.filt_y_vec > 0):
-                    tracker_dict[uid]['counted'] = True
-
-                    cnt = sum([param['counted'] for id, param in tracker_dict.items()])
-                    img = self.getVehicleImage(detection, frame)
-                    # self.vehicle_count_signal.emit(class_id, int(uid), cnt, img, '03')
-                    return True
-
-        # count with finishing line method  
-        elif self.count_method == 1:
-            bx = self.finishLine[0]
-            by = self.finishLine[1]
-            bw = self.finishLine[2]
-            bh = self.finishLine[3]
-
-            # check if centroid within bounds of finish line
-            if (cx > bx) and (cx < bx + bw) and (cy > by) and (cy < by + bh):
-                tracker_dict[uid]['dist'] += 1
-
-                if tracker_dict[uid]['dist'] > self.finishFrames:
-                    # print(tracker_dict)
-                    # tracker_dict[uid]['counted'] = True
-                    cnt = sum([param['counted'] for id, param in tracker_dict.items()])
-                    img = self.getVehicleImage(detection, frame)
-                    # self.vehicle_count_signal.emit(class_id, int(uid), cnt, img, '02')
-                    return True
-        return False
-
     @Slot()
     def startCounting(self):
         if not self.validateInputFiles():
@@ -348,16 +266,6 @@ class Model(QObject):
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
         self.analyzeFrames()
 
-    def validateInputFiles(self) -> bool:
-        if self.cache_data is None:
-            self.error_signal.emit('Model path not specified!')
-            return False
-        elif self.vid is None:
-            self.error_signal.emit('No input video specified')
-            return False
-        else:
-            return True
-
     @Slot(int)
     def previewFrame(self, frame_num):
         if not self.validateInputFiles():
@@ -413,48 +321,29 @@ class Model(QObject):
                 'out_cardinal_side':None,
                 'row_id':False
             }
-
-        # if uid == '1':
-        #     print(tracker_dict.get(uid))
         
         object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
 
-        # if uid == '6':
-        #     print('Distance:  ', tracker_dict[uid]['dist'], tracker_dict[uid]['in_cardinal_side'], tracker_dict[uid]['out_cardinal_side'])
         if uid not in self.counted_ids:
             # compute distance traveled
             prev_centroid = tracker_dict[uid]['prev_centroid'] 
-            if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
-                tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
             tracker_dict[uid]['prev_centroid'] = centroid
             tracker_dict[uid]['prev_frame_num'] = frame_num
+            if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
+                tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
+
             for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
                 cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
-                # print(cardinal_side, [[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
-                # if is_inside_polygon(cardinal_side_copy, centroid):
-                #     print(class_id, cardinal_side_id)
                 cardinal_side_polygon = Polygon(cardinal_side_copy)
-                # print('4444444444444', cardinal_side_polygon.intersection(object_polygon).area, cardinal_side_polygon.union(object_polygon).area)
-                # intersect = cardinal_side_polygon.intersection(object_polygon).area / cardinal_side_polygon.union(object_polygon).area
                 is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
                 if is_intersects:
-                    if uid == '29' or uid == '42':
-                        print(tracker_dict[uid]['dist'])
                     if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
                         tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
-                        # print(row_id)
-                        # tracker_dict[uid]['row_id'] = row_id
-                        # tracker_dict[uid]['counted'] = True
                         if self.cardinal_vehicle_counter.get(row_id):
                             self.cardinal_vehicle_counter[row_id] += 1
                         else:
                             self.cardinal_vehicle_counter[row_id] = 1
-                        # print('ROW ID:  ', row_id)
-                        # print('UID: ', uid)
-                        # print('Distance', tracker_dict[uid]['dist'])
-                        # print('************************')
-                        # cnt = sum([param['counted'] for id, param in tracker_dict.items() if param['row_id'] == row_id])
                         img = self.getVehicleImage(detection, frame)
                         exps = os.listdir('./images')
                         if not self.images_root:
@@ -467,8 +356,6 @@ class Model(QObject):
                         image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
                         cv2.imwrite(os.path.join(image_save_path), img)
                         self.counted_ids.append(uid)
-                        # print(class_id, type(class_id))
-                        # print(str(class_id))
                         self.vehicle_counter[str(class_id)] += 1
                         self.db_cur.execute(f"""INSERT INTO vehicles(
                                                             id,
@@ -504,8 +391,6 @@ class Model(QObject):
                                 )
                         self.db_conn.commit()
                         del tracker_dict[uid]
-                        # print('vehicle added')
-                        # print(class_id, int(uid), self.cardinal_vehicle_counter[row_id], row_id, self.vehicle_counter[str(class_id)])
                         self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
                     else:
                         tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
@@ -537,14 +422,6 @@ class Model(QObject):
         # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         # self.frame_update_signal.emit(frame, 0)
         # self.cardinal_direction_points = self.draw_line_widget.list_coordinates
-        print('Inferece cam id', self.cam_id)
-        print('using video:  ', self.use_video)
-        # if not self.cam_id:
-        #     self.stop_counting = True
-        #     self.error_signal.emit('Camera not selected or not added!')
-        #     return False
-        # print('Cache data path:  ', self.cache_data_path)
-        # print('Input video Path:  ', self.input_video_path)
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
@@ -557,47 +434,23 @@ class Model(QObject):
         classes=None  # filter by class: --class 0, or --class 0 2 3
         agnostic_nms=False  # class-agnostic NMS
         augment=False  # augmented inference
-        visualize=False  # visualize features
-        project='yolov5/runs/detect'  # save results to project/name
-        name='exp'  # save results to project/name
-        exist_ok=False  # existing project/name ok, do not increment
-        half=False  # use FP16 half-precision inference
         dnn=False  # use OpenCV DNN for ONNX inference
-        vid_stride=1  # video frame-rate stride
         bs = 1
-
-        # get camera info from database
-        # print('000000000')
-        # print('Query command', f"SELECT * FROM cameras")
-        # print(self.db_cur, 'cursor')
-        # self.db_cur.execute("SELECT * FROM cameras")
-        # print('111111111')
-        # camera_info = [row for row in self.db_cur.fetchall() if row[4] == self.cam_id]
-        # print('2222222222')
-        # self.db_conn.commit()
-        # print(camera_info)
-        # draw cardinal coordinates
-        # print('COORDINATES', self.cardinal_direction_points)
 
         # Load model
         device = select_device()
-        # print('Device selected')
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
-        # print('Model initialized')
         stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
-        # print('some variables initialized')
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
         # Load dataset
-        # print('Loading camera....', self.cam_ip, self.cam_username, self.cam_password)
-        # print(self.cam_ip, self.cam_username, self.cam_password, self.cam_name, self.cam_id)
         if self.use_video:
-            print(source, 'Source')
             dataset = LoadImages(source, imgsz, stride, pt)
+            self.time_now = datetime.datetime.now()
+            self.add_time = datetime.timedelta(seconds=1/25)
         else:
             dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
         # print('Dataset initializded')
-        vid_path, vid_writer = [None] * bs, [None] * bs
 
         model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
         seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
@@ -605,49 +458,33 @@ class Model(QObject):
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
 
-        # print('333333333333333333')
         # calculate cosine distance metric
         metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
         # initialize tracker
         tracker = Tracker(metric)
-        # print('111111111111111111')
 
         # load standard tensorflow saved model for YOLO and Deepsort
         # load configuration for object detector
-        # print('hello world')
         config = ConfigProto()
         config.gpu_options.allow_growth = True
         self.sess = Session(config=config)
         self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
-        # print('22222222222')
-
-        # # begin video capture
-        # total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
 
         # go to first frame
         # self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
         # self.max_frame_update_signal.emit(total_frames)
 
-        # initialize buffer to store cache
-        cache = []
-
-        # buffer to track and count vehicles
-        cars = {}
-        trucks = {}
-        car_cnt = 0
-        truck_cnt = 0
-
         frame_num = 0
         self.stop_counting = False
-        self.time_now = datetime.datetime(2022, 2, 12, 2, 56, 36)
-        self.add_time = datetime.timedelta(seconds=1/25)
+        
         try:
             for path, im, im0s in dataset:
-                print(path)
+                start_time = time()
                 if self.stop_counting:
                     self.counted_ids = []
                     break
-                self.time_now += self.add_time
+                if self.use_video:
+                    self.time_now += self.add_time
                 original_frame = im0s.copy()
                 frame_num += 1
                 frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
@@ -700,9 +537,6 @@ class Model(QObject):
                     else:
                         names.append(class_name)
                 names = np.array(names)
-                count = len(names)
-
-                # print('Not I am here')
 
                 # delete detections that are not in allowed_classes
                 bboxes = np.delete(bboxes, deleted_indx, axis=0)
@@ -756,20 +590,16 @@ class Model(QObject):
                     original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max)
                     
                     obj_num = obj_num +  1
-                # print('after track')
 
-                result = np.asarray(original_frame)
-                result = cv2.cvtColor(original_frame, cv2.COLOR_RGB2BGR)
-
-                cache.append(frame_data)
-                # print('Before line drawings')
-
+                # draw cardinal directions
                 for cardinal_direction_positions in self.cardinal_direction_points:
                     original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255,  255), 3)
 
-                # print('After drawing')
                 # update frame on UI
                 self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
+                fps = 1/(time()-start_time)
+                print(fps)
+
 
                 # print('Frame #: ', frame_num)
         except Exception as err:
@@ -781,188 +611,6 @@ class Model(QObject):
 
     def stopInference(self):
         self.stop_inference = True
-
-    @Slot()
-    def startInference1(self):
-        if self.vid is None:
-            self.error_signal.emit('No input video specified')
-            return
-
-        self.stop_inference = False
-        self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
-
-        # calculate cosine distance metric
-        metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
-        # initialize tracker
-        tracker = Tracker(metric)
-
-        # load standard tensorflow saved model for YOLO and Deepsort
-        if self.sess is None:
-            # load configuration for object detector
-            config = ConfigProto()
-            config.gpu_options.allow_growth = True
-            self.sess = Session(config=config)
-            self.saved_model_loaded = tf.saved_model.load(weights_path)
-            self.infer = self.saved_model_loaded.signatures['serving_default']
-            self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
-
-        # begin video capture
-        total_frames = int(self.vid.get(cv2.CAP_PROP_FRAME_COUNT))
-        # self.max_frame_update_signal.emit(total_frames)
-
-        # go to first frame
-        self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
-
-        # get video ready to save locally 
-        # by default VideoCapture returns float instead of int
-        width = int(self.vid.get(cv2.CAP_PROP_FRAME_WIDTH))
-        height = int(self.vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fps = int(self.vid.get(cv2.CAP_PROP_FPS))
-        codec = cv2.VideoWriter_fourcc(*'XVID')
-        out = cv2.VideoWriter(self.output_video_path, codec, fps, (width, height))
-
-        # initialize buffer to store cache
-        cache = []
-
-        # buffer to track and count vehicles
-        cars = {}
-        trucks = {}
-        car_cnt = 0
-        truck_cnt = 0
-
-        frame_num = 0
-        # while video is running
-        while not self.stop_inference:
-            frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
-
-            return_value, frame = self.vid.read()
-            if return_value:
-                frame_original = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-                frame = cv2.bitwise_and(frame_original, frame_original, mask=self.imgMask)
-
-            else:
-                print('Video has ended or failed, try a different video format!')
-                break
-
-            image_data = cv2.resize(frame, (input_size, input_size))
-            image_data = image_data / 255.
-            image_data = image_data[np.newaxis, ...].astype(np.float32)
-
-            batch_data = tf.constant(image_data)
-            pred_bbox = self.infer(batch_data)
-            for key, value in pred_bbox.items():
-                boxes = value[:, :, 0:4]
-                pred_conf = value[:, :, 4:]
-
-            boxes, scores, classes, valid_detections = tf.image.combined_non_max_suppression(
-                boxes=tf.reshape(boxes, (tf.shape(boxes)[0], -1, 1, 4)),
-                scores=tf.reshape(
-                    pred_conf, (tf.shape(pred_conf)[0], -1, tf.shape(pred_conf)[-1])),
-                max_output_size_per_class=MAX_DETECTION_NUM,
-                max_total_size=MAX_DETECTION_NUM,
-                iou_threshold= self.iou_thresh,
-                score_threshold= self.score_thresh
-            )
-
-            # convert data to numpy arrays and slice out unused elements
-            num_objects = valid_detections.numpy()[0]
-            bboxes = boxes.numpy()[0] # first item, because batch size = 1 
-            bboxes = bboxes[0:int(num_objects)]
-            scores = scores.numpy()[0]
-            scores = scores[0:int(num_objects)]
-            classes = classes.numpy()[0]
-            classes = classes[0:int(num_objects)]
-
-            # format bounding boxes from normalized ymin, xmin, ymax, xmax ---> xmin, ymin, width, height
-            original_h, original_w, _ = frame.shape
-            bboxes = utils.format_boxes(bboxes, original_h, original_w)
-
-            # store all predictions in one parameter for simplicity when calling functions
-            pred_bbox = [bboxes, scores, classes, num_objects]
-
-            # read in all class names from config
-            class_names = utils.read_class_names(cfg.YOLO.CLASSES)
-
-            # custom allowed classes (uncomment line below to customize tracker for only people)
-            allowed_classes = ['truck', 'car', 'bus']
-
-            # loop through objects and use class index to get class name, allow only classes in allowed_classes list
-            names = []
-            deleted_indx = []
-            for i in range(num_objects):
-                class_indx = int(classes[i])
-                class_name = class_names[class_indx]
-                if class_name not in allowed_classes:
-                    deleted_indx.append(i)
-                else:
-                    names.append(class_name)
-            names = np.array(names)
-            count = len(names)
-            
-            # delete detections that are not in allowed_classes
-            bboxes = np.delete(bboxes, deleted_indx, axis=0)
-            scores = np.delete(scores, deleted_indx, axis=0)
-
-            # encode yolo detections and feed to tracker
-            features = self.encoder(frame, bboxes)
-            detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
-
-            # run non-maxima supression
-            boxs = np.array([d.tlwh for d in detections])
-            scores = np.array([d.confidence for d in detections])
-            classes = np.array([d.class_name for d in detections])
-            indices = preprocessing.non_max_suppression(boxs, classes, nms_max_overlap, scores)
-            detections = [detections[i] for i in indices]       
-
-            # Call the tracker
-            tracker.predict()
-            tracker.update(detections)
-
-            obj_num = 0
-            # update tracks
-            for track in tracker.tracks:
-                if not track.is_confirmed() or track.time_since_update > 1:
-                    continue 
-                bbox = track.to_tlbr()
-                class_name = track.get_class()
-                
-                x_min = int(bbox[0])
-                y_min = int(bbox[1])
-                x_max = int(bbox[2])
-                y_max = int(bbox[3])
-                id = int(track.track_id)
-
-                # add to hdf buffer
-                class_id = self.getClassId(class_name)
-                frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
-
-                # Count vehicles
-                detected = self.countVehicles(frame, frame_num, frame_data[obj_num])
-
-                # draw bbox on screen
-                frame = self.drawBoundingBox(frame_original, class_name, id, x_min, y_min, x_max, y_max, highlight=detected)
-                
-                obj_num = obj_num +  1
-
-            result = np.asarray(frame)
-            result = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
-            out.write(result)
-
-            cache.append(frame_data)
-
-            # update frame on UI
-            self.frame_update_signal.emit(frame, frame_num)
-
-            print('Frame #: ', frame_num)
-            frame_num = frame_num + 1
-
-        # Save cache file as hdf file
-        cache_data = h5py.File(self.output_data_path, 'w')
-        cache = np.asarray(cache, dtype=int)
-        cache_data.create_dataset('dataset_1', data=cache)
-        cache_data.close()
-
-        self.process_done_signal.emit()
 
 #==================== Helper Functions ========================
 

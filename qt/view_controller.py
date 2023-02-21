@@ -27,6 +27,8 @@ class ViewController(QWidget, Ui_Form):
         super().__init__()
         self.model = model
         self.setStyleSheet(qss_file)
+        icon_path = 'icon.png'
+        self.setWindowIcon(QIcon(icon_path))
         self.setupUi(self)
         self.inputVideoFile = ''
         self.outputVideoFile = ''
@@ -56,12 +58,17 @@ class ViewController(QWidget, Ui_Form):
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur)
-        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file)
+        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, icon_path)
 
         self.add_cam_window.setStyleSheet(qss_file)
         self.remove_camera_window.setStyleSheet(qss_file)
         self.edit_camera_window.setStyleSheet(qss_file)
         self.show_calendar_window.setStyleSheet(qss_file)
+
+        self.add_cam_window.setWindowIcon(QIcon(icon_path))
+        self.remove_camera_window.setWindowIcon(QIcon(icon_path))
+        self.edit_camera_window.setWindowIcon(QIcon(icon_path))
+        self.show_calendar_window.setWindowIcon(QIcon(icon_path))
         self.setupSignalSlots()
 
     def setupSignalSlots(self):

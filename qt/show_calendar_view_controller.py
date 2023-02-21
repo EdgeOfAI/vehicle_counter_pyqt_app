@@ -12,30 +12,31 @@ from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur, qss_file):
+    def __init__(self, db_conn, db_cur, qss_file, icon_path):
         super(ShowCalendarWindow, self).__init__()
         self.qss_file = qss_file
         self.db_conn = db_conn
         self.db_cur = db_cur
+        self.icon_path = icon_path
         self.setupUi(self)
-        self.db_cur.execute(f"SELECT * FROM cameras")
-        cameras = self.db_cur.fetchall()
-        camera_names = [row[4] for row in cameras]
-        self.comboBox.clear()
-        self.comboBox.addItems(camera_names)
+        self.setCameraComboBox()
         self.setupSignalSlots()
     
     def setCamId(self, cam_id):
         self.remove_cam_id = cam_id
+    
+    def setCameraComboBox(self):
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        camera_names = [row[4] for row in cameras]
+        camera_names_with_default = ['0. Video'] + camera_names
+        self.comboBox.clear()
+        self.comboBox.addItems(camera_names_with_default)
 
     def set_db_conn_cur(self, db_conn, db_cur):
         self.db_conn = db_conn
         self.db_cur = db_cur
-        self.db_cur.execute(f"SELECT * FROM cameras")
-        cameras = self.db_cur.fetchall()
-        camera_names = [row[4] for row in cameras]
-        self.comboBox.clear()
-        self.comboBox.addItems(camera_names)
+        self.setCameraComboBox()
 
     def setupSignalSlots(self):
         self.showDataBtn.clicked.connect(self.showLineChart)
@@ -60,7 +61,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         cam_id = cam_name.split('.')[0]
         selected_date = self.calendarWidget.selectedDate().toString()
         selected_date = datetime.datetime.strptime(' '.join(selected_date.split(' ')[1:]), '%b %d %Y')
-        self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = 0")
+        self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = {cam_id}")
         vehicles = self.db_cur.fetchall()
         vehicles = [vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
         car_hour_0 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 0 and vehicle[10] == 2])
@@ -204,5 +205,6 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         [bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23],
                                         [mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23]
                                         )
+        self.chart_window.setWindowIcon(self.icon_path)
         self.chart_window.setStyleSheet(self.qss_file)
         self.chart_window.show()
