@@ -28,6 +28,10 @@ class DrawLineWidget(object):
                     cv2.LINE_4)
 
     def extract_coordinates(self, event, x, y, flags, parameters):
+        scale = 2
+
+        x = x*scale
+        y = y*scale
         
         # Record starting (x,y) coordinates on left mouse button click
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -75,7 +79,8 @@ class DrawLineWidget(object):
                 self.db_cur.execute(update_cardial_sides_query)
                 self.db_conn.commit()
             
-            self.clone2 = self.clone.copy()
+            # print('Shape', [self.clone.shape[0]/2, self.clone.shape[1]/2])
+            self.clone2 = cv2.resize(self.clone.copy(), [int(self.clone.shape[1]/scale), int(self.clone.shape[0]/scale)])
             
             text = f'Draw {coordinal_side_text} side line'
 
