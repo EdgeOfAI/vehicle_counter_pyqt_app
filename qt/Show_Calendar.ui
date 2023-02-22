@@ -7,23 +7,23 @@
     <x>0</x>
     <y>0</y>
     <width>450</width>
-    <height>390</height>
+    <height>500</height>
    </rect>
   </property>
   <property name="minimumSize">
    <size>
     <width>450</width>
-    <height>390</height>
+    <height>500</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
     <width>450</width>
-    <height>390</height>
+    <height>500</height>
    </size>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Calendar</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
@@ -35,7 +35,7 @@
    <property name="maximumSize">
     <size>
      <width>450</width>
-     <height>400</height>
+     <height>500</height>
     </size>
    </property>
    <widget class="QFrame" name="frame">
@@ -44,7 +44,7 @@
       <x>0</x>
       <y>0</y>
       <width>441</width>
-      <height>341</height>
+      <height>461</height>
      </rect>
     </property>
     <property name="minimumSize">
@@ -56,7 +56,7 @@
     <property name="maximumSize">
      <size>
       <width>441</width>
-      <height>400</height>
+      <height>500</height>
      </size>
     </property>
     <property name="frameShape">
@@ -70,7 +70,14 @@
       <widget class="QComboBox" name="comboBox"/>
      </item>
      <item>
-      <widget class="QCalendarWidget" name="calendarWidget"/>
+      <widget class="QCalendarWidget" name="calendarWidget">
+       <property name="maximumSize">
+        <size>
+         <width>16777215</width>
+         <height>300</height>
+        </size>
+       </property>
+      </widget>
      </item>
      <item>
       <widget class="QLabel" name="label">
@@ -82,9 +89,20 @@
      <item>
       <widget class="QPushButton" name="showDataBtn">
        <property name="text">
-        <string>Show Data</string>
+        <string>Show Data Hourly</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_2">
+       <item>
+        <widget class="QPushButton" name="pushButton">
+         <property name="text">
+          <string>Show Data Cardinalwise</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </widget>

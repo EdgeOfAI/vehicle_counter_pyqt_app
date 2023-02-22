@@ -47,5 +47,5 @@ class ChartWindow(QMainWindow):
         self.graphWidget.plot(hour, bicycle_data, name="Bicycle",  pen=pen4, symbol='o', symbolSize=15, symbolBrush=('r'))
         self.graphWidget.plot(hour, mcycle_data, name="MCycle",  pen=pen5, symbol='x', symbolSize=15, symbolBrush=('g'))
         
-        self.show()
+        # self.show()
 

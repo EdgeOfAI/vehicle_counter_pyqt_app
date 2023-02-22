@@ -7,6 +7,8 @@ from qt.Show_Calendar import Ui_MainWindow
 from qt.ChartWindow import ChartWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
+from PySide2.QtCore import QCoreApplication
+from PySide2.QtGui import QIcon
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
@@ -205,6 +207,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         [bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23],
                                         [mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23]
                                         )
-        self.chart_window.setWindowIcon(self.icon_path)
+        self.chart_window.setWindowIcon(QIcon(self.icon_path))
         self.chart_window.setStyleSheet(self.qss_file)
+        self.chart_window.setWindowTitle("Daily and Hourly data | Line Chart")
         self.chart_window.show()
