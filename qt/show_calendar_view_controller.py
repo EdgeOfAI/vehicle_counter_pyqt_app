@@ -4,7 +4,7 @@ import pyqtgraph as pg
 from PySide2 import QtWidgets
 from PySide2.QtCore import Signal
 from qt.Show_Calendar import Ui_MainWindow
-from qt.ChartWindow import ChartWindow
+from qt.ChartWindow import ChartWindow, BarChartWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
 from PySide2.QtCore import QCoreApplication
@@ -42,6 +42,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
     def setupSignalSlots(self):
         self.showDataBtn.clicked.connect(self.showLineChart)
+        self.pushButton.clicked.connect(self.showCardinalwiseData)
         self.calendarWidget.selectionChanged.connect(self.onSelectionChange)
 
     def onSelectionChange(self):
@@ -56,6 +57,43 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         # self.process_done_signal.emit()
         # self.hide()
+    
+    def showCardinalwiseData(self):
+        cam_name = self.comboBox.currentText()
+        cam_id = cam_name.split('.')[0]
+        selected_date = self.calendarWidget.selectedDate().toString()
+        selected_date = datetime.datetime.strptime(' '.join(selected_date.split(' ')[1:]), '%b %d %Y')
+        self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = {cam_id}")
+        vehicles = self.db_cur.fetchall()
+        N_in = [vehicle for vehicle in vehicles if vehicle[8]=='North' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        E_in = [vehicle for vehicle in vehicles if vehicle[8] == 'East' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        W_in = [vehicle for vehicle in vehicles if vehicle[8] == 'West' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        S_in = [vehicle for vehicle in vehicles if vehicle[8] == 'South' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+
+        NN = len([vehicle for vehicle in N_in if vehicle[9] == 'North'])
+        NE = len([vehicle for vehicle in N_in if vehicle[9] == 'East'])
+        NW = len([vehicle for vehicle in N_in if vehicle[9] == 'West'])
+        NS = len([vehicle for vehicle in N_in if vehicle[9] == 'South'])
+
+        EN = len([vehicle for vehicle in E_in if vehicle[9] == 'North'])
+        EE = len([vehicle for vehicle in E_in if vehicle[9] == 'East'])
+        EW = len([vehicle for vehicle in E_in if vehicle[9] == 'West'])
+        ES = len([vehicle for vehicle in E_in if vehicle[9] == 'South']) 
+
+        WN = len([vehicle for vehicle in W_in if vehicle[9] == 'North'])
+        WE = len([vehicle for vehicle in W_in if vehicle[9] == 'East'])
+        WW = len([vehicle for vehicle in W_in if vehicle[9] == 'West'])
+        WS = len([vehicle for vehicle in W_in if vehicle[9] == 'South'])
+
+        SN = len([vehicle for vehicle in S_in if vehicle[9] == 'North'])
+        SE = len([vehicle for vehicle in S_in if vehicle[9] == 'East'])
+        SW = len([vehicle for vehicle in S_in if vehicle[9] == 'West'])
+        SS = len([vehicle for vehicle in S_in if vehicle[9] == 'South'])
+
+        data = [NN, NE, NW, NS, EN, EE, EW, ES, WN, WE, WW, WS, SN, SE, SW, SS]
+
+        self.bar_chart_window = BarChartWindow(self.icon_path, self.qss_file, 'Cardinalwise Data | Bar Chart', data)
+        # self.bar_chart_window.show()
     
     def showLineChart(self):
         print('Button clicked')
