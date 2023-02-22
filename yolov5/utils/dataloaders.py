@@ -323,6 +323,11 @@ class LoadImages:
         # Create a new video capture object
         self.frame = 0
         self.cap = cv2.VideoCapture(path)
+        try:
+            self.fps = int(self.cap.get(cv2.CAP_PROP_FPS))
+        except Exception as err:
+            print('Error: ', err)
+            self.fps = 30
         self.frames = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.vid_stride)
         self.orientation = int(self.cap.get(cv2.CAP_PROP_ORIENTATION_META))  # rotation degrees
         # self.cap.set(cv2.CAP_PROP_ORIENTATION_AUTO, 0)  # disable https://github.com/ultralytics/yolov5/issues/8493

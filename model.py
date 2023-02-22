@@ -275,107 +275,114 @@ class Model(QObject):
         self.frame_update_signal.emit(frame, frame_num)
 
     def countVehiclesCustom(self, frame, frame_num, detection):
-        class_id = detection[0]
-        uid = str(detection[1])
+        try:
+            class_id = detection[0]
+            uid = str(detection[1])
 
-        # xmin, ymin, xmax, ymax
-        x_min = detection[2]
-        y_min = detection[3]
-        x_max = detection[4]
-        y_max = detection[5]
-        width = x_max - x_min
-        height = y_max - y_min
-        cx = x_min + (width / 2)
-        cy = y_min + (height / 2)
-        centroid = [cx, cy]
-        tracker_dict = self.detected_vehicles[str(class_id)]
+            # xmin, ymin, xmax, ymax
+            x_min = detection[2]
+            y_min = detection[3]
+            x_max = detection[4]
+            y_max = detection[5]
+            width = x_max - x_min
+            height = y_max - y_min
+            cx = x_min + (width / 2)
+            cy = y_min + (height / 2)
+            centroid = [cx, cy]
+            tracker_dict = self.detected_vehicles[str(class_id)]
 
-        # detecting for the first time
-        if uid not in tracker_dict.keys() and uid not in self.cardinal_vehicle_counter.keys():
-            tracker_dict[uid] = {
-                'initial_centroid' : [cx, cy], 
-                'prev_centroid': [cx, cy],
-                'prev_frame_num': frame_num,
-                'dist': 0,
-                'counted': False,
-                'in_cardinal_side':None,
-                'out_cardinal_side':None,
-                'row_id':False
-            }
-        
-        object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
+            # detecting for the first time
+            if uid not in tracker_dict.keys() and uid not in self.cardinal_vehicle_counter.keys():
+                tracker_dict[uid] = {
+                    'initial_centroid' : [cx, cy], 
+                    'prev_centroid': [cx, cy],
+                    'prev_frame_num': frame_num,
+                    'dist': 0,
+                    'counted': False,
+                    'in_cardinal_side':None,
+                    'out_cardinal_side':None,
+                    'row_id':False
+                }
+            
+            object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
 
-        if uid not in self.counted_ids:
-            # compute distance traveled
-            prev_centroid = tracker_dict[uid]['prev_centroid'] 
-            tracker_dict[uid]['prev_centroid'] = centroid
-            tracker_dict[uid]['prev_frame_num'] = frame_num
-            if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
-                tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
+            if uid not in self.counted_ids:
+                # compute distance traveled
+                prev_centroid = tracker_dict[uid]['prev_centroid'] 
+                tracker_dict[uid]['prev_centroid'] = centroid
+                tracker_dict[uid]['prev_frame_num'] = frame_num
+                if math.dist(prev_centroid, centroid) > 1 and tracker_dict[uid]['in_cardinal_side']:
+                    tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
 
-            for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
-                cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
-                cardinal_side_polygon = Polygon(cardinal_side_copy)
-                is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
-                if is_intersects:
-                    if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
-                        tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
-                        row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
-                        if self.cardinal_vehicle_counter.get(row_id):
-                            self.cardinal_vehicle_counter[row_id] += 1
+                for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
+                    cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
+                    cardinal_side_polygon = Polygon(cardinal_side_copy)
+                    is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
+                    if is_intersects:
+                        if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
+                            tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                            row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
+                            if self.cardinal_vehicle_counter.get(row_id):
+                                self.cardinal_vehicle_counter[row_id] += 1
+                            else:
+                                self.cardinal_vehicle_counter[row_id] = 1
+                            img = self.getVehicleImage(detection, frame)
+                            exps = os.listdir('./images')
+                            if not self.images_root:
+                                self.images_root = os.path.join('./images', str(len(exps)))
+                            if not Path(self.images_root).exists():
+                                os.makedirs(self.images_root)
+                            image_path = os.path.join(self.images_root, str(class_id))
+                            if not Path(image_path).exists():
+                                os.makedirs(image_path)
+                            image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+                            cv2.imwrite(os.path.join(image_save_path), img)
+                            self.counted_ids.append(uid)
+                            self.vehicle_counter[str(class_id)] += 1
+                            self.db_cur.execute(f"""INSERT INTO vehicles(
+                                                                id,
+                                                                initial_centroid_x,
+                                                                initial_centroid_y,
+                                                                prev_centroid_x,
+                                                                prev_centroid_y,
+                                                                prev_frame_num,
+                                                                dist,
+                                                                counted,
+                                                                in_cardinal_side,
+                                                                out_cardinal_side,
+                                                                type,
+                                                                time,
+                                                                camera_id,
+                                                                row_id 
+                                                            ) VALUES (
+                                                                {uid},
+                                                                {int(cx)},
+                                                                {int(cy)},
+                                                                {int(cx)},
+                                                                {int(cy)},
+                                                                {frame_num},
+                                                                {0},
+                                                                FALSE,
+                                                                '{tracker_dict[uid]['in_cardinal_side']}',
+                                                                '{tracker_dict[uid]['out_cardinal_side']}',
+                                                                {class_id},
+                                                                '{self.time_now}',
+                                                                {self.cam_id},
+                                                                '{row_id}'
+                                                            )"""
+                                    )
+                            self.db_conn.commit()
+                            del tracker_dict[uid]
+                            self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
                         else:
-                            self.cardinal_vehicle_counter[row_id] = 1
-                        img = self.getVehicleImage(detection, frame)
-                        exps = os.listdir('./images')
-                        if not self.images_root:
-                            self.images_root = os.path.join('./images', str(len(exps)))
-                        if not Path(self.images_root).exists():
-                            os.makedirs(self.images_root)
-                        image_path = os.path.join(self.images_root, str(class_id))
-                        if not Path(image_path).exists():
-                            os.makedirs(image_path)
-                        image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
-                        cv2.imwrite(os.path.join(image_save_path), img)
-                        self.counted_ids.append(uid)
-                        self.vehicle_counter[str(class_id)] += 1
-                        self.db_cur.execute(f"""INSERT INTO vehicles(
-                                                            id,
-                                                            initial_centroid_x,
-                                                            initial_centroid_y,
-                                                            prev_centroid_x,
-                                                            prev_centroid_y,
-                                                            prev_frame_num,
-                                                            dist,
-                                                            counted,
-                                                            in_cardinal_side,
-                                                            out_cardinal_side,
-                                                            type,
-                                                            time,
-                                                            camera_id,
-                                                            row_id 
-                                                        ) VALUES (
-                                                            {uid},
-                                                            {int(cx)},
-                                                            {int(cy)},
-                                                            {int(cx)},
-                                                            {int(cy)},
-                                                            {frame_num},
-                                                            {0},
-                                                            FALSE,
-                                                            '{tracker_dict[uid]['in_cardinal_side']}',
-                                                            '{tracker_dict[uid]['out_cardinal_side']}',
-                                                            {class_id},
-                                                            '{self.time_now}',
-                                                            {self.cam_id},
-                                                            '{row_id}'
-                                                        )"""
-                                )
-                        self.db_conn.commit()
-                        del tracker_dict[uid]
-                        self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
-                    else:
-                        tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
-                    break
+                            tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                        break
+        except Exception as err:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+            print(exc_type, fname, exc_tb.tb_lineno)
+            print('Custom count error:  ', err)
+
             
 
 #==================== Inference Functions ========================
@@ -427,6 +434,7 @@ class Model(QObject):
         # Load dataset
         if self.use_video:
             dataset = LoadImages(source, imgsz, stride, pt)
+            print('FPS:  ', dataset.fps)
             self.time_now = datetime.datetime.now()
             self.add_time = datetime.timedelta(seconds=1/25)
         else:
@@ -446,8 +454,8 @@ class Model(QObject):
         frame_num = 0
         self.stop_counting = False
         
-        try:
-            for path, im, im0s in dataset:
+        for path, im, im0s in dataset:
+            try:
                 start_time = time()
                 if self.stop_counting:
                     self.counted_ids = []
@@ -530,8 +538,11 @@ class Model(QObject):
 
 
                 # print('Frame #: ', frame_num)
-        except Exception as err:
-            print('Inference stopped with error:  ', err)
+            except Exception as err:
+                exc_type, exc_obj, exc_tb = sys.exc_info()
+                fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
+                print(exc_type, fname, exc_tb.tb_lineno)
+                print('Inference stopped with error:  ', err)
 
         print('INFERENCE STOPPED')
 
