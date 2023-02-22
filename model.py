@@ -14,41 +14,22 @@ import cv2, h5py, math
 import numpy as np
 import matplotlib.pyplot as plt
 
-# YOLOv4 & DeepSORT code is taken from : 
-# https://github.com/theAIGuysCode/yolov4-deepsort
-
-# deep sort imports
-from deep_sort import preprocessing, nn_matching
-from deep_sort import tracker
-from deep_sort.detection import Detection
-from deep_sort.tracker import Tracker
-
-# import tensorflow as tf
-# physical_devices = tf.config.experimental.list_physical_devices('GPU')
-# if len(physical_devices) > 0:
-#     tf.config.experimental.set_memory_growth(physical_devices[0], True)
-# from tensorflow.python.saved_model import tag_constants
-from tensorflow.compat.v1 import ConfigProto
-from tensorflow.compat.v1 import Session
-# from core.yolov4 import filter_boxes
-from core.config import cfg
-import core.utils as utils
-from tools import generate_detections as gdet
-
 from yolov5.models.common import DetectMultiBackend
 from yolov5.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams, LoadHikvisionCamera
 from yolov5.utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
 from yolov5.utils.plots import Annotator, colors, save_one_box
 from yolov5.utils.torch_utils import select_device, smart_inference_mode
+# SORT tracker
+from utils.sort_tracker import SORT
+trackers = []
+sort_tracker = SORT(max_lost=5, iou_threshold=0.3)
+trackableObjects = {}
 
-MAX_DETECTION_NUM = 50
-nn_budget = None
-nms_max_overlap = 1.0
-input_size = 416
+########################################
+MAX_DETECTION_NUM = 500
 
-model_filename = 'model_data/mars-small128.pb'
-weights_path = './checkpoints/yolov4-416'
+
 
 class_id_map = {
     'none'  : '0',
@@ -426,7 +407,7 @@ class Model(QObject):
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
-        imgsz=640  # inference size (height, width)
+        imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
         iou_thres=0.4  # NMS IOU threshold
         max_det=1000  # maximum detections per image
@@ -457,18 +438,6 @@ class Model(QObject):
 
         self.stop_inference = False
         self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
-
-        # calculate cosine distance metric
-        metric = nn_matching.NearestNeighborDistanceMetric("cosine", self.max_cosine_distance, nn_budget)
-        # initialize tracker
-        tracker = Tracker(metric)
-
-        # load standard tensorflow saved model for YOLO and Deepsort
-        # load configuration for object detector
-        config = ConfigProto()
-        config.gpu_options.allow_growth = True
-        self.sess = Session(config=config)
-        self.encoder = gdet.create_box_encoder(model_filename, batch_size=1)
 
         # go to first frame
         # self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -501,13 +470,12 @@ class Model(QObject):
                 pred = non_max_suppression(pred, conf_thres, iou_thres, None, agnostic_nms, max_det=max_det)
 
                 bboxes, scores, classes = [], [], []
-
+                allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
                 # print('Predictions', pred)
                 # Process predictions
                 for i, det in enumerate(pred):  # per image
                     seen += 1
                     p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
-                    num_objects = len(det)
 
                     if len(det):
                         # print('Detes', det)
@@ -515,69 +483,28 @@ class Model(QObject):
                         det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
                         # Write results
                         for *xyxy, conf, cls in reversed(det):
-                            scores.append(conf.cpu())
+                            class_indx = int(cls.cpu())
+                            class_name = class_names[class_indx]
+                            if class_name not in allowed_classes:
+                                continue
                             classes.append(cls.cpu())
+                            scores.append(conf.cpu())
                             # print(xyxy)
                             xmin, ymin, xmax, ymax = xyxy
-                            # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
-                            xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
-                            bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
+                            bboxes.append(np.array([xmin.cpu(), ymin.cpu(), xmax.cpu(), ymax.cpu()]))
+                            # # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
+                            # xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
+                            # bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
 
-                allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
-                # print('Allowed classes: ', allowed_classes)
-                # loop through objects and use class index to get class name, allow only classes in allowed_classes list
-                names = []
-                deleted_indx = []
-                # print(' I am here')
-                for i in range(num_objects):
-                    class_indx = int(classes[i])
-                    class_name = class_names[class_indx]
-                    if class_name not in allowed_classes:
-                        deleted_indx.append(i)
-                    else:
-                        names.append(class_name)
-                names = np.array(names)
-
-                # delete detections that are not in allowed_classes
-                bboxes = np.delete(bboxes, deleted_indx, axis=0)
-                scores = np.delete(scores, deleted_indx, axis=0)
-
-                # encode yolo detections and feed to tracker
-                features = self.encoder(original_frame, bboxes)
-                detections = [Detection(bbox, score, class_name, feature) for bbox, score, class_name, feature in zip(bboxes, scores, names, features)]
-
-                # run non-maxima supression
-                boxs = np.array([d.tlwh for d in detections])
-                scores = np.array([d.confidence for d in detections])
-                classes = np.array([d.class_name for d in detections])
-                indices = preprocessing.non_max_suppression(boxs, classes, nms_max_overlap, scores)
-                detections = [detections[i] for i in indices]  
-                
-                # Call the tracker
-                tracker.predict()
-                tracker.update(detections)
-                # print(tracker.tracks)
-
+                objects = sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
                 obj_num = 0
-                # print('befoore track')
-                # update tracks
-                # print('Before tracking')
-                for track in tracker.tracks:
-                    # print('HERE I am ', track.is_confirmed(), track.time_since_update)
-                    if not track.is_confirmed() or track.time_since_update > 1:
-                        continue 
-                    bbox = track.to_tlbr()
-                    class_name = track.get_class()
-
-                    x_min = int(bbox[0])
-                    y_min = int(bbox[1])
-                    x_max = int(bbox[2])
-                    y_max = int(bbox[3])
-                    id = int(track.track_id)
-
-                    # add to hdf buffer
+                for obj in objects:
+                    # print(obj)
+                    objectID = obj[1]
+                    x_min, y_min, x_max, y_max = int(obj[2]), int(obj[3]), int(obj[4]), int(obj[5])
+                    class_name = class_names[int(obj[6])]
                     class_id = self.getClassId(class_name)
-                    frame_data[obj_num] = [class_id, id, x_min, y_min, x_max, y_max]
+                    frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
 
                     # Count vehicles
                     # print('I am in')
@@ -587,9 +514,10 @@ class Model(QObject):
                     # detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
 
                     # draw bbox on screen
-                    original_frame = self.drawBoundingBox(original_frame, class_name, id, x_min, y_min, x_max, y_max)
+                    original_frame = self.drawBoundingBox(original_frame, class_name, objectID, x_min, y_min, x_max, y_max)
                     
                     obj_num = obj_num +  1
+
 
                 # draw cardinal directions
                 for cardinal_direction_positions in self.cardinal_direction_points:
