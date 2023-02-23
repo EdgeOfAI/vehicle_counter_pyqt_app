@@ -24,6 +24,7 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.aboutToQuit.triggered.connect(self.closeEvent)
     
     def closeEvent(self, event):
+        print('Close window pressed')
         self.process_done_signal.emit()
         event.accept()
     

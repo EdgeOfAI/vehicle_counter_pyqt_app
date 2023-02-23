@@ -27,6 +27,10 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def setCamId(self, cam_id):
         self.remove_cam_id = cam_id
     
+    def closeEvent(self, event):
+        self.process_done_signal.emit()
+        event.accept()
+    
     def setCameraComboBox(self):
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()

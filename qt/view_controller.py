@@ -97,6 +97,7 @@ class ViewController(QWidget, Ui_Form):
         self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.remove_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.edit_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
+        self.show_calendar_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.stopProcessBtn.clicked.connect(self.stopProcess)
         # self.drawMaskBtn.clicked.connect(self.drawMask)
         # self.resetMaskBtn.clicked.connect(self.resetMask)
@@ -126,8 +127,9 @@ class ViewController(QWidget, Ui_Form):
     
     def checkboxChanged(self):
         if self.checkBox.isChecked():
-            self.use_video = False
+            self.use_video = True
             self.enableControls(False)
+            self.showDataBtn.setEnabled(True)
             source = os.path.join('./videos', os.listdir('videos')[0])
             f = cv2.VideoCapture(source)
             rval, frame = f.read()
@@ -136,10 +138,13 @@ class ViewController(QWidget, Ui_Form):
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
         else:
-            self.use_video = True
+            self.use_video = False
             self.enableControls(True)
 
     def openShowCalendarWindow(self):
+        self.enableControls(False)
+        self.checkBox.setEnabled(False)
+        self.stopProcessBtn.setEnabled(False)
         self.show_calendar_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.show_calendar_window.show()
 
@@ -149,31 +154,20 @@ class ViewController(QWidget, Ui_Form):
 
     def showPopup(self, message):
         msg = QMessageBox()
-        msg.setWindowTitle('Ogohlantirish!')
+        msg.setWindowTitle('Warning!')
         msg.setText(message)
         msg.setIcon(QMessageBox.Warning)
 
         x = msg.exec_()
     
     def onCamBtnsClosed(self):
-        # self.showPopup(message)
-        self.db_cur.execute(f"SELECT * FROM cameras")
-        cameras = self.db_cur.fetchall()
-        self.enableControls(False)
-        if cameras:
-            first_cam_id = cameras[0][0]
-            self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {first_cam_id}")
-            camera_info = self.db_cur.fetchall()
-            print(camera_info)
-            cardinal_direction_points = [
-                                            [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
-                                            [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
-                                            [[camera_info[0][13], camera_info[0][14]], [camera_info[0][15],camera_info[0][16]]], # west
-                                            [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
-                                        ]
-            self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
-        else:
-            self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
+        self.enableControls(True)
+        self.checkBox.setEnabled(True)
+        self.stopProcessBtn.setEnabled(True)
+        if self.use_video:
+            self.add_cam_window.setEnabled(False)
+            self.edit_camera_window.setEnabled(False)
+            self.remove_camera_window.setEnabled(False)
         
     def openAddCamWindow(self):
         print('Opening camera add window')
@@ -185,6 +179,8 @@ class ViewController(QWidget, Ui_Form):
             return None
         self.add_cam_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.enableControls(False)
+        self.checkBox.setEnabled(False)
+        self.stopProcessBtn.setEnabled(False)
         self.add_cam_window.show()
     
     def openRemoveCamWindow(self):
@@ -200,6 +196,8 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window.setCamId(first_cam_id)
         self.remove_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.enableControls(False)
+        self.checkBox.setEnabled(False)
+        self.stopProcessBtn.setEnabled(False)
         self.remove_camera_window.show()
     
     def openEditCamWindow(self):
@@ -216,6 +214,8 @@ class ViewController(QWidget, Ui_Form):
         self.edit_camera_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.edit_camera_window.setCameraInfos()
         self.enableControls(False)
+        self.checkBox.setEnabled(False)
+        self.stopProcessBtn.setEnabled(False)
         self.edit_camera_window.show()
     
     def updateCameraDropDown(self):
@@ -714,11 +714,15 @@ class ViewController(QWidget, Ui_Form):
         self.db_cur = self.model.db_cur
         self.model.stopInference()
         self.model.stopCountingAnalysis()
+        print('Use video:  ', self.use_video)
+        self.enableControls(True)
         if self.use_video:
-            self.enableControls(False)
+            print('Use video true')
             self.startInferenceBtn.setEnabled(True)
-        else:
-            self.enableControls(True)
+            self.addCamBtn.setEnabled(False)
+            self.removeCameraBtn.setEnabled(False)
+            self.editCameraBtn.setEnabled(False)
+
 
 #================== Masking Functions ======================
 
@@ -799,12 +803,18 @@ class ViewController(QWidget, Ui_Form):
         # print('###########################')
 
     def enableControls(self, state=True):
-        self.mediaGBox.setEnabled(state)
         self.startInferenceBtn.setEnabled(state)
         self.cameraEditBox.setEnabled(state)
-        self.addCamBtn.setEnabled(state)
-        self.editCameraBtn.setEnabled(state)
-        self.removeCameraBtn.setEnabled(state)
+        if not self.use_video:
+            self.addCamBtn.setEnabled(state)
+            self.editCameraBtn.setEnabled(state)
+            self.removeCameraBtn.setEnabled(state)
+            self.mediaGBox.setEnabled(state)
+        else:
+            self.addCamBtn.setEnabled(False)
+            self.editCameraBtn.setEnabled(False)
+            self.removeCameraBtn.setEnabled(False)
+            self.mediaGBox.setEnabled(False)
         self.showDataBtn.setEnabled(state)
 
     def onProcessDone(self):
