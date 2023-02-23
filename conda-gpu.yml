@@ -5,13 +5,10 @@ dependencies:
   - pip
   - matplotlib
   - scipy
-  - cudnn
-  - cudatoolkit==10.1.243
   - pip:
-    - tensorflow-gpu==2.3.0
     - opencv-python
     - PySide2==5.15
-    - numpy>=1.19
+    - numpy==1.21
     - pyqtgraph
     - qtmodern
     - lxml
@@ -20,3 +17,5 @@ dependencies:
     - easydict
     - pillow
     - shapely
+    - h5py
+    - hikvisionapi

@@ -76,6 +76,9 @@ class Model(QObject):
         self.cardinal_direction_points = []
         self.cam_id = 0
         self.counted_ids = []
+        self.save_crops_path = './images'
+        if not Path(self.save_crops_path).exists():
+            os.makedirs(self.save_crops_path)
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
@@ -327,9 +330,9 @@ class Model(QObject):
                             else:
                                 self.cardinal_vehicle_counter[row_id] = 1
                             img = self.getVehicleImage(detection, frame)
-                            exps = os.listdir('./images')
+                            exps = os.listdir(self.save_crops_path)
                             if not self.images_root:
-                                self.images_root = os.path.join('./images', str(len(exps)))
+                                self.images_root = os.path.join(self.save_crops_path, str(len(exps)))
                             if not Path(self.images_root).exists():
                                 os.makedirs(self.images_root)
                             image_path = os.path.join(self.images_root, str(class_id))
