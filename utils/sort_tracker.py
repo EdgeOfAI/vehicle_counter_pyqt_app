@@ -136,6 +136,7 @@ class SORT(CentroidKF_Tracker):
         #         bbox_tracks.append(bb)
 
         track_ids = list(self.tracks.keys())
+        # print('Num of tracks:  ', len(track_ids))
         bbox_tracks = []
         for track_id in track_ids:
             bb = self.tracks[track_id].predict()
@@ -164,7 +165,7 @@ class SORT(CentroidKF_Tracker):
             bbox = bbox_tracks[t, :]
             confidence = self.tracks[track_id].detection_confidence
             cid = self.tracks[track_id].class_id
-            self._update_track(track_id, self.frame_count, bbox, detection_confidence=confidence, class_id=cid, lost=1)
+            self._update_track(track_id, self.frame_count, bbox, detection_confidence=confidence, class_id=cid, lost=self.tracks[track_id].lost+1)
             
             if self.tracks[track_id].lost > self.max_lost:
                 self._remove_track(track_id)
