@@ -1,6 +1,7 @@
 # Shakh)
 import sys
 from PySide2 import QtWidgets
+from PySide2.QtGui import QIcon
 from PySide2.QtCore import Signal
 from qt.EditCameraUI import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
@@ -10,10 +11,11 @@ from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur):
+    def __init__(self, db_conn, db_cur, icon_path):
         super(EditCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
+        self.icon_path = icon_path
         self.aboutToQuit = QAction("Quit", self)
         self.setupUi(self)
         # self.show()
@@ -113,8 +115,9 @@ class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     WHERE id={self.edit_cam_id}""")
 
         msg = QMessageBox()
-        msg.setWindowTitle('Ogohlantirish!')
-        msg.setText(f'{self.edit_cam_id} id ga ega bo\'lgan kamera bazadan o\'zgartirildi')
+        msg.setWindowTitle('Warning!')
+        msg.setWindowIcon(QIcon(self.icon_path))
+        msg.setText(f'Camera with {self.edit_cam_id} id changed on database')
         msg.setIcon(QMessageBox.Information)
 
         x = msg.exec_()

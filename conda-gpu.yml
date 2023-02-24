@@ -18,4 +18,5 @@ dependencies:
     - pillow
     - shapely
     - h5py
-    - hikvisionapi
+    - hikvisionap
+    - xlsxwriter 

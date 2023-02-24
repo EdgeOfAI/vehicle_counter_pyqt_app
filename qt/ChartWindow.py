@@ -60,7 +60,7 @@ class ChartWindow(QMainWindow):
 
 
 class BarChartWindow(QMainWindow):
-    def __init__(self, icon_path, qss_file, window_title, y):
+    def __init__(self, icon_path, qss_file, window_title, y, camera_name):
         super(BarChartWindow, self).__init__()
 
         pg.setConfigOption('background', 'w')
@@ -68,6 +68,7 @@ class BarChartWindow(QMainWindow):
         self.win.setWindowIcon(QIcon(icon_path))
         self.win.setStyleSheet(qss_file)
         self.win.setWindowTitle(window_title)
+        self.win.setTitle(camera_name)
 
         # y = [random.randint(259, 583) for i in range(16)]
         x = ['NN', 'NE', 'NW', 'NS', 'EN', 'EE', 'EW', 'ES', 'WN', 'WE', 'WW', 'WS', 'SN', 'SE', 'SW', 'SS']
@@ -77,6 +78,8 @@ class BarChartWindow(QMainWindow):
         for i, item in enumerate(x):
             ticks.append( (xval[i], item) )
         ticks = [ticks]
+
+        self.win.showGrid(x=True, y=True)
 
         bg1 = pg.BarGraphItem(x=xval, height=y, width=0.6, brush='b')
         self.win.addItem(bg1)

@@ -27,8 +27,8 @@ class ViewController(QWidget, Ui_Form):
         super().__init__()
         self.model = model
         self.setStyleSheet(qss_file)
-        icon_path = 'icon.png'
-        self.setWindowIcon(QIcon(icon_path))
+        self.icon_path = 'icon.png'
+        self.setWindowIcon(QIcon(self.icon_path))
         self.setupUi(self)
         self.inputVideoFile = ''
         self.outputVideoFile = ''
@@ -55,20 +55,20 @@ class ViewController(QWidget, Ui_Form):
         self.use_video = False
         self.is_refresh_clicked = 0
 
-        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur)
-        self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur)
-        self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur)
-        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, icon_path)
+        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path)
+        self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path)
+        self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path)
+        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path)
 
         self.add_cam_window.setStyleSheet(qss_file)
         self.remove_camera_window.setStyleSheet(qss_file)
         self.edit_camera_window.setStyleSheet(qss_file)
         self.show_calendar_window.setStyleSheet(qss_file)
 
-        self.add_cam_window.setWindowIcon(QIcon(icon_path))
-        self.remove_camera_window.setWindowIcon(QIcon(icon_path))
-        self.edit_camera_window.setWindowIcon(QIcon(icon_path))
-        self.show_calendar_window.setWindowIcon(QIcon(icon_path))
+        self.add_cam_window.setWindowIcon(QIcon(self.icon_path))
+        self.remove_camera_window.setWindowIcon(QIcon(self.icon_path))
+        self.edit_camera_window.setWindowIcon(QIcon(self.icon_path))
+        self.show_calendar_window.setWindowIcon(QIcon(self.icon_path))
 
         self.updateCameraDropDown()
         self.setupSignalSlots()
@@ -157,6 +157,7 @@ class ViewController(QWidget, Ui_Form):
     def showPopup(self, message):
         msg = QMessageBox()
         msg.setWindowTitle('Warning!')
+        msg.setWindowIcon(QIcon(self.icon_path))
         msg.setText(message)
         msg.setIcon(QMessageBox.Warning)
 
@@ -174,6 +175,7 @@ class ViewController(QWidget, Ui_Form):
             self.add_cam_window.setEnabled(False)
             self.edit_camera_window.setEnabled(False)
             self.remove_camera_window.setEnabled(False)
+            self.comboBox.setEnabled(False)
         
     def openAddCamWindow(self):
         # print('Opening camera add window')
@@ -181,7 +183,7 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(self.db_cur.fetchall())
         # print(type(num_added_cameras), num_added_cameras)
         if num_added_cameras >= 3:
-            self.showPopup('Kameralar soni 4taga teng. Boshqa kamera qo\'sha olmaysiz')
+            self.showPopup('Number of cameras = 3. You cannot add more!')
             return None
         self.add_cam_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.enableControls(False)
@@ -197,7 +199,7 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(cameras)
         # print(type(num_added_cameras), num_added_cameras)
         if not num_added_cameras:
-            self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
+            self.showPopup('No camera found in database. Please add camera first!')
             return None
         first_cam_id = cameras[0][0]
         self.remove_camera_window.setCamId(first_cam_id)
@@ -214,7 +216,7 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(cameras)
         # print(type(num_added_cameras), num_added_cameras)
         if not num_added_cameras:
-            self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
+            self.showPopup('Camera not found in database. Please add first!')
             return None
         first_cam_id = cameras[0][0]
         self.edit_camera_window.setCamId(first_cam_id)
@@ -811,7 +813,6 @@ class ViewController(QWidget, Ui_Form):
         # print('###########################')
 
     def enableControls(self, state=True):
-        self.comboBox.setEnabled(state)
         self.startInferenceBtn.setEnabled(state)
         # self.cameraEditBox.setEnabled(state)
         self.showDataBtn.setEnabled(state)
@@ -819,11 +820,13 @@ class ViewController(QWidget, Ui_Form):
             self.addCamBtn.setEnabled(state)
             self.editCameraBtn.setEnabled(state)
             self.removeCameraBtn.setEnabled(state)
+            self.comboBox.setEnabled(state)
             # self.mediaGBox.setEnabled(state)
         else:
             self.addCamBtn.setEnabled(False)
             self.editCameraBtn.setEnabled(False)
             self.removeCameraBtn.setEnabled(False)
+            self.comboBox.setEnabled(False)
             # self.mediaGBox.setEnabled(False)
 
     def onProcessDone(self):

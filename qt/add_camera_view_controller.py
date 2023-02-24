@@ -1,6 +1,7 @@
 # Shakh)
 import sys
 from PySide2 import QtWidgets
+from PySide2.QtGui import QIcon
 from PySide2.QtCore import Signal
 from qt.Add_Camera import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
@@ -10,10 +11,11 @@ from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur):
+    def __init__(self, db_conn, db_cur, icon_path):
         super(AddCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
+        self.icon_path = icon_path
         self.aboutToQuit = QAction("Quit", self)
         self.setupUi(self)
 
@@ -72,14 +74,17 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg = QMessageBox()
             msg.setWindowTitle('Information!')
             msg.setText(f'ID={last_id + 1} added to database')
+            msg.setWindowIcon(QIcon(self.icon_path))
             msg.setIcon(QMessageBox.Warning)
 
             x = msg.exec_()
         except Exception as err:
             b = bytes(str(err), encoding = 'utf-8')
             msg = QMessageBox()
+            msg.setWindowIcon(QIcon(self.icon_path))
             msg.setWindowTitle('Error!')
-            msg.setText(str(b, encoding = 'utf-8'))
+            msg.setText(str(b, encoding = 'utf-8')+' but camera added!')
             msg.setIcon(QMessageBox.Warning)
+            x = msg.exec_()
         self.process_done_signal.emit()
         self.hide()

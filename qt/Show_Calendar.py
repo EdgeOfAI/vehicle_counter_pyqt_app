@@ -67,6 +67,16 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addLayout(self.verticalLayout_2)
 
+        self.verticalLayout_3 = QVBoxLayout()
+        self.verticalLayout_3.setObjectName(u"verticalLayout_3")
+        self.downloadExcelDataBtn = QPushButton(self.frame)
+        self.downloadExcelDataBtn.setObjectName(u"downloadExcelDataBtn")
+
+        self.verticalLayout_3.addWidget(self.downloadExcelDataBtn)
+
+
+        self.verticalLayout.addLayout(self.verticalLayout_3)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -86,5 +96,6 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.showDataBtn.setText(QCoreApplication.translate("MainWindow", u"Show Data Hourly", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Show Data Cardinalwise", None))
+        self.downloadExcelDataBtn.setText(QCoreApplication.translate("MainWindow", u"Download Excel Data", None))
     # retranslateUi
 

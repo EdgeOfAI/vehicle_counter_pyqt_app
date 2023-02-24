@@ -1,6 +1,7 @@
 # Shakh)
 import sys
 from PySide2 import QtWidgets
+from PySide2.QtGui import QIcon
 from PySide2.QtCore import Signal
 from qt.RemoveCameraUI import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
@@ -10,10 +11,11 @@ from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur):
+    def __init__(self, db_conn, db_cur, icon_path):
         super(RemoveCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
+        self.icon_path = icon_path
         self.remove_cam_id = -1
         self.aboutToQuit = QAction("Quit", self)
         self.setupUi(self)
@@ -60,8 +62,9 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.db_cur.execute(f"DELETE FROM cameras where id = {self.remove_cam_id}")
 
         msg = QMessageBox()
-        msg.setWindowTitle('Ogohlantirish!')
-        msg.setText(f'{self.remove_cam_id} id ga ega bo\'lgan kamera bazadan o\'chirildi')
+        msg.setWindowTitle('Warning!')
+        msg.setWindowIcon(QIcon(self.icon_path))
+        msg.setText(f'Camera with {self.remove_cam_id} id removed from database')
         msg.setIcon(QMessageBox.Information)
 
         x = msg.exec_()

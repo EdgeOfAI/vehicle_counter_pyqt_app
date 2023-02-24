@@ -104,6 +104,17 @@
        </item>
       </layout>
      </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QPushButton" name="downloadExcelDataBtn">
+         <property name="text">
+          <string>Download Excel Data</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </item>
     </layout>
    </widget>
   </widget>

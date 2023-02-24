@@ -98,7 +98,7 @@ class Ui_Form(object):
         self.horizontalLayout_9.setContentsMargins(-1, -1, 0, -1)
         self.comboBox = QComboBox(self.mediaGBox)
         self.comboBox.setObjectName(u"comboBox")
-        self.comboBox.setEditable(True)
+        self.comboBox.setEditable(False)
 
         self.horizontalLayout_9.addWidget(self.comboBox)
 
