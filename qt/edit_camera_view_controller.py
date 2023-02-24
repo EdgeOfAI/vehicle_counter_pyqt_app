@@ -61,7 +61,7 @@ class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {self.edit_cam_id}")
         camera_info = self.db_cur.fetchall()[0]
         self.db_conn.commit()
-        print('camera info ', camera_info)
+        # print('camera info ', camera_info)
         if camera_info:
             self.inputCamIP.setText(camera_info[1])
             self.inputCamUsername.setText(camera_info[2])

@@ -113,10 +113,10 @@ class ViewController(QWidget, Ui_Form):
 #====================== File Dialog Functions =====================
     def onActivated(self, text):
         cam_id = text.split('.')[0]
-        print(cam_id)
+        # print(cam_id)
         self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
         camera_info = self.db_cur.fetchall()
-        print(camera_info)
+        # print(camera_info)
         cardinal_direction_points = [
                                         [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
                                         [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
@@ -172,10 +172,10 @@ class ViewController(QWidget, Ui_Form):
             self.remove_camera_window.setEnabled(False)
         
     def openAddCamWindow(self):
-        print('Opening camera add window')
+        # print('Opening camera add window')
         self.db_cur.execute(f"SELECT * FROM cameras")
         num_added_cameras = len(self.db_cur.fetchall())
-        print(type(num_added_cameras), num_added_cameras)
+        # print(type(num_added_cameras), num_added_cameras)
         if num_added_cameras >= 3:
             self.showPopup('Kameralar soni 4taga teng. Boshqa kamera qo\'sha olmaysiz')
             return None
@@ -186,11 +186,11 @@ class ViewController(QWidget, Ui_Form):
         self.add_cam_window.show()
     
     def openRemoveCamWindow(self):
-        print('Opening camera remove window')
+        # print('Opening camera remove window')
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()
         num_added_cameras = len(cameras)
-        print(type(num_added_cameras), num_added_cameras)
+        # print(type(num_added_cameras), num_added_cameras)
         if not num_added_cameras:
             self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
             return None
@@ -203,11 +203,11 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window.show()
     
     def openEditCamWindow(self):
-        print('Opening camera Edit window')
+        # print('Opening camera Edit window')
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()
         num_added_cameras = len(cameras)
-        print(type(num_added_cameras), num_added_cameras)
+        # print(type(num_added_cameras), num_added_cameras)
         if not num_added_cameras:
             self.showPopup('Bazada kameralar topilmadi. Iltimos oldin kamera qo\'shing')
             return None
@@ -225,7 +225,7 @@ class ViewController(QWidget, Ui_Form):
         cameras = self.db_cur.fetchall()
         camera_names = [row[4] for row in cameras]
         if not self.is_refresh_clicked and cameras:
-            print('Refresh pressed and camera id set to : ', camera_names[0].split('.')[0])
+            # print('Refresh pressed and camera id set to : ', camera_names[0].split('.')[0])
             cardinal_direction_points = [
                                             [[cameras[0][5], cameras[0][6]], [cameras[0][7], cameras[0][8]]], # north
                                             [[cameras[0][9], cameras[0][10]], [cameras[0][11], cameras[0][12]]], # east
@@ -422,7 +422,7 @@ class ViewController(QWidget, Ui_Form):
         # self.SSbusCount.display(count)
 
         # print('I am in update function')
-        print(class_id, uid, count, row_num, preview_num)
+        # print(class_id, uid, count, row_num, preview_num)
         if row_num == '00':  # NN
             if class_id == 1:
                 self.truckCount.display(count)
@@ -705,7 +705,7 @@ class ViewController(QWidget, Ui_Form):
         self.prepareforAnalysis()
         self.enableControls(False)
         self.showDataBtn.setEnabled(True)
-        print('before inference:  ', self.db_cur)
+        # print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
         self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[1:5]
@@ -717,10 +717,10 @@ class ViewController(QWidget, Ui_Form):
         self.db_cur = self.model.db_cur
         self.model.stopInference()
         self.model.stopCountingAnalysis()
-        print('Use video:  ', self.use_video)
+        # print('Use video:  ', self.use_video)
         self.enableControls(True)
         if self.use_video:
-            print('Use video true')
+            # print('Use video true')
             self.startInferenceBtn.setEnabled(True)
             self.addCamBtn.setEnabled(False)
             self.removeCameraBtn.setEnabled(False)

@@ -258,6 +258,6 @@ def main(opt):
 
 if __name__ == "__main__":
     opt = parse_opt() 
-    print('*(*&(&(*&)(*&)(DF*&S)(D*F)S(D*&F)(S*D&F)(S*D&F)(S*D&')
-    print('OPTS:  ', **vars(opt))
+    # print('*(*&(&(*&)(*&)(DF*&S)(D*F)S(D*&F)(S*D&F)(S*D&F)(S*D&')
+    # print('OPTS:  ', **vars(opt))
     main(opt)

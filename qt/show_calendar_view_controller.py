@@ -22,6 +22,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.icon_path = icon_path
         self.setupUi(self)
         self.setCameraComboBox()
+        self.onSelectionChange()
         self.setupSignalSlots()
     
     def setCamId(self, cam_id):
@@ -55,8 +56,8 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.inputCamPassword.text()
         # self.inputCamDisplayName.text()
         selected_date = self.calendarWidget.selectedDate()
-        print(selected_date)
-        print(dir(selected_date))
+        # print(selected_date)
+        # print(dir(selected_date))
         self.label.setText(str(selected_date.toString()))
 
         # self.process_done_signal.emit()
@@ -100,7 +101,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.bar_chart_window.show()
     
     def showLineChart(self):
-        print('Button clicked')
+        # print('Button clicked')
         cam_name = self.comboBox.currentText()
         cam_id = cam_name.split('.')[0]
         selected_date = self.calendarWidget.selectedDate().toString()
@@ -234,13 +235,13 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         mcycle_hour_23 = len([vehicle for vehicle in vehicles if datetime.datetime.fromisoformat(vehicle[11]).hour == 23 and vehicle[10] == 5])
         # print(times)
         # times = [ for vehicle in vehicles]
-        print(
-            len([car_hour_0,car_hour_1,car_hour_2, car_hour_3, car_hour_4, car_hour_5, car_hour_6, car_hour_7, car_hour_8, car_hour_9, car_hour_10, car_hour_11, car_hour_12, car_hour_13, car_hour_14, car_hour_15, car_hour_16, car_hour_17, car_hour_18, car_hour_19, car_hour_20, car_hour_21, car_hour_22, car_hour_23]),
-            len([truck_hour_0, truck_hour_1, truck_hour_2, truck_hour_3, truck_hour_4, truck_hour_5, truck_hour_6, truck_hour_7, truck_hour_8, truck_hour_9, truck_hour_10, truck_hour_11, truck_hour_12, truck_hour_13, truck_hour_14, truck_hour_15, truck_hour_16, truck_hour_17, truck_hour_18, truck_hour_19, truck_hour_20, truck_hour_21, truck_hour_22, truck_hour_23]),
-            len([bus_hour_0, bus_hour_1, bus_hour_2, bus_hour_3, bus_hour_4, bus_hour_5, bus_hour_6, bus_hour_7, bus_hour_8, bus_hour_9, bus_hour_10, bus_hour_11, bus_hour_12, bus_hour_13, bus_hour_14, bus_hour_15, bus_hour_16, bus_hour_17, bus_hour_18, bus_hour_19, bus_hour_20, bus_hour_21, bus_hour_22, bus_hour_23]),
-            len([bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23]),
-            len([mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23])
-        )
+        # print(
+        #     len([car_hour_0,car_hour_1,car_hour_2, car_hour_3, car_hour_4, car_hour_5, car_hour_6, car_hour_7, car_hour_8, car_hour_9, car_hour_10, car_hour_11, car_hour_12, car_hour_13, car_hour_14, car_hour_15, car_hour_16, car_hour_17, car_hour_18, car_hour_19, car_hour_20, car_hour_21, car_hour_22, car_hour_23]),
+        #     len([truck_hour_0, truck_hour_1, truck_hour_2, truck_hour_3, truck_hour_4, truck_hour_5, truck_hour_6, truck_hour_7, truck_hour_8, truck_hour_9, truck_hour_10, truck_hour_11, truck_hour_12, truck_hour_13, truck_hour_14, truck_hour_15, truck_hour_16, truck_hour_17, truck_hour_18, truck_hour_19, truck_hour_20, truck_hour_21, truck_hour_22, truck_hour_23]),
+        #     len([bus_hour_0, bus_hour_1, bus_hour_2, bus_hour_3, bus_hour_4, bus_hour_5, bus_hour_6, bus_hour_7, bus_hour_8, bus_hour_9, bus_hour_10, bus_hour_11, bus_hour_12, bus_hour_13, bus_hour_14, bus_hour_15, bus_hour_16, bus_hour_17, bus_hour_18, bus_hour_19, bus_hour_20, bus_hour_21, bus_hour_22, bus_hour_23]),
+        #     len([bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23]),
+        #     len([mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23])
+        # )
         self.chart_window = ChartWindow(
                                         cam_name if cam_name else 'No Cam',
                                         [car_hour_0,car_hour_1,car_hour_2, car_hour_3, car_hour_4, car_hour_5, car_hour_6, car_hour_7, car_hour_8, car_hour_9, car_hour_10, car_hour_11, car_hour_12, car_hour_13, car_hour_14, car_hour_15, car_hour_16, car_hour_17, car_hour_18, car_hour_19, car_hour_20, car_hour_21, car_hour_22, car_hour_23],

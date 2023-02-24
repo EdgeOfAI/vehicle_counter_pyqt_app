@@ -24,7 +24,7 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.aboutToQuit.triggered.connect(self.closeEvent)
     
     def closeEvent(self, event):
-        print('Close window pressed')
+        # print('Close window pressed')
         self.process_done_signal.emit()
         event.accept()
     
@@ -39,12 +39,12 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.inputCamDisplayName.text()
         self.db_cur.execute(f"SELECT max(id) FROM cameras")
         last_id = self.db_cur.fetchone()[0]
-        print(type(last_id), last_id)
+        # print(type(last_id), last_id)
         self.db_conn.commit()
         if not last_id:
             last_id = 0
 
-        print('Cam ID:  ', f'{last_id + 1}. {self.inputCamDisplayName.text()}')
+        # print('Cam ID:  ', f'{last_id + 1}. {self.inputCamDisplayName.text()}')
         self.db_cur.execute(f"INSERT INTO cameras VALUES ({last_id + 1}, '{self.inputCamIP.text()}', '{self.inputCamUsername.text()}', '{self.inputCamPassword.text()}', '{last_id + 1}. {self.inputCamDisplayName.text()}', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)")
         self.db_conn.commit()
         self.hide()
