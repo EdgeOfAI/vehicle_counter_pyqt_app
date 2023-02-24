@@ -68,7 +68,7 @@ class Model(QObject):
         self.frame_counter = 0
         self.finishLine = (0,0,0,0)
         self.stop_inference = True
-        self.stop_counting = True
+        self.stop_counting = False
         self.use_video = False
         self.count_method = 0
         self.imgMask = None

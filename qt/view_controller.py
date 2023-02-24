@@ -159,11 +159,13 @@ class ViewController(QWidget, Ui_Form):
         msg.setIcon(QMessageBox.Warning)
 
         x = msg.exec_()
-    
+
     def onCamBtnsClosed(self):
         self.enableControls(True)
         self.checkBox.setEnabled(True)
         self.stopProcessBtn.setEnabled(True)
+        if not self.model.stop_counting:
+            self.startInferenceBtn.setEnabled(False)
         if self.use_video:
             self.add_cam_window.setEnabled(False)
             self.edit_camera_window.setEnabled(False)
@@ -702,6 +704,7 @@ class ViewController(QWidget, Ui_Form):
     def startInference(self):
         self.prepareforAnalysis()
         self.enableControls(False)
+        self.showDataBtn.setEnabled(True)
         print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
@@ -805,6 +808,7 @@ class ViewController(QWidget, Ui_Form):
     def enableControls(self, state=True):
         self.startInferenceBtn.setEnabled(state)
         self.cameraEditBox.setEnabled(state)
+        self.showDataBtn.setEnabled(state)
         if not self.use_video:
             self.addCamBtn.setEnabled(state)
             self.editCameraBtn.setEnabled(state)
@@ -815,7 +819,6 @@ class ViewController(QWidget, Ui_Form):
             self.editCameraBtn.setEnabled(False)
             self.removeCameraBtn.setEnabled(False)
             self.mediaGBox.setEnabled(False)
-        self.showDataBtn.setEnabled(state)
 
     def onProcessDone(self):
         self.enableControls(True)
