@@ -439,7 +439,7 @@ class Model(QObject):
             dataset = LoadImages(source, imgsz, stride, pt)
             print('FPS:  ', dataset.fps)
             self.time_now = datetime.datetime.now()
-            self.add_time = datetime.timedelta(seconds=1/25)
+            self.add_time = datetime.timedelta(seconds=1/dataset.fps)
         else:
             dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
         # print('Dataset initializded')
