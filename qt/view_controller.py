@@ -69,6 +69,8 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window.setWindowIcon(QIcon(icon_path))
         self.edit_camera_window.setWindowIcon(QIcon(icon_path))
         self.show_calendar_window.setWindowIcon(QIcon(icon_path))
+
+        self.updateCameraDropDown()
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
@@ -83,7 +85,7 @@ class ViewController(QWidget, Ui_Form):
         self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
         self.showDataBtn.clicked.connect(self.openShowCalendarWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
-        self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
+        # self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
         self.comboBox.activated[str].connect(self.onActivated)
         # self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
         # self.loadCacheBtn.clicked.connect(self.openCacheFile)
@@ -161,10 +163,12 @@ class ViewController(QWidget, Ui_Form):
         x = msg.exec_()
 
     def onCamBtnsClosed(self):
+        self.updateCameraDropDown()
         self.enableControls(True)
         self.checkBox.setEnabled(True)
         self.stopProcessBtn.setEnabled(True)
-        if not self.model.stop_counting:
+        print('Stop counting', self.model.stop_counting)
+        if self.model.stop_counting:
             self.startInferenceBtn.setEnabled(False)
         if self.use_video:
             self.add_cam_window.setEnabled(False)
@@ -183,6 +187,7 @@ class ViewController(QWidget, Ui_Form):
         self.enableControls(False)
         self.checkBox.setEnabled(False)
         self.stopProcessBtn.setEnabled(False)
+        self.add_cam_window.clearInputs()
         self.add_cam_window.show()
     
     def openRemoveCamWindow(self):
@@ -219,7 +224,7 @@ class ViewController(QWidget, Ui_Form):
         self.checkBox.setEnabled(False)
         self.stopProcessBtn.setEnabled(False)
         self.edit_camera_window.show()
-    
+
     def updateCameraDropDown(self):
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()
@@ -806,19 +811,20 @@ class ViewController(QWidget, Ui_Form):
         # print('###########################')
 
     def enableControls(self, state=True):
+        self.comboBox.setEnabled(state)
         self.startInferenceBtn.setEnabled(state)
-        self.cameraEditBox.setEnabled(state)
+        # self.cameraEditBox.setEnabled(state)
         self.showDataBtn.setEnabled(state)
         if not self.use_video:
             self.addCamBtn.setEnabled(state)
             self.editCameraBtn.setEnabled(state)
             self.removeCameraBtn.setEnabled(state)
-            self.mediaGBox.setEnabled(state)
+            # self.mediaGBox.setEnabled(state)
         else:
             self.addCamBtn.setEnabled(False)
             self.editCameraBtn.setEnabled(False)
             self.removeCameraBtn.setEnabled(False)
-            self.mediaGBox.setEnabled(False)
+            # self.mediaGBox.setEnabled(False)
 
     def onProcessDone(self):
         self.enableControls(True)

@@ -103,38 +103,29 @@ class Ui_Form(object):
         self.horizontalLayout_9.addWidget(self.comboBox)
 
 
-        self.gridLayout_2.addLayout(self.horizontalLayout_9, 0, 2, 1, 1)
+        self.gridLayout_2.addLayout(self.horizontalLayout_9, 0, 1, 1, 1)
 
-        self.label_5 = QLabel(self.mediaGBox)
-        self.label_5.setObjectName(u"label_5")
+        self.stopProcessBtn = QPushButton(self.mediaGBox)
+        self.stopProcessBtn.setObjectName(u"stopProcessBtn")
 
-        self.gridLayout_2.addWidget(self.label_5, 0, 0, 1, 1)
+        self.gridLayout_2.addWidget(self.stopProcessBtn, 0, 5, 1, 1)
 
-        self.refreshCamerasBtn = QPushButton(self.mediaGBox)
-        self.refreshCamerasBtn.setObjectName(u"refreshCamerasBtn")
+        self.startInferenceBtn = QPushButton(self.mediaGBox)
+        self.startInferenceBtn.setObjectName(u"startInferenceBtn")
 
-        self.gridLayout_2.addWidget(self.refreshCamerasBtn, 0, 3, 1, 1)
+        self.gridLayout_2.addWidget(self.startInferenceBtn, 0, 4, 1, 1)
+
+        self.checkBox = QCheckBox(self.mediaGBox)
+        self.checkBox.setObjectName(u"checkBox")
+        self.checkBox.setMaximumSize(QSize(80, 16777215))
+
+        self.gridLayout_2.addWidget(self.checkBox, 0, 3, 1, 1)
 
 
         self.horizontalLayout_2.addWidget(self.mediaGBox)
 
 
         self.verticalLayout_2.addLayout(self.horizontalLayout_2)
-
-        self.checkBox = QCheckBox(Form)
-        self.checkBox.setObjectName(u"checkBox")
-
-        self.verticalLayout_2.addWidget(self.checkBox)
-
-        self.startInferenceBtn = QPushButton(Form)
-        self.startInferenceBtn.setObjectName(u"startInferenceBtn")
-
-        self.verticalLayout_2.addWidget(self.startInferenceBtn)
-
-        self.stopProcessBtn = QPushButton(Form)
-        self.stopProcessBtn.setObjectName(u"stopProcessBtn")
-
-        self.verticalLayout_2.addWidget(self.stopProcessBtn)
 
         self.verticalLayout_2.setStretch(2, 1)
 
@@ -982,11 +973,9 @@ class Ui_Form(object):
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")
         self.comboBox.setCurrentText("")
-        self.label_5.setText(QCoreApplication.translate("Form", u"IP", None))
-        self.refreshCamerasBtn.setText(QCoreApplication.translate("Form", u"Refresh", None))
-        self.checkBox.setText(QCoreApplication.translate("Form", u"Use Video", None))
-        self.startInferenceBtn.setText(QCoreApplication.translate("Form", u"START", None))
         self.stopProcessBtn.setText(QCoreApplication.translate("Form", u"STOP", None))
+        self.startInferenceBtn.setText(QCoreApplication.translate("Form", u"START", None))
+        self.checkBox.setText(QCoreApplication.translate("Form", u"Use Video", None))
         self.label_8.setText(QCoreApplication.translate("Form", u"NN", None))
         self.label_2.setText(QCoreApplication.translate("Form", u"Cars", None))
         self.label.setText(QCoreApplication.translate("Form", u"Trucks", None))
