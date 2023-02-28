@@ -1,15 +1,13 @@
 
 from typing import Tuple
-from PySide2.QtCore import QPoint, QUrl, Signal, Slot
+from PySide2.QtCore import QPoint, Signal, Slot
 # from PyQt5 import QtCore, QtGui, QtWidgets
-from PySide2.QtWidgets import QFileDialog, QMessageBox, QErrorMessage, QWidget, QMainWindow
+from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 from PySide2.QtGui import QImage, QPixmap, Qt, QIcon
 from qt.Ui_Form import Ui_Form
 import numpy as np
 import cv2, os, math
 import pyqtgraph as pg
-
-from model import Model
 
 from DrawLineWidget import DrawLineWidget
 from qt.add_camera_view_controller import AddCameraWindow

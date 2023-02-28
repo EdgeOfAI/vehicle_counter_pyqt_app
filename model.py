@@ -8,7 +8,6 @@ from DrawLineWidget import DrawLineWidget
 
 from typing import Dict
 from shapely.geometry import Polygon
-from pointcheck import is_inside_polygons, is_inside_polygon
 from PySide2.QtCore import Signal, Slot, QObject, QTimer
 import cv2, h5py, math
 import numpy as np
@@ -16,9 +15,8 @@ import matplotlib.pyplot as plt
 
 from yolov5.models.common import DetectMultiBackend
 from yolov5.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadScreenshots, LoadStreams, LoadHikvisionCamera
-from yolov5.utils.general import (LOGGER, Profile, check_file, check_img_size, check_imshow, check_requirements, colorstr, cv2,
+from yolov5.utils.general import (LOGGER, Profile, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
-from yolov5.utils.plots import Annotator, colors, save_one_box
 from yolov5.utils.torch_utils import select_device, smart_inference_mode
 # SORT tracker
 from utils.sort_tracker import SORT

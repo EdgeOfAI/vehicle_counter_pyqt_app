@@ -1,4 +1,4 @@
-name: traffic_counter
+name: counter
 
 dependencies:
   - python==3.8.5
@@ -18,5 +18,5 @@ dependencies:
     - pillow
     - shapely
     - h5py
-    - hikvisionap
+    - hikvisionapi
     - xlsxwriter 
