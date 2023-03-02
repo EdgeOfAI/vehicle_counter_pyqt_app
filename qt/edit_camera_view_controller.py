@@ -2,20 +2,21 @@
 import sys
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
-from PySide2.QtCore import Signal
 from qt.EditCameraUI import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
+from PySide2.QtCore import Signal, QCoreApplication
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
 class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur, icon_path):
+    def __init__(self, db_conn, db_cur, icon_path, text_translator):
         super(EditCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.icon_path = icon_path
+        self.text_translator = text_translator
         self.aboutToQuit = QAction("Quit", self)
         self.setupUi(self)
         # self.show()
@@ -124,3 +125,27 @@ class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         self.process_done_signal.emit()
         self.hide()
+    
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Edit Camera", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Camera IP", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Username", None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Password", None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Display name", None))
+        self.label_6.setText(QCoreApplication.translate("MainWindow", u"Nx1", None))
+        self.label_8.setText(QCoreApplication.translate("MainWindow", u"Ny1", None))
+        self.label_9.setText(QCoreApplication.translate("MainWindow", u"Nx2", None))
+        self.label_11.setText(QCoreApplication.translate("MainWindow", u"Ny2", None))
+        self.label_10.setText(QCoreApplication.translate("MainWindow", u"Wx1", None))
+        self.label_12.setText(QCoreApplication.translate("MainWindow", u"Wy1", None))
+        self.label_13.setText(QCoreApplication.translate("MainWindow", u"Wx2", None))
+        self.label_7.setText(QCoreApplication.translate("MainWindow", u"Wy2", None))
+        self.label_14.setText(QCoreApplication.translate("MainWindow", u"Ex1", None))
+        self.label_15.setText(QCoreApplication.translate("MainWindow", u"Ey1", None))
+        self.label_16.setText(QCoreApplication.translate("MainWindow", u"Ex2", None))
+        self.label_17.setText(QCoreApplication.translate("MainWindow", u"Ey2", None))
+        self.label_18.setText(QCoreApplication.translate("MainWindow", u"Sx1", None))
+        self.label_19.setText(QCoreApplication.translate("MainWindow", u"Sy1", None))
+        self.label_20.setText(QCoreApplication.translate("MainWindow", u"Sx2", None))
+        self.label_21.setText(QCoreApplication.translate("MainWindow", u"Sy2", None))
+        self.editCamBtn.setText(QCoreApplication.translate("MainWindow", u"Edit Info", None))

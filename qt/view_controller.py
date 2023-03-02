@@ -1,6 +1,6 @@
 
 from typing import Tuple
-from PySide2.QtCore import QPoint, Signal, Slot
+from PySide2.QtCore import QPoint, Signal, Slot, QCoreApplication
 # from PyQt5 import QtCore, QtGui, QtWidgets
 from PySide2.QtWidgets import QFileDialog, QMessageBox, QWidget
 from PySide2.QtGui import QImage, QPixmap, Qt, QIcon
@@ -21,9 +21,10 @@ class ViewController(QWidget, Ui_Form):
     startCountingSignal = Signal()
     startCountingAnalysisSignal = Signal()
 
-    def __init__(self, model, conn, cur, qss_file):
+    def __init__(self, model, conn, cur, qss_file, text_translator):
         super().__init__()
         self.model = model
+        self.text_translator = text_translator
         self.setStyleSheet(qss_file)
         self.icon_path = 'icon.png'
         self.setWindowIcon(QIcon(self.icon_path))
@@ -33,8 +34,6 @@ class ViewController(QWidget, Ui_Form):
         self.outputDataFile = ''
         self.cacheDataFile = ''
         self.maskFile = ''
-        # self.carPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID']) # Shakh
-        # self.truckPreviewTable.setHorizontalHeaderLabels(['Preview', 'ID'])
         self.frameView.ui.histogram.hide()
         self.frameView.ui.roiBtn.hide()
         self.frameView.ui.menuBtn.hide()
@@ -45,7 +44,6 @@ class ViewController(QWidget, Ui_Form):
         self.visualizeMarkerEnd = QPoint(500,500)
         self.visualizeMarker = pg.LineROI(self.visualizeMarkerStart, self.visualizeMarkerEnd, 50)
         self.finishLine = pg.RectROI((200,200), (200,200), rotatable=True, resizable=True)
-        # self.CARDINAL_SIDES = ['North', 'East', 'West', 'South']
 
         # sqlite3 db files
         self.db_conn = conn
@@ -53,7 +51,7 @@ class ViewController(QWidget, Ui_Form):
         self.use_video = False
         self.is_refresh_clicked = 0
 
-        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path)
+        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path)
         self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path)
@@ -72,25 +70,15 @@ class ViewController(QWidget, Ui_Form):
         self.setupSignalSlots()
 
     def setupSignalSlots(self):
-        # self.loadVideoBtn.clicked.connect(self.openVideoFile)
-
-        # self.setOutputFileBtn.clicked.connect(self.getOutputFileName)
         self.startInferenceBtn.clicked.connect(self.startInference)
         self.startInferenceSignal.connect(self.model.startInference)
-        # self.updateDbSignal.connect(self.update_db)
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.editCameraBtn.clicked.connect(self.openEditCamWindow)
         self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
         self.showDataBtn.clicked.connect(self.openShowCalendarWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
-        # self.refreshCamerasBtn.clicked.connect(self.updateCameraDropDown)
         self.comboBox.activated[str].connect(self.onActivated)
-        # self.model.max_frame_update_signal.connect(self.updateMaxFrameNum)
-        # self.loadCacheBtn.clicked.connect(self.openCacheFile)
-        # self.countBtn.clicked.connect(self.startCounting)
-        # self.startCountingSignal.connect(self.model.startCounting)
-        # self.countAnalyzeBtn.clicked.connect(self.startCountingAnalysis)
-        # self.startCountingAnalysisSignal.connect(self.model.startCountingAnalysis)
+        self.languageChooser.activated[str].connect(self.onLanguageChange)
         self.checkBox.stateChanged.connect(self.checkboxChanged)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
         self.model.process_done_signal.connect(self.onProcessDone)
@@ -99,16 +87,6 @@ class ViewController(QWidget, Ui_Form):
         self.edit_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.show_calendar_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.stopProcessBtn.clicked.connect(self.stopProcess)
-        # self.drawMaskBtn.clicked.connect(self.drawMask)
-        # self.resetMaskBtn.clicked.connect(self.resetMask)
-        # self.setMaskFileBtn.clicked.connect(self.openMaskFile)
-        # self.saveMaskBtn.clicked.connect(self.saveMask)
-
-        # self.yFilterVectorSpn.valueChanged.connect(self.updateVectorDirectionLabel)
-        # self.countMethodCmb.currentIndexChanged.connect(self.countingMethodSwitcher.setCurrentIndex)
-        # self.frameSlider.valueChanged.connect(self.model.previewFrame)
-        # self.visualizeChk.toggled.connect(self.visualizeCountingParam)
-        # self.finishLineChk.toggled.connect(self.showFinishLine)
 
 #====================== File Dialog Functions =====================
     def onActivated(self, text):
@@ -124,6 +102,15 @@ class ViewController(QWidget, Ui_Form):
                                         [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
                                     ]
         self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
+    
+    def onLanguageChange(self, text):
+        if text == 'English':
+            self.text_translator.translateToEnglish()
+        elif text == "O'zbek":
+            self.text_translator.translateToUzbek()
+        self.retranslateUi(self)
+        self.add_cam_window.setTextTranslator(self.text_translator)
+        self.add_cam_window.retranslateUi(self.add_cam_window)
     
     def checkboxChanged(self):
         if self.checkBox.isChecked():
@@ -849,3 +836,63 @@ class ViewController(QWidget, Ui_Form):
         p = convert_to_Qt_format.scaled(width, height, Qt.KeepAspectRatio)
         return QPixmap.fromImage(p)
 
+    def retranslateUi(self, Form):
+        Form.setWindowTitle(QCoreApplication.translate("Form", u"Traffic Vehicle Counter", None))
+        self.languageChooser.setItemText(0, QCoreApplication.translate("Form", u"English", None))
+        self.languageChooser.setItemText(1, QCoreApplication.translate("Form", u"O'zbek", None))
+
+        self.addCamBtn.setText(QCoreApplication.translate("Form", self.text_translator.add_camera_btn, None))
+        self.editCameraBtn.setText(QCoreApplication.translate("Form", self.text_translator.edit_camera_btn, None))
+        self.removeCameraBtn.setText(QCoreApplication.translate("Form", self.text_translator.remove_camera_btn, None))
+        self.showDataBtn.setText(QCoreApplication.translate("Form", self.text_translator.show_data_btn, None))
+        self.videoSwitcher.setTitle("")
+        self.mediaGBox.setTitle("")
+        self.comboBox.setCurrentText("")
+        self.stopProcessBtn.setText(QCoreApplication.translate("Form", self.text_translator.stop_process_btn, None))
+        self.startInferenceBtn.setText(QCoreApplication.translate("Form", self.text_translator.start_inference_btn, None))
+        self.checkBox.setText(QCoreApplication.translate("Form", self.text_translator.use_video_checkbox, None))
+        self.label_39.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+        self.label_42.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.label_53.setText(QCoreApplication.translate("Form", self.text_translator.b_out, None))
+        self.label_52.setText(QCoreApplication.translate("Form", self.text_translator.c_out, None))
+        self.label_48.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.label_55.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
+        self.label_9.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.label_2.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.carTab), QCoreApplication.translate("Form", self.text_translator.cars, None))
+        self.label_30.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.label_31.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+        self.label_23.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.label_32.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.label_4.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
+        self.label_24.setText(QCoreApplication.translate("Form", self.text_translator.b_out, None))
+        self.label_25.setText(QCoreApplication.translate("Form", self.text_translator.c_out, None))
+        self.label_11.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.busTab), QCoreApplication.translate("Form", self.text_translator.buses, None))
+        self.label_28.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.label_29.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+        self.label_27.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.label_8.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.label_21.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.label_22.setText(QCoreApplication.translate("Form", self.text_translator.b_out, None))
+        self.label_20.setText(QCoreApplication.translate("Form", self.text_translator.c_out, None))
+        self.label_3.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.bicycleTab), QCoreApplication.translate("Form", self.text_translator.bicycles, None))
+        self.label_33.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.label_34.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+        self.label_35.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.label_12.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.label_26.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.label_36.setText(QCoreApplication.translate("Form", self.text_translator.b_out, None))
+        self.label_37.setText(QCoreApplication.translate("Form", self.text_translator.c_out, None))
+        self.label_6.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.mcycleTab), QCoreApplication.translate("Form", self.text_translator.motorcycles, None))
+        self.label_49.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.label_38.setText(QCoreApplication.translate("Form", self.text_translator.c_out, None))
+        self.label_43.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
+        self.label_10.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.label_40.setText(QCoreApplication.translate("Form", self.text_translator.b_out, None))
+        self.label_46.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.label_47.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+        self.label_5.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.truckTab), QCoreApplication.translate("Form", self.text_translator.trucks, None))

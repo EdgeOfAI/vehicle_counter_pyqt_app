@@ -2,7 +2,7 @@
 import sys
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
-from PySide2.QtCore import Signal
+from PySide2.QtCore import Signal, QCoreApplication
 from qt.Add_Camera import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
@@ -11,15 +11,19 @@ from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur, icon_path):
+    def __init__(self, db_conn, db_cur, icon_path, text_translator):
         super(AddCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.icon_path = icon_path
         self.aboutToQuit = QAction("Quit", self)
+        self.text_translator = text_translator
         self.setupUi(self)
 
         self.setupSignalSlots()
+    
+    def setTextTranslator(self, text_translator):
+        self.text_translator = text_translator
     
     def setupSignalSlots(self):
         self.addCamBtn.clicked.connect(self.add_cam)
@@ -88,3 +92,11 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             x = msg.exec_()
         self.process_done_signal.emit()
         self.hide()
+
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_title, None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_ip, None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_username, None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_password, None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_display_name, None))
+        self.addCamBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_add_cam_btn, None))

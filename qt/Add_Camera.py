@@ -126,11 +126,11 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Add Camera", None))
-        self.label_2.setText(QCoreApplication.translate("MainWindow", u"Camera IP", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"Username", None))
-        self.label_4.setText(QCoreApplication.translate("MainWindow", u"Password", None))
-        self.label_5.setText(QCoreApplication.translate("MainWindow", u"Display name", None))
-        self.addCamBtn.setText(QCoreApplication.translate("MainWindow", u"Add Camera", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_title, None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_ip, None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_username, None))
+        self.label_4.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_password, None))
+        self.label_5.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_cam_display_name, None))
+        self.addCamBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_add_cam_btn, None))
     # retranslateUi
 
