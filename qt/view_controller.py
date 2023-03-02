@@ -52,9 +52,9 @@ class ViewController(QWidget, Ui_Form):
         self.is_refresh_clicked = 0
 
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
-        self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path)
-        self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path)
-        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path)
+        self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
+        self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
+        self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path, self.text_translator)
 
         self.add_cam_window.setStyleSheet(qss_file)
         self.remove_camera_window.setStyleSheet(qss_file)
@@ -111,6 +111,12 @@ class ViewController(QWidget, Ui_Form):
         self.retranslateUi(self)
         self.add_cam_window.setTextTranslator(self.text_translator)
         self.add_cam_window.retranslateUi(self.add_cam_window)
+        self.edit_camera_window.setTextTranslator(self.text_translator)
+        self.edit_camera_window.retranslateUi(self.add_cam_window)
+        self.remove_camera_window.setTextTranslator(self.text_translator)
+        self.remove_camera_window.retranslateUi(self.add_cam_window)
+        self.show_calendar_window.setTextTranslator(self.text_translator)
+        self.show_calendar_window.retranslateUi(self.add_cam_window)
     
     def checkboxChanged(self):
         if self.checkBox.isChecked():
@@ -153,7 +159,6 @@ class ViewController(QWidget, Ui_Form):
         self.enableControls(True)
         self.checkBox.setEnabled(True)
         self.stopProcessBtn.setEnabled(True)
-        print('Stop counting', self.model.stop_counting)
         if self.model.stop_counting:
             self.startInferenceBtn.setEnabled(False)
         if self.use_video:
@@ -168,7 +173,7 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(self.db_cur.fetchall())
         # print(type(num_added_cameras), num_added_cameras)
         if num_added_cameras >= 3:
-            self.showPopup('Number of cameras = 3. You cannot add more!')
+            self.showPopup(self.text_translator.num_cameras_exceeded)
             return None
         self.add_cam_window.set_db_conn_cur(self.db_conn, self.db_cur)
         self.enableControls(False)
@@ -184,7 +189,7 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(cameras)
         # print(type(num_added_cameras), num_added_cameras)
         if not num_added_cameras:
-            self.showPopup('No camera found in database. Please add camera first!')
+            self.showPopup(self.text_translator.no_cameras_found_error)
             return None
         first_cam_id = cameras[0][0]
         self.remove_camera_window.setCamId(first_cam_id)
@@ -201,7 +206,7 @@ class ViewController(QWidget, Ui_Form):
         num_added_cameras = len(cameras)
         # print(type(num_added_cameras), num_added_cameras)
         if not num_added_cameras:
-            self.showPopup('Camera not found in database. Please add first!')
+            self.showPopup(self.text_translator.no_cameras_found_error)
             return None
         first_cam_id = cameras[0][0]
         self.edit_camera_window.setCamId(first_cam_id)
@@ -837,7 +842,7 @@ class ViewController(QWidget, Ui_Form):
         return QPixmap.fromImage(p)
 
     def retranslateUi(self, Form):
-        Form.setWindowTitle(QCoreApplication.translate("Form", u"Traffic Vehicle Counter", None))
+        Form.setWindowTitle(QCoreApplication.translate("Form", self.text_translator.main_window_title, None))
         self.languageChooser.setItemText(0, QCoreApplication.translate("Form", u"English", None))
         self.languageChooser.setItemText(1, QCoreApplication.translate("Form", u"O'zbek", None))
 

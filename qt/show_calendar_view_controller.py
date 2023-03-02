@@ -4,19 +4,20 @@ import xlsxwriter
 from pathlib import Path
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
-from PySide2.QtCore import Signal
 from qt.Show_Calendar import Ui_MainWindow
+from PySide2.QtCore import Signal, QCoreApplication
 from qt.ChartWindow import ChartWindow, BarChartWindow
 
 
 class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur, qss_file, icon_path):
+    def __init__(self, db_conn, db_cur, qss_file, icon_path, text_translator):
         super(ShowCalendarWindow, self).__init__()
         self.qss_file = qss_file
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.icon_path = icon_path
+        self.text_translator = text_translator
         self.setupUi(self)
         self.setCameraComboBox()
         self.onSelectionChange()
@@ -24,6 +25,9 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def setCamId(self, cam_id):
         self.remove_cam_id = cam_id
+    
+    def setTextTranslator(self, text_translator):
+        self.text_translator = text_translator
     
     def closeEvent(self, event):
         self.process_done_signal.emit()
@@ -61,10 +65,17 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.inputCamUsername.text()
         # self.inputCamPassword.text()
         # self.inputCamDisplayName.text()
-        selected_date = self.calendarWidget.selectedDate()
+        selected_date = str(self.calendarWidget.selectedDate().toString())
+        week_day, month, day, year = selected_date.split(' ')[0], selected_date.split(' ')[1], selected_date.split(' ')[2], selected_date.split(' ')[3]      
+        if self.text_translator.lang == 'uz':
+            week_day = self.text_translator.week_days[week_day]
+            month = self.text_translator.months[month]
+        
+        selected_date = f'{week_day} {month} {day} {year}'
         # print(selected_date)
         # print(dir(selected_date))
-        self.label.setText(str(selected_date.toString()))
+        # print(month)
+        self.label.setText(selected_date)
 
         # self.process_done_signal.emit()
         # self.hide()
@@ -104,7 +115,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 cardinal_worksheet.write(4, i, bicycle_data, cf if bicycle_data else workbook.add_format())
                 cardinal_worksheet.write(5, i, mcycle_data, cf if mcycle_data else workbook.add_format())
                 cardinal_worksheet.write(6, i, total, cf if total else workbook.add_format())
-        self.showPopup(f'{excel_file_name} data written!')
+        self.showPopup(f'{excel_file_name} '+self.text_translator.excel_data_written_success)
         workbook.close()
     
     def get_cardinalwise_data(self, get_all_data=False):
@@ -394,3 +405,18 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.chart_window.setStyleSheet(self.qss_file)
         self.chart_window.setWindowTitle("Daily and Hourly data | Line Chart")
         self.chart_window.show()
+
+    def retranslateUi(self, MainWindow):
+        selected_date = str(self.calendarWidget.selectedDate().toString())
+        week_day, month, day, year = selected_date.split(' ')[0], selected_date.split(' ')[1], selected_date.split(' ')[2], selected_date.split(' ')[3]      
+        if self.text_translator.lang == 'uz':
+            week_day = self.text_translator.week_days[week_day]
+            month = self.text_translator.months[month]
+        
+        selected_date = f'{week_day} {month} {day} {year}'
+
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_title, None))
+        self.label.setText(QCoreApplication.translate("MainWindow", selected_date, None))
+        self.showDataBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_show_data_hourly, None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_show_data_cardinalwise, None))
+        self.downloadExcelDataBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_download_excel_data, None))

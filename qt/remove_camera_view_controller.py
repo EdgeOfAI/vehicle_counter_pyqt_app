@@ -2,22 +2,23 @@
 import sys
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
-from PySide2.QtCore import Signal
 from qt.RemoveCameraUI import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
+from PySide2.QtCore import Signal, QCoreApplication
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
 class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur, icon_path):
+    def __init__(self, db_conn, db_cur, icon_path, text_translator):
         super(RemoveCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.icon_path = icon_path
         self.remove_cam_id = -1
         self.aboutToQuit = QAction("Quit", self)
+        self.text_translator = text_translator
         self.setupUi(self)
         # self.show()
         self.db_cur.execute(f"SELECT * FROM cameras")
@@ -30,6 +31,9 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def setCamId(self, cam_id):
         self.remove_cam_id = cam_id
+    
+    def setTextTranslator(self, text_translator):
+        self.text_translator = text_translator
     
     def closeEvent(self, event):
         self.process_done_signal.emit()
@@ -64,10 +68,15 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         msg = QMessageBox()
         msg.setWindowTitle('Warning!')
         msg.setWindowIcon(QIcon(self.icon_path))
-        msg.setText(f'Camera with {self.remove_cam_id} id removed from database')
+        msg.setText(f'ID = {self.remove_cam_id} '+self.text_translator.remove_camera_popup_success)
         msg.setIcon(QMessageBox.Information)
 
         x = msg.exec_()
 
         self.process_done_signal.emit()
         self.hide()
+    
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", self.text_translator.remove_camera_window_title, None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", self.text_translator.remove_camera_window_camera_names, None))
+        self.addCamBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.remove_camera_window_remove_camera, None))

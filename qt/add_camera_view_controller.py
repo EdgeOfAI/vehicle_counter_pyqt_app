@@ -76,8 +76,8 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             self.cardinal_direction_points = self.draw_line_widget.list_coordinates
 
             msg = QMessageBox()
-            msg.setWindowTitle('Information!')
-            msg.setText(f'ID={last_id + 1} added to database')
+            msg.setWindowTitle(self.text_translator.information)
+            msg.setText(f'ID={last_id + 1} '+self.text_translator.add_camera_popup_success)
             msg.setWindowIcon(QIcon(self.icon_path))
             msg.setIcon(QMessageBox.Warning)
 
@@ -87,7 +87,7 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg = QMessageBox()
             msg.setWindowIcon(QIcon(self.icon_path))
             msg.setWindowTitle('Error!')
-            msg.setText(str(b, encoding = 'utf-8')+' but camera added!')
+            msg.setText(str(b, encoding = 'utf-8')+self.text_translator.add_camera_popup_error)
             msg.setIcon(QMessageBox.Warning)
             x = msg.exec_()
         self.process_done_signal.emit()
