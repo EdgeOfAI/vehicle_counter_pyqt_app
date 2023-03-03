@@ -21,7 +21,7 @@ from yolov5.utils.torch_utils import select_device, smart_inference_mode
 # SORT tracker
 from utils.sort_tracker import SORT
 trackers = []
-sort_tracker = SORT(max_lost=5, iou_threshold=0.3)
+sort_tracker = SORT(max_lost=25, iou_threshold=0.3)
 trackableObjects = {}
 
 ########################################

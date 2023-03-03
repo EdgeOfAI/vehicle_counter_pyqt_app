@@ -765,71 +765,20 @@ class Ui_Form(object):
         self.widget_6.setEnabled(True)
         self.gridLayout_6 = QGridLayout(self.widget_6)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-        self.label_33 = QLabel(self.widget_6)
-        self.label_33.setObjectName(u"label_33")
+        self.label_6 = QLabel(self.widget_6)
+        self.label_6.setObjectName(u"label_6")
+        self.label_6.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.gridLayout_6.addWidget(self.label_33, 8, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.label_6, 0, 5, 1, 1)
 
-        self.WNmcycleCount = QLCDNumber(self.widget_6)
-        self.WNmcycleCount.setObjectName(u"WNmcycleCount")
-        self.WNmcycleCount.setLineWidth(0)
-        self.WNmcycleCount.setDigitCount(10)
-        self.WNmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+        self.NEmcycleCount = QLCDNumber(self.widget_6)
+        self.NEmcycleCount.setObjectName(u"NEmcycleCount")
+        self.NEmcycleCount.setFrameShadow(QFrame.Raised)
+        self.NEmcycleCount.setLineWidth(0)
+        self.NEmcycleCount.setDigitCount(10)
+        self.NEmcycleCount.setSegmentStyle(QLCDNumber.Flat)
 
-        self.gridLayout_6.addWidget(self.WNmcycleCount, 8, 1, 1, 1)
-
-        self.WWmcycleCount = QLCDNumber(self.widget_6)
-        self.WWmcycleCount.setObjectName(u"WWmcycleCount")
-        self.WWmcycleCount.setLineWidth(0)
-        self.WWmcycleCount.setDigitCount(10)
-        self.WWmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.WWmcycleCount, 8, 4, 1, 1)
-
-        self.WSmcycleCount = QLCDNumber(self.widget_6)
-        self.WSmcycleCount.setObjectName(u"WSmcycleCount")
-        self.WSmcycleCount.setLineWidth(0)
-        self.WSmcycleCount.setDigitCount(10)
-        self.WSmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.WSmcycleCount, 8, 5, 1, 1)
-
-        self.label_34 = QLabel(self.widget_6)
-        self.label_34.setObjectName(u"label_34")
-
-        self.gridLayout_6.addWidget(self.label_34, 9, 0, 1, 1)
-
-        self.SEmcycleCount = QLCDNumber(self.widget_6)
-        self.SEmcycleCount.setObjectName(u"SEmcycleCount")
-        self.SEmcycleCount.setLineWidth(0)
-        self.SEmcycleCount.setDigitCount(10)
-        self.SEmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.SEmcycleCount, 9, 3, 1, 1)
-
-        self.WEmcycleCount = QLCDNumber(self.widget_6)
-        self.WEmcycleCount.setObjectName(u"WEmcycleCount")
-        self.WEmcycleCount.setLineWidth(0)
-        self.WEmcycleCount.setDigitCount(10)
-        self.WEmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.WEmcycleCount, 8, 3, 1, 1)
-
-        self.ESmcycleCount = QLCDNumber(self.widget_6)
-        self.ESmcycleCount.setObjectName(u"ESmcycleCount")
-        self.ESmcycleCount.setLineWidth(0)
-        self.ESmcycleCount.setDigitCount(10)
-        self.ESmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.ESmcycleCount, 7, 5, 1, 1)
-
-        self.SNmcycleCount = QLCDNumber(self.widget_6)
-        self.SNmcycleCount.setObjectName(u"SNmcycleCount")
-        self.SNmcycleCount.setLineWidth(0)
-        self.SNmcycleCount.setDigitCount(10)
-        self.SNmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.SNmcycleCount, 9, 1, 1, 1)
+        self.gridLayout_6.addWidget(self.NEmcycleCount, 2, 3, 1, 1)
 
         self.SWmcycleCount = QLCDNumber(self.widget_6)
         self.SWmcycleCount.setObjectName(u"SWmcycleCount")
@@ -847,14 +796,6 @@ class Ui_Form(object):
 
         self.gridLayout_6.addWidget(self.SSmcycleCount, 9, 5, 1, 1)
 
-        self.NSmcycleCount = QLCDNumber(self.widget_6)
-        self.NSmcycleCount.setObjectName(u"NSmcycleCount")
-        self.NSmcycleCount.setLineWidth(0)
-        self.NSmcycleCount.setDigitCount(10)
-        self.NSmcycleCount.setSegmentStyle(QLCDNumber.Flat)
-
-        self.gridLayout_6.addWidget(self.NSmcycleCount, 2, 5, 1, 1)
-
         self.NNmcycleCount = QLCDNumber(self.widget_6)
         self.NNmcycleCount.setObjectName(u"NNmcycleCount")
         self.NNmcycleCount.setFrameShadow(QFrame.Raised)
@@ -865,19 +806,21 @@ class Ui_Form(object):
 
         self.gridLayout_6.addWidget(self.NNmcycleCount, 2, 1, 1, 1)
 
-        self.NEmcycleCount = QLCDNumber(self.widget_6)
-        self.NEmcycleCount.setObjectName(u"NEmcycleCount")
-        self.NEmcycleCount.setFrameShadow(QFrame.Raised)
-        self.NEmcycleCount.setLineWidth(0)
-        self.NEmcycleCount.setDigitCount(10)
-        self.NEmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+        self.NSmcycleCount = QLCDNumber(self.widget_6)
+        self.NSmcycleCount.setObjectName(u"NSmcycleCount")
+        self.NSmcycleCount.setLineWidth(0)
+        self.NSmcycleCount.setDigitCount(10)
+        self.NSmcycleCount.setSegmentStyle(QLCDNumber.Flat)
 
-        self.gridLayout_6.addWidget(self.NEmcycleCount, 2, 3, 1, 1)
+        self.gridLayout_6.addWidget(self.NSmcycleCount, 2, 5, 1, 1)
 
-        self.label_35 = QLabel(self.widget_6)
-        self.label_35.setObjectName(u"label_35")
+        self.EWmcycleCount = QLCDNumber(self.widget_6)
+        self.EWmcycleCount.setObjectName(u"EWmcycleCount")
+        self.EWmcycleCount.setLineWidth(0)
+        self.EWmcycleCount.setDigitCount(10)
+        self.EWmcycleCount.setSegmentStyle(QLCDNumber.Flat)
 
-        self.gridLayout_6.addWidget(self.label_35, 7, 0, 1, 1)
+        self.gridLayout_6.addWidget(self.EWmcycleCount, 7, 4, 1, 1)
 
         self.ENmcycleCount = QLCDNumber(self.widget_6)
         self.ENmcycleCount.setObjectName(u"ENmcycleCount")
@@ -895,13 +838,16 @@ class Ui_Form(object):
 
         self.gridLayout_6.addWidget(self.EEmcycleCount, 7, 3, 1, 1)
 
-        self.EWmcycleCount = QLCDNumber(self.widget_6)
-        self.EWmcycleCount.setObjectName(u"EWmcycleCount")
-        self.EWmcycleCount.setLineWidth(0)
-        self.EWmcycleCount.setDigitCount(10)
-        self.EWmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+        self.label_35 = QLabel(self.widget_6)
+        self.label_35.setObjectName(u"label_35")
 
-        self.gridLayout_6.addWidget(self.EWmcycleCount, 7, 4, 1, 1)
+        self.gridLayout_6.addWidget(self.label_35, 7, 0, 1, 1)
+
+        self.label_36 = QLabel(self.widget_6)
+        self.label_36.setObjectName(u"label_36")
+        self.label_36.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_6.addWidget(self.label_36, 0, 3, 1, 1)
 
         self.label_12 = QLabel(self.widget_6)
         self.label_12.setObjectName(u"label_12")
@@ -926,23 +872,77 @@ class Ui_Form(object):
 
         self.gridLayout_6.addWidget(self.label_26, 0, 1, 1, 1)
 
-        self.label_36 = QLabel(self.widget_6)
-        self.label_36.setObjectName(u"label_36")
-        self.label_36.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_6.addWidget(self.label_36, 0, 3, 1, 1)
-
         self.label_37 = QLabel(self.widget_6)
         self.label_37.setObjectName(u"label_37")
         self.label_37.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_6.addWidget(self.label_37, 0, 4, 1, 1)
 
-        self.label_6 = QLabel(self.widget_6)
-        self.label_6.setObjectName(u"label_6")
-        self.label_6.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.SNmcycleCount = QLCDNumber(self.widget_6)
+        self.SNmcycleCount.setObjectName(u"SNmcycleCount")
+        self.SNmcycleCount.setLineWidth(0)
+        self.SNmcycleCount.setDigitCount(10)
+        self.SNmcycleCount.setSegmentStyle(QLCDNumber.Flat)
 
-        self.gridLayout_6.addWidget(self.label_6, 0, 5, 1, 1)
+        self.gridLayout_6.addWidget(self.SNmcycleCount, 9, 1, 1, 1)
+
+        self.label_33 = QLabel(self.widget_6)
+        self.label_33.setObjectName(u"label_33")
+
+        self.gridLayout_6.addWidget(self.label_33, 8, 0, 1, 1)
+
+        self.WNmcycleCount = QLCDNumber(self.widget_6)
+        self.WNmcycleCount.setObjectName(u"WNmcycleCount")
+        self.WNmcycleCount.setLineWidth(0)
+        self.WNmcycleCount.setDigitCount(10)
+        self.WNmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.gridLayout_6.addWidget(self.WNmcycleCount, 8, 1, 1, 1)
+
+        self.WEmcycleCount = QLCDNumber(self.widget_6)
+        self.WEmcycleCount.setObjectName(u"WEmcycleCount")
+        self.WEmcycleCount.setLineWidth(0)
+        self.WEmcycleCount.setDigitCount(10)
+        self.WEmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.gridLayout_6.addWidget(self.WEmcycleCount, 8, 3, 1, 1)
+
+        self.SEmcycleCount = QLCDNumber(self.widget_6)
+        self.SEmcycleCount.setObjectName(u"SEmcycleCount")
+        self.SEmcycleCount.setLineWidth(0)
+        self.SEmcycleCount.setDigitCount(10)
+        self.SEmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.gridLayout_6.addWidget(self.SEmcycleCount, 9, 3, 1, 1)
+
+        self.label_34 = QLabel(self.widget_6)
+        self.label_34.setObjectName(u"label_34")
+
+        self.gridLayout_6.addWidget(self.label_34, 9, 0, 1, 1)
+
+        self.WWmcycleCount = QLCDNumber(self.widget_6)
+        self.WWmcycleCount.setObjectName(u"WWmcycleCount")
+        self.WWmcycleCount.setLineWidth(0)
+        self.WWmcycleCount.setDigitCount(10)
+        self.WWmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.gridLayout_6.addWidget(self.WWmcycleCount, 8, 4, 1, 1)
+
+        self.ESmcycleCount = QLCDNumber(self.widget_6)
+        self.ESmcycleCount.setObjectName(u"ESmcycleCount")
+        self.ESmcycleCount.setLineWidth(0)
+        self.ESmcycleCount.setDigitCount(10)
+        self.ESmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.gridLayout_6.addWidget(self.ESmcycleCount, 7, 5, 1, 1)
+
+        self.WSmcycleCount = QLCDNumber(self.widget_6)
+        self.WSmcycleCount.setObjectName(u"WSmcycleCount")
+        self.WSmcycleCount.setLineWidth(0)
+        self.WSmcycleCount.setDigitCount(10)
+        self.WSmcycleCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.gridLayout_6.addWidget(self.WSmcycleCount, 8, 5, 1, 1)
 
 
         self.gridLayout_8.addWidget(self.widget_6, 0, 0, 1, 1)
@@ -1158,6 +1158,211 @@ class Ui_Form(object):
         self.verticalLayout_5.addWidget(self.widget_3)
 
         self.sidewiseCountMatrixDisplay.addTab(self.truckTab, "")
+        self.tab = QWidget()
+        self.tab.setObjectName(u"tab")
+        self.gridLayout_11 = QGridLayout(self.tab)
+        self.gridLayout_11.setObjectName(u"gridLayout_11")
+        self.widget_7 = QWidget(self.tab)
+        self.widget_7.setObjectName(u"widget_7")
+        self.widget_7.setEnabled(True)
+        self.gridLayout_10 = QGridLayout(self.widget_7)
+        self.gridLayout_10.setObjectName(u"gridLayout_10")
+        self.EEtotal = QLCDNumber(self.widget_7)
+        self.EEtotal.setObjectName(u"EEtotal")
+        self.EEtotal.setLineWidth(0)
+        self.EEtotal.setDigitCount(10)
+        self.EEtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.EEtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.EEtotal, 7, 4, 1, 1)
+
+        self.SEtotal = QLCDNumber(self.widget_7)
+        self.SEtotal.setObjectName(u"SEtotal")
+        self.SEtotal.setLineWidth(0)
+        self.SEtotal.setDigitCount(10)
+        self.SEtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.SEtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.SEtotal, 9, 4, 1, 1)
+
+        self.EStotal = QLCDNumber(self.widget_7)
+        self.EStotal.setObjectName(u"EStotal")
+        self.EStotal.setLineWidth(0)
+        self.EStotal.setDigitCount(10)
+        self.EStotal.setSegmentStyle(QLCDNumber.Flat)
+        self.EStotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.EStotal, 7, 7, 1, 1)
+
+        self.SWtotal = QLCDNumber(self.widget_7)
+        self.SWtotal.setObjectName(u"SWtotal")
+        self.SWtotal.setLineWidth(0)
+        self.SWtotal.setDigitCount(10)
+        self.SWtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.SWtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.SWtotal, 9, 6, 1, 1)
+
+        self.SStotal = QLCDNumber(self.widget_7)
+        self.SStotal.setObjectName(u"SStotal")
+        self.SStotal.setLineWidth(0)
+        self.SStotal.setDigitCount(10)
+        self.SStotal.setSegmentStyle(QLCDNumber.Flat)
+        self.SStotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.SStotal, 9, 7, 1, 1)
+
+        self.NWtotal = QLCDNumber(self.widget_7)
+        self.NWtotal.setObjectName(u"NWtotal")
+        self.NWtotal.setLineWidth(0)
+        self.NWtotal.setDigitCount(10)
+        self.NWtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.NWtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.NWtotal, 2, 6, 1, 1)
+
+        self.EWtotal = QLCDNumber(self.widget_7)
+        self.EWtotal.setObjectName(u"EWtotal")
+        self.EWtotal.setLineWidth(0)
+        self.EWtotal.setDigitCount(10)
+        self.EWtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.EWtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.EWtotal, 7, 6, 1, 1)
+
+        self.WNtotal = QLCDNumber(self.widget_7)
+        self.WNtotal.setObjectName(u"WNtotal")
+        self.WNtotal.setLineWidth(0)
+        self.WNtotal.setDigitCount(10)
+        self.WNtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.WNtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.WNtotal, 8, 3, 1, 1)
+
+        self.NEtotal = QLCDNumber(self.widget_7)
+        self.NEtotal.setObjectName(u"NEtotal")
+        self.NEtotal.setLineWidth(0)
+        self.NEtotal.setDigitCount(10)
+        self.NEtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.NEtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.NEtotal, 2, 4, 1, 1)
+
+        self.SNtotal = QLCDNumber(self.widget_7)
+        self.SNtotal.setObjectName(u"SNtotal")
+        self.SNtotal.setLineWidth(0)
+        self.SNtotal.setDigitCount(10)
+        self.SNtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.SNtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.SNtotal, 9, 3, 1, 1)
+
+        self.label_41 = QLabel(self.widget_7)
+        self.label_41.setObjectName(u"label_41")
+
+        self.gridLayout_10.addWidget(self.label_41, 9, 0, 1, 1)
+
+        self.label_44 = QLabel(self.widget_7)
+        self.label_44.setObjectName(u"label_44")
+
+        self.gridLayout_10.addWidget(self.label_44, 8, 0, 1, 1)
+
+        self.label_54 = QLabel(self.widget_7)
+        self.label_54.setObjectName(u"label_54")
+        self.label_54.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_10.addWidget(self.label_54, 1, 4, 1, 1)
+
+        self.WStotal = QLCDNumber(self.widget_7)
+        self.WStotal.setObjectName(u"WStotal")
+        self.WStotal.setLineWidth(0)
+        self.WStotal.setDigitCount(10)
+        self.WStotal.setSegmentStyle(QLCDNumber.Flat)
+        self.WStotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.WStotal, 8, 7, 1, 1)
+
+        self.label_56 = QLabel(self.widget_7)
+        self.label_56.setObjectName(u"label_56")
+        self.label_56.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_10.addWidget(self.label_56, 1, 6, 1, 1)
+
+        self.ENtotal = QLCDNumber(self.widget_7)
+        self.ENtotal.setObjectName(u"ENtotal")
+        self.ENtotal.setLineWidth(0)
+        self.ENtotal.setDigitCount(10)
+        self.ENtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.ENtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.ENtotal, 7, 3, 1, 1)
+
+        self.label_50 = QLabel(self.widget_7)
+        self.label_50.setObjectName(u"label_50")
+
+        self.gridLayout_10.addWidget(self.label_50, 7, 0, 1, 1)
+
+        self.NNtotal = QLCDNumber(self.widget_7)
+        self.NNtotal.setObjectName(u"NNtotal")
+        self.NNtotal.setLineWidth(0)
+        self.NNtotal.setDigitCount(10)
+        self.NNtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.NNtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.NNtotal, 2, 3, 1, 1)
+
+        self.label_57 = QLabel(self.widget_7)
+        self.label_57.setObjectName(u"label_57")
+        self.label_57.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_10.addWidget(self.label_57, 1, 7, 1, 1)
+
+        self.NStotal = QLCDNumber(self.widget_7)
+        self.NStotal.setObjectName(u"NStotal")
+        self.NStotal.setLineWidth(0)
+        self.NStotal.setDigitCount(10)
+        self.NStotal.setSegmentStyle(QLCDNumber.Flat)
+        self.NStotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.NStotal, 2, 7, 1, 1)
+
+        self.label_13 = QLabel(self.widget_7)
+        self.label_13.setObjectName(u"label_13")
+        sizePolicy2.setHeightForWidth(self.label_13.sizePolicy().hasHeightForWidth())
+        self.label_13.setSizePolicy(sizePolicy2)
+
+        self.gridLayout_10.addWidget(self.label_13, 2, 0, 1, 1)
+
+        self.label_7 = QLabel(self.widget_7)
+        self.label_7.setObjectName(u"label_7")
+        sizePolicy3.setHeightForWidth(self.label_7.sizePolicy().hasHeightForWidth())
+        self.label_7.setSizePolicy(sizePolicy3)
+        self.label_7.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_10.addWidget(self.label_7, 1, 3, 1, 1)
+
+        self.WWtotal = QLCDNumber(self.widget_7)
+        self.WWtotal.setObjectName(u"WWtotal")
+        self.WWtotal.setLineWidth(0)
+        self.WWtotal.setDigitCount(10)
+        self.WWtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.WWtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.WWtotal, 8, 6, 1, 1)
+
+        self.WEtotal = QLCDNumber(self.widget_7)
+        self.WEtotal.setObjectName(u"WEtotal")
+        self.WEtotal.setLineWidth(0)
+        self.WEtotal.setDigitCount(10)
+        self.WEtotal.setSegmentStyle(QLCDNumber.Flat)
+        self.WEtotal.setProperty("intValue", 0)
+
+        self.gridLayout_10.addWidget(self.WEtotal, 8, 4, 1, 1)
+
+
+        self.gridLayout_11.addWidget(self.widget_7, 0, 0, 1, 1)
+
+        self.sidewiseCountMatrixDisplay.addTab(self.tab, "")
 
         self.gridLayout_9.addWidget(self.sidewiseCountMatrixDisplay, 0, 0, 1, 1)
 
@@ -1172,7 +1377,7 @@ class Ui_Form(object):
 
         self.languageChooser.setCurrentIndex(0)
         self.comboBox.setCurrentIndex(-1)
-        self.sidewiseCountMatrixDisplay.setCurrentIndex(3)
+        self.sidewiseCountMatrixDisplay.setCurrentIndex(5)
 
 
         QMetaObject.connectSlotsByName(Form)
@@ -1220,14 +1425,14 @@ class Ui_Form(object):
         self.label_20.setText(QCoreApplication.translate("Form", u"C out", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"D out", None))
         self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.bicycleTab), QCoreApplication.translate("Form", u"Bicycles", None))
-        self.label_33.setText(QCoreApplication.translate("Form", u"C in", None))
-        self.label_34.setText(QCoreApplication.translate("Form", u"D in", None))
+        self.label_6.setText(QCoreApplication.translate("Form", u"D out", None))
         self.label_35.setText(QCoreApplication.translate("Form", u"B in", None))
+        self.label_36.setText(QCoreApplication.translate("Form", u"B out", None))
         self.label_12.setText(QCoreApplication.translate("Form", u"A in", None))
         self.label_26.setText(QCoreApplication.translate("Form", u"A out", None))
-        self.label_36.setText(QCoreApplication.translate("Form", u"B out", None))
         self.label_37.setText(QCoreApplication.translate("Form", u"C out", None))
-        self.label_6.setText(QCoreApplication.translate("Form", u"D out", None))
+        self.label_33.setText(QCoreApplication.translate("Form", u"C in", None))
+        self.label_34.setText(QCoreApplication.translate("Form", u"D in", None))
         self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.mcycleTab), QCoreApplication.translate("Form", u"Motorcycles", None))
         self.label_49.setText(QCoreApplication.translate("Form", u"B in", None))
         self.label_38.setText(QCoreApplication.translate("Form", u"C out", None))
@@ -1238,5 +1443,14 @@ class Ui_Form(object):
         self.label_47.setText(QCoreApplication.translate("Form", u"D in", None))
         self.label_5.setText(QCoreApplication.translate("Form", u"A out", None))
         self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.truckTab), QCoreApplication.translate("Form", u"Trucks", None))
+        self.label_41.setText(QCoreApplication.translate("Form", u"D in", None))
+        self.label_44.setText(QCoreApplication.translate("Form", u"C in", None))
+        self.label_54.setText(QCoreApplication.translate("Form", u"B out", None))
+        self.label_56.setText(QCoreApplication.translate("Form", u"C out", None))
+        self.label_50.setText(QCoreApplication.translate("Form", u"B in", None))
+        self.label_57.setText(QCoreApplication.translate("Form", u"D out", None))
+        self.label_13.setText(QCoreApplication.translate("Form", u"A in", None))
+        self.label_7.setText(QCoreApplication.translate("Form", u"A out", None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.tab), QCoreApplication.translate("Form", u"Total", None))
     # retranslateUi
 

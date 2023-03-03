@@ -251,7 +251,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>3</number>
+           <number>5</number>
           </property>
           <widget class="QWidget" name="carTab">
            <attribute name="title">
@@ -1242,100 +1242,21 @@
                <bool>true</bool>
               </property>
               <layout class="QGridLayout" name="gridLayout_6">
-               <item row="8" column="0">
-                <widget class="QLabel" name="label_33">
+               <item row="0" column="5">
+                <widget class="QLabel" name="label_6">
                  <property name="text">
-                  <string>C in</string>
+                  <string>D out</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
-               <item row="8" column="1">
-                <widget class="QLCDNumber" name="WNmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
+               <item row="2" column="3">
+                <widget class="QLCDNumber" name="NEmcycleCount">
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
                  </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="4">
-                <widget class="QLCDNumber" name="WWmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
-                 </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="5">
-                <widget class="QLCDNumber" name="WSmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
-                 </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="0">
-                <widget class="QLabel" name="label_34">
-                 <property name="text">
-                  <string>D in</string>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="3">
-                <widget class="QLCDNumber" name="SEmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
-                 </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="8" column="3">
-                <widget class="QLCDNumber" name="WEmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
-                 </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="7" column="5">
-                <widget class="QLCDNumber" name="ESmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
-                 </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
-               <item row="9" column="1">
-                <widget class="QLCDNumber" name="SNmcycleCount">
                  <property name="lineWidth">
                   <number>0</number>
                  </property>
@@ -1373,19 +1294,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="5">
-                <widget class="QLCDNumber" name="NSmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
-                 </property>
-                 <property name="digitCount">
-                  <number>10</number>
-                 </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
-                 </property>
-                </widget>
-               </item>
                <item row="2" column="1">
                 <widget class="QLCDNumber" name="NNmcycleCount">
                  <property name="frameShadow">
@@ -1405,11 +1313,8 @@
                  </property>
                 </widget>
                </item>
-               <item row="2" column="3">
-                <widget class="QLCDNumber" name="NEmcycleCount">
-                 <property name="frameShadow">
-                  <enum>QFrame::Raised</enum>
-                 </property>
+               <item row="2" column="5">
+                <widget class="QLCDNumber" name="NSmcycleCount">
                  <property name="lineWidth">
                   <number>0</number>
                  </property>
@@ -1421,10 +1326,16 @@
                  </property>
                 </widget>
                </item>
-               <item row="7" column="0">
-                <widget class="QLabel" name="label_35">
-                 <property name="text">
-                  <string>B in</string>
+               <item row="7" column="4">
+                <widget class="QLCDNumber" name="EWmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
                  </property>
                 </widget>
                </item>
@@ -1454,16 +1365,20 @@
                  </property>
                 </widget>
                </item>
-               <item row="7" column="4">
-                <widget class="QLCDNumber" name="EWmcycleCount">
-                 <property name="lineWidth">
-                  <number>0</number>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_35">
+                 <property name="text">
+                  <string>B in</string>
                  </property>
-                 <property name="digitCount">
-                  <number>10</number>
+                </widget>
+               </item>
+               <item row="0" column="3">
+                <widget class="QLabel" name="label_36">
+                 <property name="text">
+                  <string>B out</string>
                  </property>
-                 <property name="segmentStyle">
-                  <enum>QLCDNumber::Flat</enum>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                  </property>
                 </widget>
                </item>
@@ -1509,16 +1424,6 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="3">
-                <widget class="QLabel" name="label_36">
-                 <property name="text">
-                  <string>B out</string>
-                 </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-                 </property>
-                </widget>
-               </item>
                <item row="0" column="4">
                 <widget class="QLabel" name="label_37">
                  <property name="text">
@@ -1529,13 +1434,108 @@
                  </property>
                 </widget>
                </item>
-               <item row="0" column="5">
-                <widget class="QLabel" name="label_6">
-                 <property name="text">
-                  <string>D out</string>
+               <item row="9" column="1">
+                <widget class="QLCDNumber" name="SNmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
                  </property>
-                 <property name="alignment">
-                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_33">
+                 <property name="text">
+                  <string>C in</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="1">
+                <widget class="QLCDNumber" name="WNmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="3">
+                <widget class="QLCDNumber" name="WEmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="3">
+                <widget class="QLCDNumber" name="SEmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_34">
+                 <property name="text">
+                  <string>D in</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="4">
+                <widget class="QLCDNumber" name="WWmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="5">
+                <widget class="QLCDNumber" name="ESmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="5">
+                <widget class="QLCDNumber" name="WSmcycleCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
                  </property>
                 </widget>
                </item>
@@ -1883,6 +1883,358 @@
                </item>
                <item row="4" column="7">
                 <widget class="QLCDNumber" name="WStruckCount">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+          <widget class="QWidget" name="tab">
+           <attribute name="title">
+            <string>Total</string>
+           </attribute>
+           <layout class="QGridLayout" name="gridLayout_11">
+            <item row="0" column="0">
+             <widget class="QWidget" name="widget_7" native="true">
+              <property name="enabled">
+               <bool>true</bool>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_10">
+               <item row="7" column="4">
+                <widget class="QLCDNumber" name="EEtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="4">
+                <widget class="QLCDNumber" name="SEtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="7">
+                <widget class="QLCDNumber" name="EStotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="6">
+                <widget class="QLCDNumber" name="SWtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="7">
+                <widget class="QLCDNumber" name="SStotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="6">
+                <widget class="QLCDNumber" name="NWtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="6">
+                <widget class="QLCDNumber" name="EWtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="3">
+                <widget class="QLCDNumber" name="WNtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="4">
+                <widget class="QLCDNumber" name="NEtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="3">
+                <widget class="QLCDNumber" name="SNtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="9" column="0">
+                <widget class="QLabel" name="label_41">
+                 <property name="text">
+                  <string>D in</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="0">
+                <widget class="QLabel" name="label_44">
+                 <property name="text">
+                  <string>C in</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="4">
+                <widget class="QLabel" name="label_54">
+                 <property name="text">
+                  <string>B out</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="7">
+                <widget class="QLCDNumber" name="WStotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="6">
+                <widget class="QLabel" name="label_56">
+                 <property name="text">
+                  <string>C out</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="3">
+                <widget class="QLCDNumber" name="ENtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="7" column="0">
+                <widget class="QLabel" name="label_50">
+                 <property name="text">
+                  <string>B in</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="3">
+                <widget class="QLCDNumber" name="NNtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="7">
+                <widget class="QLabel" name="label_57">
+                 <property name="text">
+                  <string>D out</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="7">
+                <widget class="QLCDNumber" name="NStotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QLabel" name="label_13">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>A in</string>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="3">
+                <widget class="QLabel" name="label_7">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="text">
+                  <string>A out</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="6">
+                <widget class="QLCDNumber" name="WWtotal">
+                 <property name="lineWidth">
+                  <number>0</number>
+                 </property>
+                 <property name="digitCount">
+                  <number>10</number>
+                 </property>
+                 <property name="segmentStyle">
+                  <enum>QLCDNumber::Flat</enum>
+                 </property>
+                 <property name="intValue" stdset="0">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item row="8" column="4">
+                <widget class="QLCDNumber" name="WEtotal">
                  <property name="lineWidth">
                   <number>0</number>
                  </property>

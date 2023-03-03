@@ -29,25 +29,25 @@ def assign_tracks2detection_iou(bbox_tracks, bbox_detections, iou_threshold=0.3)
     """
 
     if (bbox_tracks.size == 0) or (bbox_detections.size == 0):
-        print('I am here')
-        print('Matches:  ', np.empty((0, 2), dtype=int))
-        print('Unmatched detections: ', np.arange(len(bbox_detections), dtype=int))
-        print('Unmatched tracks:  ', np.empty((0,), dtype=int))
+        # print('I am here')
+        # print('Matches:  ', np.empty((0, 2), dtype=int))
+        # print('Unmatched detections: ', np.arange(len(bbox_detections), dtype=int))
+        # print('Unmatched tracks:  ', np.empty((0,), dtype=int))
         return np.empty((0, 2), dtype=int), np.arange(len(bbox_detections), dtype=int), np.empty((0,), dtype=int)
 
     if len(bbox_tracks.shape) == 1:
-        print('I am here 2')
+        # print('I am here 2')
         bbox_tracks = bbox_tracks[None, :]
 
     if len(bbox_detections.shape) == 1:
-        print('I am here 3')
+        # print('I am here 3')
         bbox_detections = bbox_detections[None, :]
 
     iou_matrix = np.zeros((bbox_tracks.shape[0], bbox_detections.shape[0]), dtype=np.float32)
     for t in range(bbox_tracks.shape[0]):
-        print('I am here 4')
+        # print('I am here 4')
         for d in range(bbox_detections.shape[0]):
-            print('I am here 5')
+            # print('I am here 5')
             iou_matrix[t, d] = iou(bbox_tracks[t, :], bbox_detections[d, :])
 
     assigned_tracks, assigned_detections = linear_sum_assignment(-iou_matrix)
@@ -55,37 +55,37 @@ def assign_tracks2detection_iou(bbox_tracks, bbox_detections, iou_threshold=0.3)
     unmatched_detections, unmatched_tracks = [], []
 
     for d in range(bbox_detections.shape[0]):
-        print('I am here 6')
+        # print('I am here 6')
         if d not in assigned_detections:
-            print('I am here 7')
+            # print('I am here 7')
             unmatched_detections.append(d)
 
     for t in range(bbox_tracks.shape[0]):
-        print('I am here 8')
+        # print('I am here 8')
         if t not in assigned_tracks:
-            print('I am here 9')
+            # print('I am here 9')
             unmatched_tracks.append(t)
 
     # filter out matched with low IOU
     matches = []
     for t, d in zip(assigned_tracks, assigned_detections):
-        print('I am here 10')
+        # print('I am here 10')
         if iou_matrix[t, d] < iou_threshold:
-            print('I am here 11')
+            # print('I am here 11')
             unmatched_detections.append(d)
             unmatched_tracks.append(t)
         else:
-            print('I am here 12')
+            # print('I am here 12')
             matches.append((t, d))
 
     if len(matches):
-        print('I am here 13')
+        # print('I am here 13')
         matches = np.array(matches)
     else:
-        print('I am here 14')
+        # print('I am here 14')
         matches = np.empty((0, 2), dtype=int)
 
-    print('I am here 15')
+    # print('I am here 15')
     return matches, np.array(unmatched_detections), np.array(unmatched_tracks)
 
 
@@ -170,7 +170,7 @@ class SORT(CentroidKF_Tracker):
             bbox = bboxes[d, :]
             cid = class_ids[d]
             confidence = detection_scores[d]
-            print(f'Matches {cid}:  ', bbox, cid)
+            # print(f'Matches {cid}:  ', bbox, cid)
             self._update_track(track_id, self.frame_count, bbox, confidence, cid, lost=0)
             
         for d in unmatched_detections:
@@ -190,5 +190,5 @@ class SORT(CentroidKF_Tracker):
                 self._remove_track(track_id)
 
         outputs = self._get_tracks(self.tracks)
-        print(self.tracks)
+        # print(self.tracks)
         return outputs
