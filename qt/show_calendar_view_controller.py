@@ -112,6 +112,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         buses_worksheet = workbook.add_worksheet('Buses')
         bicycles_worksheet = workbook.add_worksheet('Bicycles')
         motorcycles_worksheet = workbook.add_worksheet('Motorcycles')
+        total_worksheet = workbook.add_worksheet('Total')
 
         cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(start_time_str, end_time_str, get_all_data=True)
         cf = workbook.add_format({'bg_color': 'yellow'})
@@ -171,6 +172,13 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 motorcycles_worksheet.write(2, i, in_sides[1], cf)
                 motorcycles_worksheet.write(3, i, in_sides[2], cf)
                 motorcycles_worksheet.write(4, i, in_sides[3], cf)
+
+                total_worksheet.write(0, i, '', cf)
+                total_worksheet.write(1, i, in_sides[0], cf)
+                total_worksheet.write(2, i, in_sides[1], cf)
+                total_worksheet.write(3, i, in_sides[2], cf)
+                total_worksheet.write(4, i, in_sides[3], cf)
+
             else:
                 truck_data_a = cardinal_truck_data[i-1]
                 truck_data_b = cardinal_truck_data[i-1+4]
@@ -196,6 +204,11 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 mcycle_data_b = cardinal_mcycle_data[i-1+4]
                 mcycle_data_c = cardinal_mcycle_data[i-1+8]
                 mcycle_data_d = cardinal_mcycle_data[i-1+12]
+
+                total_a = sum([len(truck_data_a), len(car_data_a), len(bus_data_a), len(bicycle_data_a), len(mcycle_data_a)])
+                total_b = sum([len(truck_data_b), len(car_data_b), len(bus_data_b), len(bicycle_data_b), len(mcycle_data_b)])
+                total_c = sum([len(truck_data_c), len(car_data_c), len(bus_data_c), len(bicycle_data_c), len(mcycle_data_c)])
+                total_d = sum([len(truck_data_d), len(car_data_d), len(bus_data_d), len(bicycle_data_d), len(mcycle_data_d)])
 
                 trucks_worksheet.write(0, i, out_sides[i-1], cf)
                 trucks_worksheet.write(1, i, len(truck_data_a))
@@ -226,6 +239,12 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 motorcycles_worksheet.write(2, i, len(mcycle_data_b))
                 motorcycles_worksheet.write(3, i, len(mcycle_data_c))
                 motorcycles_worksheet.write(4, i, len(mcycle_data_d))
+
+                total_worksheet.write(0, i, out_sides[i-1], cf)
+                total_worksheet.write(1, i, total_a)
+                total_worksheet.write(2, i, total_b)
+                total_worksheet.write(3, i, total_c)
+                total_worksheet.write(4, i, total_d)
 
 
         self.showPopup(f'{excel_file_name} '+self.text_translator.excel_data_written_success)
