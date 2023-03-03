@@ -53,6 +53,7 @@ class Translator:
 
         # pop up messages 
         self.information = ''
+        self.warning = ''
         self.add_camera_popup_success = ''
         self.add_camera_popup_error = ''
         self.edit_camera_popup_success = ''
@@ -140,6 +141,7 @@ class Translator:
 
         # pop up messages 
         self.information = 'Infoormation'
+        self.warning = 'Warning'
         self.add_camera_popup_success = 'added to database'
         self.add_camera_popup_error = ' but camera added!'
         self.edit_camera_popup_success = 'changed on database'
@@ -202,6 +204,7 @@ class Translator:
 
         # pop up messages
         self.information = 'Ma\'lumot'
+        self.warning = 'Ogohlantirish'
         self.add_camera_popup_success = 'bazaga qo\'shildi'
         self.add_camera_popup_error = ' lekin kamera qo\'shildi'
         self.edit_camera_popup_success = 'bazada o\'zgartirildi'

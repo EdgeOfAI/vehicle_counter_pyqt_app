@@ -147,7 +147,7 @@ class ViewController(QWidget, Ui_Form):
 
     def showPopup(self, message):
         msg = QMessageBox()
-        msg.setWindowTitle('Warning!')
+        msg.setWindowTitle(self.text_translator.warning)
         msg.setWindowIcon(QIcon(self.icon_path))
         msg.setText(message)
         msg.setIcon(QMessageBox.Warning)

@@ -66,7 +66,7 @@ class RemoveCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.db_cur.execute(f"DELETE FROM cameras where id = {self.remove_cam_id}")
 
         msg = QMessageBox()
-        msg.setWindowTitle('Warning!')
+        msg.setWindowTitle(self.text_translator.warning)
         msg.setWindowIcon(QIcon(self.icon_path))
         msg.setText(f'ID = {self.remove_cam_id} '+self.text_translator.remove_camera_popup_success)
         msg.setIcon(QMessageBox.Information)

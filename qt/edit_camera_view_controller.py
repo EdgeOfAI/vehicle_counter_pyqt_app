@@ -119,7 +119,7 @@ class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                     WHERE id={self.edit_cam_id}""")
 
         msg = QMessageBox()
-        msg.setWindowTitle('Warning!')
+        msg.setWindowTitle(self.text_translator.warning)
         msg.setWindowIcon(QIcon(self.icon_path))
         msg.setText(f'ID = {self.edit_cam_id} '+self.text_translator.edit_camera_popup_success)
         msg.setIcon(QMessageBox.Information)
