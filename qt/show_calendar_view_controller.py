@@ -83,6 +83,8 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def createExcelData(self):
 
         cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
+        in_sides = ['A_in', 'B_in', 'C_in', 'D_in']
+        out_sides = ['A_out', 'B_out', 'C_out', 'D_out']
         cam_name = self.comboBox.currentText()
         self.excels_folder = 'downloaded_excel_files'
         end_time = self.timeEdit_2.time()
@@ -103,9 +105,15 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             os.makedirs(self.excels_folder)
         excel_file_name = os.path.join(self.excels_folder, f'{datetime.datetime.now()}_{cam_name}_{self.label.text()}.xlsx').replace('\\', '/').replace(' ', '').replace(':', '-')
         workbook = xlsxwriter.Workbook(excel_file_name)
+
         cardinal_worksheet = workbook.add_worksheet("Caradinalwise")
+        trucks_worksheet = workbook.add_worksheet('Trucks')
+        cars_worksheet = workbook.add_worksheet('Cars')
+        buses_worksheet = workbook.add_worksheet('Buses')
+        bicycles_worksheet = workbook.add_worksheet('Bicycles')
+        motorcycles_worksheet = workbook.add_worksheet('Motorcycles')
+
         cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(start_time_str, end_time_str, get_all_data=True)
-        print(cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data)
         cf = workbook.add_format({'bg_color': 'yellow'})
         for i in range(len(cardinal_truck_data)+1):
             if i == 0:
@@ -131,6 +139,95 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 cardinal_worksheet.write(4, i, bicycle_data, cf if bicycle_data else workbook.add_format())
                 cardinal_worksheet.write(5, i, mcycle_data, cf if mcycle_data else workbook.add_format())
                 cardinal_worksheet.write(6, i, total, cf if total else workbook.add_format())
+        
+        for i in range(5):
+            if i == 0:
+                trucks_worksheet.write(0, i, '', cf)
+                trucks_worksheet.write(1, i, in_sides[0], cf)
+                trucks_worksheet.write(2, i, in_sides[1], cf)
+                trucks_worksheet.write(3, i, in_sides[2], cf)
+                trucks_worksheet.write(4, i, in_sides[3], cf)
+
+                cars_worksheet.write(0, i, '', cf)
+                cars_worksheet.write(1, i, in_sides[0], cf)
+                cars_worksheet.write(2, i, in_sides[1], cf)
+                cars_worksheet.write(3, i, in_sides[2], cf)
+                cars_worksheet.write(4, i, in_sides[3], cf)
+
+                buses_worksheet.write(0, i, '', cf)
+                buses_worksheet.write(1, i, in_sides[0], cf)
+                buses_worksheet.write(2, i, in_sides[1], cf)
+                buses_worksheet.write(3, i, in_sides[2], cf)
+                buses_worksheet.write(4, i, in_sides[3], cf)
+
+                bicycles_worksheet.write(0, i, '', cf)
+                bicycles_worksheet.write(1, i, in_sides[0], cf)
+                bicycles_worksheet.write(2, i, in_sides[1], cf)
+                bicycles_worksheet.write(3, i, in_sides[2], cf)
+                bicycles_worksheet.write(4, i, in_sides[3], cf)
+
+                motorcycles_worksheet.write(0, i, '', cf)
+                motorcycles_worksheet.write(1, i, in_sides[0], cf)
+                motorcycles_worksheet.write(2, i, in_sides[1], cf)
+                motorcycles_worksheet.write(3, i, in_sides[2], cf)
+                motorcycles_worksheet.write(4, i, in_sides[3], cf)
+            else:
+                truck_data_a = cardinal_truck_data[i-1]
+                truck_data_b = cardinal_truck_data[i-1+4]
+                truck_data_c = cardinal_truck_data[i-1+8]
+                truck_data_d = cardinal_truck_data[i-1+12]
+
+                car_data_a = cardinal_car_data[i-1]
+                car_data_b = cardinal_car_data[i-1+4]
+                car_data_c = cardinal_car_data[i-1+8]
+                car_data_d = cardinal_car_data[i-1+12]
+
+                bus_data_a = cardinal_bus_data[i-1]
+                bus_data_b = cardinal_bus_data[i-1+4]
+                bus_data_c = cardinal_bus_data[i-1+8]
+                bus_data_d = cardinal_bus_data[i-1+12]
+
+                bicycle_data_a = cardinal_bicycle_data[i-1]
+                bicycle_data_b = cardinal_bicycle_data[i-1+4]
+                bicycle_data_c = cardinal_bicycle_data[i-1+8]
+                bicycle_data_d = cardinal_bicycle_data[i-1+12]
+
+                mcycle_data_a = cardinal_mcycle_data[i-1]
+                mcycle_data_b = cardinal_mcycle_data[i-1+4]
+                mcycle_data_c = cardinal_mcycle_data[i-1+8]
+                mcycle_data_d = cardinal_mcycle_data[i-1+12]
+
+                trucks_worksheet.write(0, i, out_sides[i-1], cf)
+                trucks_worksheet.write(1, i, len(truck_data_a))
+                trucks_worksheet.write(2, i, len(truck_data_b))
+                trucks_worksheet.write(3, i, len(truck_data_c))
+                trucks_worksheet.write(4, i, len(truck_data_d))
+
+                cars_worksheet.write(0, i, out_sides[i-1], cf)
+                cars_worksheet.write(1, i, len(car_data_a))
+                cars_worksheet.write(2, i, len(car_data_b))
+                cars_worksheet.write(3, i, len(car_data_c))
+                cars_worksheet.write(4, i, len(car_data_d))
+
+                buses_worksheet.write(0, i, out_sides[i-1], cf)
+                buses_worksheet.write(1, i, len(bus_data_a))
+                buses_worksheet.write(2, i, len(bus_data_b))
+                buses_worksheet.write(3, i, len(bus_data_c))
+                buses_worksheet.write(4, i, len(bus_data_d))
+
+                bicycles_worksheet.write(0, i, out_sides[i-1], cf)
+                bicycles_worksheet.write(1, i, len(bicycle_data_a))
+                bicycles_worksheet.write(2, i, len(bicycle_data_b))
+                bicycles_worksheet.write(3, i, len(bicycle_data_c))
+                bicycles_worksheet.write(4, i, len(bicycle_data_d))
+
+                motorcycles_worksheet.write(0, i, out_sides[i-1], cf)
+                motorcycles_worksheet.write(1, i, len(mcycle_data_a))
+                motorcycles_worksheet.write(2, i, len(mcycle_data_b))
+                motorcycles_worksheet.write(3, i, len(mcycle_data_c))
+                motorcycles_worksheet.write(4, i, len(mcycle_data_d))
+
+
         self.showPopup(f'{excel_file_name} '+self.text_translator.excel_data_written_success)
         workbook.close()
     
@@ -145,10 +242,8 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
 
         start_date_time = f'{selected_date.year}-{selected_month}-{selected_day} {start_time_str}'
         end_date_time = f'{selected_date.year}-{selected_month}-{selected_day} {end_time_str}'
-        print(start_date_time, end_date_time)
         self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = {cam_id} and `time` >= '{start_date_time}' and `time` <= '{end_date_time}'")
         vehicles = self.db_cur.fetchall()
-        print(vehicles)
         # N_in = [vehicle for vehicle in vehicles if vehicle[8]=='North' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
         # E_in = [vehicle for vehicle in vehicles if vehicle[8] == 'East' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
         # W_in = [vehicle for vehicle in vehicles if vehicle[8] == 'West' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
