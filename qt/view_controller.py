@@ -690,7 +690,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.SSbicycleCount.display(self.SSbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.SSmcycle.display(count)
+                self.SSmcycle.display(self.SSmcycle.intValue()+1)
             else:
                 return
         
