@@ -243,14 +243,13 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                    [NN_mcycle, NE_mcycle, NW_mcycle, NS_mcycle, EN_mcycle, EE_mcycle, EW_mcycle, ES_mcycle, WN_mcycle, WE_mcycle, WW_mcycle, WS_mcycle, SN_mcycle, SE_mcycle, SW_mcycle, SS_mcycle], \
 
         return [len(NN), len(NE), len(NW), len(NS), len(EN), len(EE), len(EW), len(ES), len(WN), len(WE), len(WW), len(WS), len(SN), len(SE), len(SW), len(SS)]
-
     
     def showCardinalwiseData(self):
         data = self.get_cardinalwise_data()
 
         self.bar_chart_window = BarChartWindow(self.icon_path, self.qss_file, 'Cardinalwise Data | Bar Chart', data, self.comboBox.currentText())
         # self.bar_chart_window.show()
-    
+
     def showLineChart(self):
         # print('Button clicked')
         cam_name = self.comboBox.currentText()
@@ -399,11 +398,12 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                         [truck_hour_0, truck_hour_1, truck_hour_2, truck_hour_3, truck_hour_4, truck_hour_5, truck_hour_6, truck_hour_7, truck_hour_8, truck_hour_9, truck_hour_10, truck_hour_11, truck_hour_12, truck_hour_13, truck_hour_14, truck_hour_15, truck_hour_16, truck_hour_17, truck_hour_18, truck_hour_19, truck_hour_20, truck_hour_21, truck_hour_22, truck_hour_23],
                                         [bus_hour_0, bus_hour_1, bus_hour_2, bus_hour_3, bus_hour_4, bus_hour_5, bus_hour_6, bus_hour_7, bus_hour_8, bus_hour_9, bus_hour_10, bus_hour_11, bus_hour_12, bus_hour_13, bus_hour_14, bus_hour_15, bus_hour_16, bus_hour_17, bus_hour_18, bus_hour_19, bus_hour_20, bus_hour_21, bus_hour_22, bus_hour_23],
                                         [bicycle_hour_0, bicycle_hour_1, bicycle_hour_2, bicycle_hour_3, bicycle_hour_4, bicycle_hour_5, bicycle_hour_6, bicycle_hour_7, bicycle_hour_8, bicycle_hour_9, bicycle_hour_10, bicycle_hour_11, bicycle_hour_12, bicycle_hour_13, bicycle_hour_14, bicycle_hour_15, bicycle_hour_16, bicycle_hour_17, bicycle_hour_18, bicycle_hour_19, bicycle_hour_20, bicycle_hour_21, bicycle_hour_22, bicycle_hour_23],
-                                        [mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23]
+                                        [mcycle_hour_0, mcycle_hour_1, mcycle_hour_2, mcycle_hour_3, mcycle_hour_4, mcycle_hour_5, mcycle_hour_6, mcycle_hour_7, mcycle_hour_8, mcycle_hour_9, mcycle_hour_10, mcycle_hour_11, mcycle_hour_12, mcycle_hour_13, mcycle_hour_14, mcycle_hour_15, mcycle_hour_16, mcycle_hour_17, mcycle_hour_18, mcycle_hour_19, mcycle_hour_20, mcycle_hour_21, mcycle_hour_22, mcycle_hour_23],
+                                        self.text_translator
                                         )
         self.chart_window.setWindowIcon(QIcon(self.icon_path))
         self.chart_window.setStyleSheet(self.qss_file)
-        self.chart_window.setWindowTitle("Daily and Hourly data | Line Chart")
+        self.chart_window.setWindowTitle(self.text_translator.linlechart_title)
         self.chart_window.show()
 
     def retranslateUi(self, MainWindow):

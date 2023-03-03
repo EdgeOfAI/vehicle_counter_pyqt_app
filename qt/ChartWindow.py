@@ -12,9 +12,11 @@ class ChartWindow(QMainWindow):
                        trucks_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        buses_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        bicycle_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-                       mcycle_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]):
+                       mcycle_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                       text_translator=None):
         super(ChartWindow, self).__init__()
 
+        self.text_translator = text_translator
         self.graphWidget = pg.PlotWidget()
         self.setCentralWidget(self.graphWidget)
 
@@ -34,8 +36,8 @@ class ChartWindow(QMainWindow):
         self.graphWidget.setTitle(cam_name, color="b", size="30pt")
         # Add Axis Labels
         styles = {"color": "#f00", "font-size": "20px"}
-        self.graphWidget.setLabel("left", "Num of Vehicles", **styles)
-        self.graphWidget.setLabel("bottom", "Hours (H)", **styles)
+        self.graphWidget.setLabel("left", self.text_translator.linechart_num_of_vehicles, **styles)
+        self.graphWidget.setLabel("bottom", self.text_translator.linechart_hours, **styles)
         #Add legend
         self.graphWidget.addLegend()
         #Add grid
@@ -50,13 +52,16 @@ class ChartWindow(QMainWindow):
         pen4 = pg.mkPen(color=(255, 0, 0))
         pen5 = pg.mkPen(color=(0, 255, 0))
 
-        self.graphWidget.plot(hour, cars_data, name=f"Car {sum(cars_data)}",  pen=pen1, symbol='x', symbolSize=15, symbolBrush=('r'))
-        self.graphWidget.plot(hour, trucks_data, name=f"Truck {sum(trucks_data)}",  pen=pen2, symbol='+', symbolSize=15, symbolBrush=('g'))
-        self.graphWidget.plot(hour, buses_data, name=f"Bus {sum(buses_data)}",  pen=pen3, symbol='o', symbolSize=15, symbolBrush=('b'))
-        self.graphWidget.plot(hour, bicycle_data, name=f"Bicycle {sum(bicycle_data)}",  pen=pen4, symbol='o', symbolSize=15, symbolBrush=('r'))
-        self.graphWidget.plot(hour, mcycle_data, name=f"MCycle {sum(mcycle_data)}",  pen=pen5, symbol='x', symbolSize=15, symbolBrush=('g'))
+        self.graphWidget.plot(hour, cars_data, name=f"{self.text_translator.linechart_cars} {sum(cars_data)}",  pen=pen1, symbol='x', symbolSize=15, symbolBrush=('r'))
+        self.graphWidget.plot(hour, trucks_data, name=f"{self.text_translator.linechart_trucks} {sum(trucks_data)}",  pen=pen2, symbol='+', symbolSize=15, symbolBrush=('g'))
+        self.graphWidget.plot(hour, buses_data, name=f"{self.text_translator.linechart_buses} {sum(buses_data)}",  pen=pen3, symbol='o', symbolSize=15, symbolBrush=('b'))
+        self.graphWidget.plot(hour, bicycle_data, name=f"{self.text_translator.linechart_bicycles} {sum(bicycle_data)}",  pen=pen4, symbol='o', symbolSize=15, symbolBrush=('r'))
+        self.graphWidget.plot(hour, mcycle_data, name=f"{self.text_translator.linechart_motorcycles} {sum(mcycle_data)}",  pen=pen5, symbol='x', symbolSize=15, symbolBrush=('g'))
         
         # self.show()
+    
+    def setTextTranslator(self, text_translator):
+        self.text_translator = text_translator
 
 
 class BarChartWindow(QMainWindow):
@@ -71,7 +76,7 @@ class BarChartWindow(QMainWindow):
         self.win.setTitle(camera_name)
 
         # y = [random.randint(259, 583) for i in range(16)]
-        x = ['NN', 'NE', 'NW', 'NS', 'EN', 'EE', 'EW', 'ES', 'WN', 'WE', 'WW', 'WS', 'SN', 'SE', 'SW', 'SS']
+        x = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
         xval = list(range(1,len(x)+1))
 
         ticks=[]

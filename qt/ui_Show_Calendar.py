@@ -20,18 +20,19 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(450, 500)
+        MainWindow.resize(450, 600)
         MainWindow.setMinimumSize(QSize(450, 500))
-        MainWindow.setMaximumSize(QSize(450, 500))
+        MainWindow.setMaximumSize(QSize(450, 600))
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setMinimumSize(QSize(450, 294))
-        self.centralwidget.setMaximumSize(QSize(450, 500))
+        self.centralwidget.setMaximumSize(QSize(450, 600))
+        self.horizontalLayout = QHBoxLayout(self.centralwidget)
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.frame = QFrame(self.centralwidget)
         self.frame.setObjectName(u"frame")
-        self.frame.setGeometry(QRect(0, 0, 441, 461))
         self.frame.setMinimumSize(QSize(441, 301))
-        self.frame.setMaximumSize(QSize(441, 500))
+        self.frame.setMaximumSize(QSize(441, 600))
         self.frame.setFrameShape(QFrame.StyledPanel)
         self.frame.setFrameShadow(QFrame.Raised)
         self.verticalLayout = QVBoxLayout(self.frame)
@@ -46,6 +47,19 @@ class Ui_MainWindow(object):
         self.calendarWidget.setMaximumSize(QSize(16777215, 300))
 
         self.verticalLayout.addWidget(self.calendarWidget)
+
+        self.timeEdit = QTimeEdit(self.frame)
+        self.timeEdit.setObjectName(u"timeEdit")
+
+        self.verticalLayout.addWidget(self.timeEdit)
+
+        self.timeEdit_2 = QTimeEdit(self.frame)
+        self.timeEdit_2.setObjectName(u"timeEdit_2")
+        self.timeEdit_2.setCurrentSection(QDateTimeEdit.HourSection)
+        self.timeEdit_2.setCalendarPopup(False)
+        self.timeEdit_2.setTime(QTime(23, 59, 59))
+
+        self.verticalLayout.addWidget(self.timeEdit_2)
 
         self.label = QLabel(self.frame)
         self.label.setObjectName(u"label")
@@ -77,6 +91,9 @@ class Ui_MainWindow(object):
 
         self.verticalLayout.addLayout(self.verticalLayout_3)
 
+
+        self.horizontalLayout.addWidget(self.frame)
+
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
         self.menubar.setObjectName(u"menubar")
@@ -93,6 +110,7 @@ class Ui_MainWindow(object):
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"Calendar", None))
+        self.timeEdit_2.setDisplayFormat(QCoreApplication.translate("MainWindow", u"h:mm AP", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"TextLabel", None))
         self.showDataBtn.setText(QCoreApplication.translate("MainWindow", u"Show Data Hourly", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Show Data Cardinalwise", None))

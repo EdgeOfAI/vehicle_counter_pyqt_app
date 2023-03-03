@@ -414,6 +414,7 @@ class Model(QObject):
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
+        # source = 'https://www.youtube.com/watch?v=GgriNm5S2WE'
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold

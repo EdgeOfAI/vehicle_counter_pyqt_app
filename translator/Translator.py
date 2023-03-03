@@ -51,6 +51,16 @@ class Translator:
         self.show_calendar_window_show_data_cardinalwise = ''
         self.show_calendar_window_download_excel_data = ''
 
+        # linechart window translations
+        self.linlechart_title = ''
+        self.linechart_num_of_vehicles = ''
+        self.linechart_hours = ''
+        self.linechart_cars = ''
+        self.linechart_trucks = ''
+        self.linechart_buses = ''
+        self.linechart_bicycles = ''
+        self.linechart_motorcycles = ''
+
         # pop up messages 
         self.information = ''
         self.warning = ''
@@ -139,6 +149,16 @@ class Translator:
         self.show_calendar_window_show_data_cardinalwise = 'Show Data Cardinalwise'
         self.show_calendar_window_download_excel_data = 'Download Excel Data'
 
+        # linechart window translations
+        self.linlechart_title = 'Daily and Hourly data | Line Chart'
+        self.linechart_num_of_vehicles = 'Num of vehicles'
+        self.linechart_hours = 'Hour (H)'
+        self.linechart_cars = 'Cars'
+        self.linechart_trucks = 'Trucks'
+        self.linechart_buses = 'Buses'
+        self.linechart_bicycles = 'Bicycles'
+        self.linechart_motorcycles = 'MCycles'
+
         # pop up messages 
         self.information = 'Infoormation'
         self.warning = 'Warning'
@@ -201,6 +221,16 @@ class Translator:
         self.show_calendar_window_show_data_hourly = 'Soatlik ma\'lumotlarni ko\'rish'
         self.show_calendar_window_show_data_cardinalwise = 'Tomonlar bo\'yicha ma\'lumotlarni ko\'rish'
         self.show_calendar_window_download_excel_data = 'Excel ma\'lumotlarni yuklab olish'
+
+        # linechart window translations
+        self.linlechart_title = 'Kun va haftalik ma\'lumotlar'
+        self.linechart_num_of_vehicles = 'Mashinalar soni'
+        self.linechart_hours = 'Soatlar'
+        self.linechart_cars = 'Yengil avtomobillar'
+        self.linechart_trucks = 'Yuk avtomobillari'
+        self.linechart_buses = 'Avtobuslar'
+        self.linechart_bicycles = 'Velosipedlar'
+        self.linechart_motorcycles = 'Motosikllar'
 
         # pop up messages
         self.information = 'Ma\'lumot'
