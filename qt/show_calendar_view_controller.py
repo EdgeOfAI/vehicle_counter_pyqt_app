@@ -81,15 +81,31 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.hide()
     
     def createExcelData(self):
-        cardinal_sides = ['NN', 'NE', 'NW', 'NS', 'EN', 'EE', 'EW', 'ES', 'WN', 'WE', 'WW', 'WS', 'SN', 'SE', 'SW', 'SS']
+
+        cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
         cam_name = self.comboBox.currentText()
         self.excels_folder = 'downloaded_excel_files'
+        end_time = self.timeEdit_2.time()
+        start_time = self.timeEdit.time()
+
+        start_hour = f'0{start_time.hour()}' if len(str(start_time.hour())) == 1 else start_time.hour()
+        start_minute = f'0{start_time.minute()}' if len(str(start_time.minute())) == 1 else start_time.minute()
+        start_second = f'0{start_time.second()}' if len(str(start_time.second())) == 1 else start_time.second()
+
+        end_hour = f'0{end_time.hour()}' if len(str(end_time.hour())) == 1 else end_time.hour()
+        end_minute = f'0{end_time.minute()}' if len(str(end_time.minute())) == 1 else end_time.minute()
+        end_second = f'0{end_time.second()}' if len(str(end_time.second())) == 1 else end_time.second()
+
+        start_time_str = f'{start_hour}:{start_minute}:{start_second}'
+        end_time_str = f'{end_hour}:{end_minute}:{end_second}'
+        # print(start_time_str, end_time_str, 'Got from start and end time editors')
         if not Path(self.excels_folder).exists():
             os.makedirs(self.excels_folder)
         excel_file_name = os.path.join(self.excels_folder, f'{datetime.datetime.now()}_{cam_name}_{self.label.text()}.xlsx').replace('\\', '/').replace(' ', '').replace(':', '-')
         workbook = xlsxwriter.Workbook(excel_file_name)
         cardinal_worksheet = workbook.add_worksheet("Caradinalwise")
-        cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(get_all_data=True)
+        cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(start_time_str, end_time_str, get_all_data=True)
+        print(cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data)
         cf = workbook.add_format({'bg_color': 'yellow'})
         for i in range(len(cardinal_truck_data)+1):
             if i == 0:
@@ -118,17 +134,30 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.showPopup(f'{excel_file_name} '+self.text_translator.excel_data_written_success)
         workbook.close()
     
-    def get_cardinalwise_data(self, get_all_data=False):
+    def get_cardinalwise_data(self,start_time_str='00:00:00', end_time_str='23:59:59', get_all_data=False):
         cam_name = self.comboBox.currentText()
         cam_id = cam_name.split('.')[0]
         selected_date = self.calendarWidget.selectedDate().toString()
         selected_date = datetime.datetime.strptime(' '.join(selected_date.split(' ')[1:]), '%b %d %Y')
-        self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = {cam_id}")
+
+        selected_month = f'0{selected_date.month}' if len(str(selected_date.month)) == 1 else selected_date.month
+        selected_day = f'0{selected_date.day}' if len(str(selected_date.day)) == 1 else selected_date.day
+
+        start_date_time = f'{selected_date.year}-{selected_month}-{selected_day} {start_time_str}'
+        end_date_time = f'{selected_date.year}-{selected_month}-{selected_day} {end_time_str}'
+        print(start_date_time, end_date_time)
+        self.db_cur.execute(f"SELECT * FROM vehicles WHERE camera_id = {cam_id} and `time` >= '{start_date_time}' and `time` <= '{end_date_time}'")
         vehicles = self.db_cur.fetchall()
-        N_in = [vehicle for vehicle in vehicles if vehicle[8]=='North' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
-        E_in = [vehicle for vehicle in vehicles if vehicle[8] == 'East' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
-        W_in = [vehicle for vehicle in vehicles if vehicle[8] == 'West' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
-        S_in = [vehicle for vehicle in vehicles if vehicle[8] == 'South' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        print(vehicles)
+        # N_in = [vehicle for vehicle in vehicles if vehicle[8]=='North' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        # E_in = [vehicle for vehicle in vehicles if vehicle[8] == 'East' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        # W_in = [vehicle for vehicle in vehicles if vehicle[8] == 'West' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+        # S_in = [vehicle for vehicle in vehicles if vehicle[8] == 'South' and datetime.datetime.fromisoformat(vehicle[11]).day == selected_date.day and datetime.datetime.fromisoformat(vehicle[11]).month == selected_date.month and datetime.datetime.fromisoformat(vehicle[11]).year == selected_date.year]
+
+        N_in = [vehicle for vehicle in vehicles if vehicle[8] == 'North']
+        E_in = [vehicle for vehicle in vehicles if vehicle[8] == 'East']
+        W_in = [vehicle for vehicle in vehicles if vehicle[8] == 'West']
+        S_in = [vehicle for vehicle in vehicles if vehicle[8] == 'South']
 
         NN = [vehicle for vehicle in N_in if vehicle[9] == 'North']
         NE = [vehicle for vehicle in N_in if vehicle[9] == 'East']
@@ -420,3 +449,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         self.showDataBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_show_data_hourly, None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_show_data_cardinalwise, None))
         self.downloadExcelDataBtn.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_download_excel_data, None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_start_time, None))
+        self.timeEdit_2.setDisplayFormat(QCoreApplication.translate("MainWindow", u"h:mm:ss", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", self.text_translator.show_calendar_window_end_time, None))
+        self.timeEdit.setDisplayFormat(QCoreApplication.translate("MainWindow", u"h:mm:ss", None))

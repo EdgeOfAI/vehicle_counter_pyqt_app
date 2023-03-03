@@ -13,7 +13,7 @@
   <property name="minimumSize">
    <size>
     <width>450</width>
-    <height>500</height>
+    <height>600</height>
    </size>
   </property>
   <property name="maximumSize">
@@ -38,7 +38,7 @@
      <height>600</height>
     </size>
    </property>
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_4">
     <item>
      <widget class="QFrame" name="frame">
       <property name="minimumSize">
@@ -74,27 +74,53 @@
         </widget>
        </item>
        <item>
-        <widget class="QTimeEdit" name="timeEdit"/>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <item>
+          <widget class="QTimeEdit" name="timeEdit">
+           <property name="displayFormat">
+            <string>h:mm</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_2">
+           <property name="text">
+            <string>Start time</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
-        <widget class="QTimeEdit" name="timeEdit_2">
-         <property name="currentSection">
-          <enum>QDateTimeEdit::HourSection</enum>
-         </property>
-         <property name="displayFormat">
-          <string>h:mm AP</string>
-         </property>
-         <property name="calendarPopup">
-          <bool>false</bool>
-         </property>
-         <property name="time">
-          <time>
-           <hour>23</hour>
-           <minute>59</minute>
-           <second>59</second>
-          </time>
-         </property>
-        </widget>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QTimeEdit" name="timeEdit_2">
+           <property name="currentSection">
+            <enum>QDateTimeEdit::HourSection</enum>
+           </property>
+           <property name="displayFormat">
+            <string>h:mm</string>
+           </property>
+           <property name="calendarPopup">
+            <bool>false</bool>
+           </property>
+           <property name="time">
+            <time>
+             <hour>23</hour>
+             <minute>59</minute>
+             <second>59</second>
+            </time>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="label_3">
+           <property name="text">
+            <string>End time</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
        </item>
        <item>
         <widget class="QLabel" name="label">

@@ -48,6 +48,8 @@ class Translator:
         # show calendar window  translations
         self.show_calendar_window_title = ''
         self.show_calendar_window_show_data_hourly = ''
+        self.show_calendar_window_start_time = ''
+        self.show_calendar_window_end_time = ''
         self.show_calendar_window_show_data_cardinalwise = ''
         self.show_calendar_window_download_excel_data = ''
 
@@ -145,6 +147,8 @@ class Translator:
 
         # show calendar window  translations
         self.show_calendar_window_title = 'Calendar'
+        self.show_calendar_window_start_time = 'Start time'
+        self.show_calendar_window_end_time = 'End time'
         self.show_calendar_window_show_data_hourly = 'Show Data Hourly'
         self.show_calendar_window_show_data_cardinalwise = 'Show Data Cardinalwise'
         self.show_calendar_window_download_excel_data = 'Download Excel Data'
@@ -218,6 +222,8 @@ class Translator:
 
         # show calendar window  translations
         self.show_calendar_window_title = 'Kalendar'
+        self.show_calendar_window_start_time = 'Boshlanish vaqti'
+        self.show_calendar_window_end_time = 'Tugash vaqti'
         self.show_calendar_window_show_data_hourly = 'Soatlik ma\'lumotlarni ko\'rish'
         self.show_calendar_window_show_data_cardinalwise = 'Tomonlar bo\'yicha ma\'lumotlarni ko\'rish'
         self.show_calendar_window_download_excel_data = 'Excel ma\'lumotlarni yuklab olish'
