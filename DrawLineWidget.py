@@ -3,16 +3,18 @@ import cv2
 
 class DrawLineWidget(object):
     def __init__(self, img, db_conn=None, db_cur=None, added_cam_id=-1):
+        self.scale = 2
+        self.coordinal_side_text = 'A'
         self.original_image = img.copy()
         self.clone = self.original_image.copy()
-        self.clone2 = self.original_image.copy()
+        self.clone2 = cv2.resize(self.clone.copy(), [int(self.clone.shape[1]/self.scale), int(self.clone.shape[0]/self.scale)])
         self.font = cv2.FONT_HERSHEY_SIMPLEX
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.cam_id = added_cam_id
 
-        cv2.namedWindow('image')
-        cv2.setMouseCallback('image', self.extract_coordinates)
+        cv2.namedWindow('Image')
+        cv2.setMouseCallback('Image', self.extract_coordinates)
 
         # List to store start/end points
         self.image_coordinates = []
@@ -20,18 +22,17 @@ class DrawLineWidget(object):
 
         # Use putText() method for inserting text on video
         cv2.putText(self.clone2, 
-                    f'Draw NORTH side line', 
+                    f'A', 
                     (50, 50), 
                     self.font, 1, 
-                    (0, 0, 255), 
+                    (0, 0, 0), 
                     2, 
                     cv2.LINE_4)
 
     def extract_coordinates(self, event, x, y, flags, parameters):
-        scale = 2
 
-        x = x*scale
-        y = y*scale
+        x = x*self.scale
+        y = y*self.scale
         
         # Record starting (x,y) coordinates on left mouse button click
         if event == cv2.EVENT_LBUTTONDOWN:
@@ -45,34 +46,41 @@ class DrawLineWidget(object):
             
             # Draw line
             cv2.line(self.clone, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)
-            cv2.line(self.clone2, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)
+            cv2.putText(self.clone, 
+                        self.coordinal_side_text, 
+                        (self.image_coordinates[0][0], self.image_coordinates[0][1]), 
+                        self.font, 3, 
+                        (0, 0, 255),  
+                        2, 
+                        cv2.LINE_4)
+            # cv2.line(self.clone2, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)
 
             num_coordinates = len(self.list_coordinates)
-            if num_coordinates == 1:
-                coordinal_side_text = 'NORTH'
+            if num_coordinates == 0:
+                self.coordinal_side_text = 'A'
                 update_cardial_sides_query = ''
-            elif num_coordinates == 2:
-                coordinal_side_text = 'EAST'
+            elif num_coordinates == 1:
+                self.coordinal_side_text = 'B'
                 # write north coordinates into database
                 update_cardial_sides_query = f'Update cameras set nx1 = {self.image_coordinates[0][0]}, ny1 = {self.image_coordinates[0][1]}, nx2 = {self.image_coordinates[1][0]}, ny2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
-            elif num_coordinates == 3:
-                coordinal_side_text = 'WEST'
+            elif num_coordinates == 2:
+                self.coordinal_side_text = 'C'
                 # write east coordinates into database
                 update_cardial_sides_query = f'Update cameras set ex1 = {self.image_coordinates[0][0]}, ey1 = {self.image_coordinates[0][1]}, ex2 = {self.image_coordinates[1][0]}, ey2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
-            elif num_coordinates == 4:
-                coordinal_side_text = 'SOUTH'
+            elif num_coordinates == 3:
+                self.coordinal_side_text = 'D'
                 # write west coordinates into database
                 update_cardial_sides_query = f'Update cameras set wx1 = {self.image_coordinates[0][0]}, wy1 = {self.image_coordinates[0][1]}, wx2 = {self.image_coordinates[1][0]}, wy2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
-            elif num_coordinates == 5:
-                coordinal_side_text = ''
+            elif num_coordinates == 4:
+                self.coordinal_side_text = ''
                 # write south coordinates into database
                 update_cardial_sides_query = f'Update cameras set sx1 = {self.image_coordinates[0][0]}, sy1 = {self.image_coordinates[0][1]}, sx2 = {self.image_coordinates[1][0]}, sy2 = {self.image_coordinates[1][1]} where id = {self.cam_id}'
 
             else:
-                coordinal_side_text = ''
+                self.coordinal_side_text = ''
                 update_cardial_sides_query = None
             
             if update_cardial_sides_query and self.cam_id > 0:
@@ -80,11 +88,12 @@ class DrawLineWidget(object):
                 self.db_conn.commit()
             
             # print('Shape', [self.clone.shape[0]/2, self.clone.shape[1]/2])
-            self.clone2 = cv2.resize(self.clone.copy(), [int(self.clone.shape[1]/scale), int(self.clone.shape[0]/scale)])
-            
-            text = f'Draw {coordinal_side_text} side line'
 
-            if coordinal_side_text:
+            self.clone2 = cv2.resize(self.clone.copy(), [int(self.clone.shape[1]/self.scale), int(self.clone.shape[0]/self.scale)])
+            
+            text = f'{self.coordinal_side_text}'
+
+            if self.coordinal_side_text:
                 # Use putText() method for inserting text on video
                 cv2.putText(self.clone2, 
                             text, 
@@ -94,11 +103,16 @@ class DrawLineWidget(object):
                             2, 
                             cv2.LINE_4)
 
-            cv2.imshow("image", self.clone2) 
+            cv2.imshow("Image", self.clone2) 
+            # return self.clone2
 
         # Clear drawing boxes on right mouse button click
-        elif event == cv2.EVENT_RBUTTONDOWN:
+        elif event == cv2.EVENT_RBUTTONUP:
             self.clone = self.original_image.copy()
+            self.clone2 = self.original_image.copy()
+            self.image_coordinates = []
+            self.list_coordinates = []
+
 
     def show_image(self):
         return self.clone2

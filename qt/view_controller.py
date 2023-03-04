@@ -128,6 +128,7 @@ class ViewController(QWidget, Ui_Form):
             rval, frame = f.read()
             f.release()
             self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur)
+            cv2.imshow('Image', self.draw_line_widget.show_image())
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
         else:
