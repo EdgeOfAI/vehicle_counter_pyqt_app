@@ -75,6 +75,16 @@ class Translator:
         self.num_cameras_exceeded = ''
         self.no_cameras_found_error = ''
 
+        ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
+
+        self.class_names = {
+            'car':'yengil a.',
+            'truck':'yuku a.',
+            'bus':'avtobus',
+            'bicycle':'velosiped',
+            'motorcycle':'motosikl'
+        }
+
         self.week_days = {
             'Sun': 'Yak',
             'Mon': "Dush",

@@ -725,6 +725,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
         self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[0:4]
+        self.model.text_translator = self.text_translator
         # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         self.startInferenceSignal.emit()
     

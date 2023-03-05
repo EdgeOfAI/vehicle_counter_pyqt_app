@@ -591,6 +591,8 @@ class Model(QObject):
         # print(self.colors)
         # color = self.colors[id % len(self.colors)]
         color = self.colors[self.allowed_classes.index(class_name)]
+        if self.text_translator.lang == 'uz':
+            class_name = self.text_translator.class_names[class_name]
         # color = [i * 255 for i in color]
         cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), color, 2)
         cv2.rectangle(frame, (x_min, y_min-30), (x_min+(len(class_name)+len(str(id)) )*17, y_min), color, -1)
