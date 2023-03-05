@@ -46,7 +46,7 @@ class Model(QObject):
     error_signal = Signal(str)
     vehicle_count_signal = Signal(int,int,int,np.ndarray,str,int)
 
-    def __init__(self, conn, cur):
+    def __init__(self, conn, cur, draw_color):
         super().__init__()
         # Definition of the parameters
         self.sess = None
@@ -74,10 +74,12 @@ class Model(QObject):
         self.cardinal_direction_points = []
         self.cam_id = 0
         self.counted_ids = []
+        self.draw_color = draw_color
         self.save_crops_path = './images'
         if not Path(self.save_crops_path).exists():
             os.makedirs(self.save_crops_path)
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
+        self.allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
         self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
         self.images_root = None
@@ -87,7 +89,7 @@ class Model(QObject):
 
         #initialize color map
         cmap = plt.get_cmap('tab20b')
-        self.colors = [cmap(i)[:3] for i in np.linspace(0, 1, 20)]
+        self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
 
 #======================= Setters  ===========================
     def update_db_conn_cur(self, db_conn, db_cur):
@@ -480,7 +482,7 @@ class Model(QObject):
                 pred = non_max_suppression(pred, conf_thres, iou_thres, None, agnostic_nms, max_det=max_det)
 
                 bboxes, scores, classes = [], [], []
-                allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
+                
                 # print('Predictions', pred)
                 # Process predictions
                 for i, det in enumerate(pred):  # per image
@@ -495,7 +497,7 @@ class Model(QObject):
                         for *xyxy, conf, cls in reversed(det):
                             class_indx = int(cls.cpu())
                             class_name = class_names[class_indx]
-                            if class_name not in allowed_classes:
+                            if class_name not in self.allowed_classes:
                                 continue
                             classes.append(cls.cpu())
                             scores.append(conf.cpu())
@@ -530,8 +532,16 @@ class Model(QObject):
 
 
                 # draw cardinal directions
-                for cardinal_direction_positions in self.cardinal_direction_points:
-                    original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255,  255), 3)
+                # print(len(self.cardinal_direction_points))
+                for cardinal_direction_positions, side_txt in zip(self.cardinal_direction_points[:4], ['A', 'B', 'C', 'D']):
+                    cv2.putText(original_frame, 
+                                side_txt, 
+                                (cardinal_direction_positions[0][0], cardinal_direction_positions[0][1]), 
+                                cv2.FONT_HERSHEY_SIMPLEX, 3, 
+                                self.draw_color,  
+                                2, 
+                                cv2.LINE_4)
+                    original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], self.draw_color, 3)
 
                 # update frame on UI
                 self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
@@ -578,8 +588,10 @@ class Model(QObject):
         return name
 
     def drawBoundingBox(self, frame:np.ndarray, class_name:str, id:int, x_min, y_min, x_max, y_max, highlight=False):
-        color = self.colors[id % len(self.colors)]
-        color = [i * 255 for i in color]
+        # print(self.colors)
+        # color = self.colors[id % len(self.colors)]
+        color = self.colors[self.allowed_classes.index(class_name)]
+        # color = [i * 255 for i in color]
         cv2.rectangle(frame, (x_min, y_min), (x_max, y_max), color, 2)
         cv2.rectangle(frame, (x_min, y_min-30), (x_min+(len(class_name)+len(str(id)) )*17, y_min), color, -1)
         cv2.putText(frame, class_name + "-" + str(id),(x_min, int(y_min-10)),0, 0.75, (255,255,255),2)

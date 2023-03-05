@@ -2,9 +2,10 @@ import cv2
 
 
 class DrawLineWidget(object):
-    def __init__(self, img, db_conn=None, db_cur=None, added_cam_id=-1):
+    def __init__(self, img, db_conn=None, db_cur=None, added_cam_id=-1, draw_color=None):
         self.scale = 2
         self.coordinal_side_text = 'A'
+        self.draw_color = draw_color
         self.original_image = img.copy()
         self.clone = self.original_image.copy()
         self.clone2 = cv2.resize(self.clone.copy(), [int(self.clone.shape[1]/self.scale), int(self.clone.shape[0]/self.scale)])
@@ -45,12 +46,12 @@ class DrawLineWidget(object):
             self.list_coordinates.append([self.image_coordinates[0], self.image_coordinates[1]])
             
             # Draw line
-            cv2.line(self.clone, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)
+            cv2.line(self.clone, self.image_coordinates[0], self.image_coordinates[1], self.draw_color, 2)
             cv2.putText(self.clone, 
                         self.coordinal_side_text, 
                         (self.image_coordinates[0][0], self.image_coordinates[0][1]), 
                         self.font, 3, 
-                        (0, 0, 255),  
+                        self.draw_color,  
                         2, 
                         cv2.LINE_4)
             # cv2.line(self.clone2, self.image_coordinates[0], self.image_coordinates[1], (36,255,12), 2)

@@ -1,5 +1,5 @@
 # Shakh)
-import sys
+import sys, cv2
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
 from PySide2.QtCore import Signal, QCoreApplication
@@ -11,13 +11,14 @@ from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
-    def __init__(self, db_conn, db_cur, icon_path, text_translator):
+    def __init__(self, db_conn, db_cur, icon_path, text_translator, draw_color):
         super(AddCameraWindow, self).__init__()
         self.db_conn = db_conn
         self.db_cur = db_cur
         self.icon_path = icon_path
         self.aboutToQuit = QAction("Quit", self)
         self.text_translator = text_translator
+        self.draw_color = draw_color
         self.setupUi(self)
 
         self.setupSignalSlots()
@@ -72,7 +73,8 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                             False
                                         )
             frame = dataset.get_frame()
-            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1)
+            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
+            cv2.imshow('Image', self.draw_line_widget.show_image())
             self.cardinal_direction_points = self.draw_line_widget.list_coordinates
 
             msg = QMessageBox()

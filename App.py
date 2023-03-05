@@ -1,3 +1,6 @@
+import os
+os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+
 import sys
 import sqlite3
 from PySide2.QtCore import Qt, QThread
@@ -17,6 +20,7 @@ class App(QApplication):
     def __init__(self, sys_argv):
         super().__init__()
         text_translator = Translator()
+        self.draw_color = (35, 22, 164)  # (164, 22, 35) 
         text_translator.translateToEnglish()
         qss_file = QtCore.QFile("style.qss")
         # qss = QtCore.QTextStream(qss_file)
@@ -79,12 +83,12 @@ class App(QApplication):
         conn.commit()
 
         self.modelThread = QThread()
-        self.model = Model(conn, cur)
+        self.model = Model(conn, cur, self.draw_color)
         self.model.moveToThread(self.modelThread)
         self.modelThread.start()
         self.modelThread.setPriority(QThread.HighestPriority)
         qss_file = open('style.qss').read()
-        self.viewController = ViewController(self.model, conn, cur, qss_file, text_translator)
+        self.viewController = ViewController(self.model, conn, cur, qss_file, text_translator, self.draw_color)
         # self.viewController.setStyleSheet(open('style.qss').read())
         self.viewController.show()
 

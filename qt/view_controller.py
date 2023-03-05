@@ -21,9 +21,10 @@ class ViewController(QWidget, Ui_Form):
     startCountingSignal = Signal()
     startCountingAnalysisSignal = Signal()
 
-    def __init__(self, model, conn, cur, qss_file, text_translator):
+    def __init__(self, model, conn, cur, qss_file, text_translator, draw_color):
         super().__init__()
         self.model = model
+        self.draw_color = draw_color
         self.text_translator = text_translator
         self.setStyleSheet(qss_file)
         self.icon_path = 'icon.png'
@@ -51,7 +52,7 @@ class ViewController(QWidget, Ui_Form):
         self.use_video = False
         self.is_refresh_clicked = 0
 
-        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
+        self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator, self.draw_color)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path, self.text_translator)
@@ -127,7 +128,7 @@ class ViewController(QWidget, Ui_Form):
             f = cv2.VideoCapture(source)
             rval, frame = f.read()
             f.release()
-            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur)
+            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
             cv2.imshow('Image', self.draw_line_widget.show_image())
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
@@ -723,7 +724,7 @@ class ViewController(QWidget, Ui_Form):
         # print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
-        self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[1:5]
+        self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[0:4]
         # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         self.startInferenceSignal.emit()
     
