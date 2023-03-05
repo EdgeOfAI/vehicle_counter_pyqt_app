@@ -83,8 +83,8 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def createExcelData(self):
 
         cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
-        in_sides = ['A_in', 'B_in', 'C_in', 'D_in']
-        out_sides = ['A_out', 'B_out', 'C_out', 'D_out']
+        in_sides = [self.text_translator.a_in, self.text_translator.b_in, self.text_translator.c_in, self.text_translator.d_in]
+        out_sides = [self.text_translator.a_out, self.text_translator.b_out, self.text_translator.c_out, self.text_translator.d_out]
         cam_name = self.comboBox.currentText()
         self.excels_folder = 'downloaded_excel_files'
         end_time = self.timeEdit_2.time()
@@ -106,25 +106,25 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         excel_file_name = os.path.join(self.excels_folder, f'{datetime.datetime.now()}_{cam_name}_{self.label.text()}.xlsx').replace('\\', '/').replace(' ', '').replace(':', '-')
         workbook = xlsxwriter.Workbook(excel_file_name)
 
-        cardinal_worksheet = workbook.add_worksheet("Caradinalwise")
-        trucks_worksheet = workbook.add_worksheet('Trucks')
-        cars_worksheet = workbook.add_worksheet('Cars')
-        buses_worksheet = workbook.add_worksheet('Buses')
-        bicycles_worksheet = workbook.add_worksheet('Bicycles')
-        motorcycles_worksheet = workbook.add_worksheet('Motorcycles')
-        total_worksheet = workbook.add_worksheet('Total')
+        cardinal_worksheet = workbook.add_worksheet(self.text_translator.cardinalwise)
+        trucks_worksheet = workbook.add_worksheet(self.text_translator.linechart_trucks)
+        cars_worksheet = workbook.add_worksheet(self.text_translator.linechart_cars)
+        buses_worksheet = workbook.add_worksheet(self.text_translator.linechart_buses)
+        bicycles_worksheet = workbook.add_worksheet(self.text_translator.linechart_bicycles)
+        motorcycles_worksheet = workbook.add_worksheet(self.text_translator.linechart_motorcycles)
+        total_worksheet = workbook.add_worksheet(self.text_translator.total)
 
         cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(start_time_str, end_time_str, get_all_data=True)
         cf = workbook.add_format({'bg_color': 'yellow'})
         for i in range(len(cardinal_truck_data)+1):
             if i == 0:
                 cardinal_worksheet.write(0, i, '')
-                cardinal_worksheet.write(1, i, 'Truck')
-                cardinal_worksheet.write(2, i, 'Car')
-                cardinal_worksheet.write(3, i, 'Bus')
-                cardinal_worksheet.write(4, i, 'Bicycle')
-                cardinal_worksheet.write(5, i, 'Motorcycle')
-                cardinal_worksheet.write(6, i, 'Total')
+                cardinal_worksheet.write(1, i, self.text_translator.linechart_trucks)
+                cardinal_worksheet.write(2, i, self.text_translator.linechart_cars)
+                cardinal_worksheet.write(3, i, self.text_translator.linechart_buses)
+                cardinal_worksheet.write(4, i, self.text_translator.linechart_bicycles)
+                cardinal_worksheet.write(5, i, self.text_translator.linechart_motorcycles)
+                cardinal_worksheet.write(6, i, self.text_translator.total)
             else:
                 cardinal_side = cardinal_sides[i-1]
                 truck_data = len(cardinal_truck_data[i-1])

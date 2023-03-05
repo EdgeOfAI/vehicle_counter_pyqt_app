@@ -53,6 +53,8 @@ class Translator:
         self.show_calendar_window_end_time = ''
         self.show_calendar_window_show_data_cardinalwise = ''
         self.show_calendar_window_download_excel_data = ''
+        self.total = ''
+        self.cardinalwise = ''
 
         # linechart window translations
         self.linlechart_title = ''
@@ -75,7 +77,6 @@ class Translator:
         self.num_cameras_exceeded = ''
         self.no_cameras_found_error = ''
 
-        ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
 
         self.class_names = {
             'car':'yengil a.',
@@ -164,6 +165,8 @@ class Translator:
         self.show_calendar_window_show_data_hourly = 'Show Data Hourly'
         self.show_calendar_window_show_data_cardinalwise = 'Show Data Cardinalwise'
         self.show_calendar_window_download_excel_data = 'Download Excel Data'
+        self.total = 'Total'
+        self.cardinalwise = 'Cardinalwise'
 
         # linechart window translations
         self.linlechart_title = 'Daily and Hourly data | Line Chart'
@@ -185,6 +188,7 @@ class Translator:
         self.excel_data_written_success = 'data written!'
         self.num_cameras_exceeded = 'Number of cameras = 3. You cannot add more!'
         self.no_cameras_found_error = 'No camera found in database. Please add camera first!'
+
     
     def translateToUzbek(self):
         self.lang = 'uz'
@@ -240,6 +244,8 @@ class Translator:
         self.show_calendar_window_show_data_hourly = 'Soatlik ma\'lumotlarni ko\'rish'
         self.show_calendar_window_show_data_cardinalwise = 'Tomonlar bo\'yicha ma\'lumotlarni ko\'rish'
         self.show_calendar_window_download_excel_data = 'Excel ma\'lumotlarni yuklab olish'
+        self.total = 'Umumiy'
+        self.cardinalwise = 'Tomonlar bo\'yicha'
 
         # linechart window translations
         self.linlechart_title = 'Kun va haftalik ma\'lumotlar'
@@ -261,4 +267,5 @@ class Translator:
         self.excel_data_written_success = 'excel yaratildi!'
         self.num_cameras_exceeded = 'Kameralar soni 3 taga yetdi boshqa qo\'sha olmaysiz'
         self.no_cameras_found_error = 'Bazada kamera topilmadi'
+
         
