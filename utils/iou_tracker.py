@@ -1,7 +1,5 @@
-import sys
-sys.path.append('utils/')
-from misc import iou_xywh as iou
-from tracker import Tracker
+from utils.misc import iou_xywh as iou
+from utils.tracker import Tracker
 
 
 class IOUTracker(Tracker):

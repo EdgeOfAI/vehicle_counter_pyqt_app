@@ -1,12 +1,10 @@
-import sys
-sys.path.append('utils/')
 from collections import OrderedDict
 import numpy as np
 from scipy.spatial import distance
 from scipy.optimize import linear_sum_assignment
-from tracker import Tracker
-from track import KFTrackCentroid
-from misc import get_centroid
+from utils.tracker import Tracker
+from utils.track import KFTrackCentroid
+from utils.misc import get_centroid
 
 
 def assign_tracks2detection_centroid_distances(bbox_tracks, bbox_detections, distance_threshold=10.):

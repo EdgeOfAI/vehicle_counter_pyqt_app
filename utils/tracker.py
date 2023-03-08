@@ -1,10 +1,8 @@
 from collections import OrderedDict
 import numpy as np
 from scipy.spatial import distance
-import sys
-sys.path.append('utils/')
-from misc import get_centroid
-from track import Track
+from utils.misc import get_centroid
+from utils.track import Track
 
 
 class Tracker:

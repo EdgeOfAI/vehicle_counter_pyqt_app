@@ -310,14 +310,14 @@ class LoadImages:
             assert im0 is not None, f'Image Not Found {path}'
             s = f'image {self.count}/{self.nf} {path}: '
 
-        if self.transforms:
-            im = self.transforms(im0)  # transforms
-        else:
-            im = letterbox(im0, self.img_size, stride=self.stride, auto=self.auto)[0]  # padded resize
-            im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
-            im = np.ascontiguousarray(im)  # contiguous
+        # if self.transforms:
+        #     im = self.transforms(im0)  # transforms
+        # else:
+        #     im = letterbox(im0, self.img_size, stride=self.stride, auto=self.auto)[0]  # padded resize
+        #     im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+        #     im = np.ascontiguousarray(im)  # contiguous
 
-        return path, im, im0
+        return path, im0, im0
 
     def _new_video(self, path):
         # Create a new video capture object

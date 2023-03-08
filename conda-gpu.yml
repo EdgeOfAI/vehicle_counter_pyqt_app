@@ -5,18 +5,18 @@ dependencies:
   - pip
   - matplotlib
   - scipy
-  - pip:
-    - opencv-python
-    - PySide2==5.15
-    - numpy==1.21
-    - pyqtgraph
-    - qtmodern
-    - lxml
-    - tqdm
-    - absl-py
-    - easydict
-    - pillow
-    - shapely
-    - h5py
-    - hikvisionapi
-    - xlsxwriter 
+  # - PySide2
+  - pyinstaller
+  # - opencv-python
+  - pyqtgraph
+  # - qtmodern
+  - lxml
+  - tqdm
+  - absl-py
+  # - easydict
+  - pillow
+  - shapely
+  - h5py
+  # - hikvisionapi
+  - 
+    

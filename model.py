@@ -18,12 +18,14 @@ from yolov5.utils.dataloaders import IMG_FORMATS, VID_FORMATS, LoadImages, LoadS
 from yolov5.utils.general import (LOGGER, Profile, check_img_size, check_imshow, check_requirements, colorstr, cv2,
                            increment_path, non_max_suppression, print_args, scale_boxes, strip_optimizer, xyxy2xywh)
 from yolov5.utils.torch_utils import select_device, smart_inference_mode
+from yolov5.utils.augmentations import classify_transforms, letterbox
+from yolov5.models.experimental import attempt_load
+import torch.nn.functional as F
 # SORT tracker
 from utils.sort_tracker import SORT
-trackers = []
 sort_tracker = SORT(max_lost=25, iou_threshold=0.3)
-trackableObjects = {}
-
+from utils.trackableobject import TrackableObject
+from utils.image_cropper import CropImage
 ########################################
 MAX_DETECTION_NUM = 500
 
@@ -79,14 +81,21 @@ class Model(QObject):
         if not Path(self.save_crops_path).exists():
             os.makedirs(self.save_crops_path)
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
-        self.allowed_classes = ['truck', 'car', 'bus', 'bicycle', 'motorcycle']
+        
+        self.allowed_classes = ['bicycle', 'car', 'motorcycle', 'bus', 'truck',  'van']
         self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
         self.images_root = None
 
         self.db_conn = conn 
         self.db_cur = cur 
-
+        self.trackableObjects = {}
+        self.image_cropper = CropImage()
+        self.det_area_x0 = 0
+        self.det_area_y0 = 0
+        self.det_area_x1 = 1280
+        self.det_area_y1 = 720
+        self.margin = 20
         #initialize color map
         cmap = plt.get_cmap('tab20b')
         self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
@@ -164,7 +173,25 @@ class Model(QObject):
         self.count_method = params['count_method']
 
 #==================== Counting Functions ========================
+    @Slot()
+    def custom_softmax(x):
+        f_x = np.exp(x)/np.sum(np.exp(x))
+        return f_x[0]
+    @Slot()
+    def get_class_name(self, img, model_cls):
+        class_name = None
+        transform = classify_transforms(64)
+        img = transform(img)
+        img = torch.Tensor(img).to(torch.device('cuda:0'))
+        img = img.float()
+        img = img[None]
+        preds = model_cls(img)
+        preds = F.softmax(preds, dim=1)
+        preds = preds[0].argsort(0, descending=True)[:1].tolist()
+        # print("preds: ", preds)
+        class_name = preds[0]
 
+        return class_name
     @Slot()
     def startCounting(self):
         if not self.validateInputFiles():
@@ -215,7 +242,7 @@ class Model(QObject):
                 y_max = detection[5]
 
                 # detected = self.countVehicles(frame, self.frame_counter, detection)
-                frame = self.drawBoundingBox(frame_original, class_name, uid, x_min, y_min, x_max, y_max, detected)
+                frame = self.drawBoundingBox(frame_original, class_name, uid, x_min, y_min, x_max, y_max)
 
             self.frame_counter += 1
             self.frame_update_signal.emit(frame, self.frame_counter)
@@ -415,10 +442,11 @@ class Model(QObject):
         # self.cardinal_direction_points = self.draw_line_widget.list_coordinates
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
+        weights_cls = ['./weights/classification.pt']  # model path or triton URL
         source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
         # source = 'https://www.youtube.com/watch?v=GgriNm5S2WE'
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
-        imgsz=1280  # inference size (height, width)
+        imgsz=640  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
         iou_thres=0.4  # NMS IOU threshold
         max_det=1000  # maximum detections per image
@@ -432,6 +460,8 @@ class Model(QObject):
         # Load model
         device = select_device()
         model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
+        model_cls = DetectMultiBackend(weights_cls, device=device, dnn=dnn, data=data)
+        
         stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size
 
@@ -457,6 +487,17 @@ class Model(QObject):
 
         frame_num = 0
         self.stop_counting = False
+        # [[(292, 426), (752, 258)], [(796, 300), (902, 438)], [(896, 442), (576, 636)], [(318, 422), (506, 602)]]
+        x_list = []
+        y_list = []
+        for line in self.cardinal_direction_points:
+            for point in line:
+                x_list.append(point[0])
+                y_list.append(point[1])
+        self.det_area_x0 = min(x_list) - self.margin 
+        self.det_area_y0 = min(y_list) - self.margin
+        self.det_area_x1 = max(x_list) + self.margin
+        self.det_area_y1 = max(y_list) + self.margin
         
         for path, im, im0s in dataset:
             try:
@@ -467,6 +508,19 @@ class Model(QObject):
                 if self.use_video:
                     self.time_now += self.add_time
                 original_frame = im0s.copy()
+                ################
+                self.det_area_x0 = max(0, self.det_area_x0)
+                self.det_area_y0 = max(0, self.det_area_y0)
+                self.det_area_x1 = min(self.det_area_x1, original_frame.shape[1])
+                self.det_area_y1 = min(self.det_area_y1, original_frame.shape[0])
+               
+                cv2.rectangle(original_frame, (self.det_area_x0, self.det_area_y0), (self.det_area_x1, self.det_area_y1), (0,255,0), 2)
+                det_area = im[self.det_area_y0:self.det_area_y1, self.det_area_x0:self.det_area_x1]
+
+                im = letterbox(det_area, imgsz, stride=stride)[0]  # padded resize
+                im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+                im = np.ascontiguousarray(im)  # contiguous
+                ###############
                 frame_num += 1
                 frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
                 im = torch.from_numpy(im).to(model.device)
@@ -487,43 +541,58 @@ class Model(QObject):
                 # Process predictions
                 for i, det in enumerate(pred):  # per image
                     seen += 1
-                    p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
-
+                    # p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
                     if len(det):
                         # print('Detes', det)
                         # Rescale boxes from img_size to im0 size
-                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0.shape).round()
+                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], det_area.shape).round()
                         # Write results
                         for *xyxy, conf, cls in reversed(det):
                             class_indx = int(cls.cpu())
                             class_name = class_names[class_indx]
-                            if class_name not in self.allowed_classes:
-                                continue
+                            # if class_name not in self.allowed_classes:
+                            #     continue
                             classes.append(cls.cpu())
                             scores.append(conf.cpu())
                             # print(xyxy)
                             xmin, ymin, xmax, ymax = xyxy
-                            bboxes.append(np.array([xmin.cpu(), ymin.cpu(), xmax.cpu(), ymax.cpu()]))
+                            xmin, ymin, xmax, ymax = xmin.cpu()+self.det_area_x0, ymin.cpu()+self.det_area_y0, xmax.cpu() + self.det_area_x0, ymax.cpu()+self.det_area_y0
+                            bboxes.append(np.array([xmin, ymin, xmax, ymax]))
+                           
                             # # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
                             # xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
                             # bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
-
                 objects = sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
                 obj_num = 0
+                # print("len objs: ", len(objects))
                 for obj in objects:
                     # print(obj)
                     objectID = obj[1]
                     x_min, y_min, x_max, y_max = int(obj[2]), int(obj[3]), int(obj[4]), int(obj[5])
-                    class_name = class_names[int(obj[6])]
+                    track_obj = self.trackableObjects.get(objectID, None)
+                    if track_obj is None:
+                        track_obj = TrackableObject(objectID)
+                    if  not track_obj.classified:
+                        param = {
+                        "org_img": original_frame,
+                        "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
+                        "scale": 1,
+                        "out_w": 64,
+                        "out_h": 64,
+                        "crop": True,
+                            }
+                        crop = self.image_cropper.crop(**param)
+                        # crop = im0s[y_min:y_max, x_min:x_max]
+                        class_name = self.get_class_name(crop, model_cls)
+                        track_obj.class_name=class_name
+                        track_obj.classified = True
+                    self.trackableObjects[objectID] = track_obj
+                    class_name = self.allowed_classes[track_obj.class_name]
                     class_id = self.getClassId(class_name)
-                    frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
 
-                    # Count vehicles
-                    # print('I am in')
-                    # print('Before custom vehicles count')
+                    frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
                     self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
-                    # print('After custom vehicle count')
-                    # detected = self.countVehicles(original_frame, frame_num, frame_data[obj_num])
+
 
                     # draw bbox on screen
                     original_frame = self.drawBoundingBox(original_frame, class_name, objectID, x_min, y_min, x_max, y_max)

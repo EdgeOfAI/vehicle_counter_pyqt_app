@@ -1,7 +1,5 @@
 class TrackableObject:
-	def __init__(self, objectID, centroid, head, startY):
+	def __init__(self, objectID):
 		self.objectID = objectID
-		self.centroids = [centroid]
-		self.head = head
-		self.counted = False
-		self.startY = startY
+		self.classified = False
+		self.class_name = 0
