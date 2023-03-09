@@ -432,12 +432,12 @@ class ViewController(QWidget, Ui_Form):
                 self.carCount.display(self.carCount.intValue()+1)
                 # table = self.carPreviewTable
             elif class_id == 3:
-                self.busCount.display(self.busCount.intValue()+1)
+                self.NNbusCount.display(self.NNbusCount.intValue()+1)
                 # table = self.busPreviewTable
             elif class_id == 4:
                 self.NNbicycleCount.display(self.NNbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.NNmcycle.display(self.NNmcycle.intValue()+1)
+                self.NNmcycleCount.display(self.NNmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '01':  # NE
@@ -454,7 +454,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.NEbicycleCount.display(self.NEbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.NEmcycle.display(self.NEmcycle.intValue()+1)
+                self.NEmcycleCount.display(self.NEmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '02':  # NW
@@ -471,7 +471,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.NWbicycleCount.display(self.NWbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.NWmcycle.display(self.NWmcycle.intValue()+1)
+                self.NWmcycleCount.display(self.NWmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '03':  # NS
@@ -488,7 +488,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.NSbicycleCount.display(self.NSbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.NSmcycle.display(self.NSmcycle.intValue()+1)
+                self.NSmcycleCount.display(self.NSmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '10':  # EN
@@ -505,7 +505,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.ENbicycleCount.display(self.ENbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.ENmcycle.display(self.ENmcycle.intValue()+1)
+                self.ENmcycleCount.display(self.ENmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '11':  # EE
@@ -522,7 +522,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.EEbicycleCount.display(self.EEbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.EEmcycle.display(self.EEmcycle.intValue()+1)
+                self.EEmcycleCount.display(self.EEmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '12':  # EW
@@ -539,7 +539,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.EWbicycleCount.display(self.EWbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.EWmcycle.display(self.EWmcycle.intValue()+1)
+                self.EWmcycleCount.display(self.EWmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '13':  # ES
@@ -556,7 +556,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.ESbicycleCount.display(self.ESbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.ESmcycle.display(self.ESmcycle.intValue()+1)
+                self.ESmcycleCount.display(self.ESmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '20':  # WN
@@ -573,7 +573,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.WNbicycleCount.display(self.WNbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.WNmcycle.display(self.WNmcycle.intValue()+1)
+                self.WNmcycleCount.display(self.WNmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '21':  # WE
@@ -590,7 +590,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.WEbicycleCount.display(self.WEbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.WEmcycle.display(self.WEmcycle.intValue()+1)
+                self.WEmcycleCount.display(self.WEmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '22':  # WW
@@ -607,7 +607,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.WWbicycleCount.display(self.WWbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.WWmcycle.display(self.WWmcycle.intValue()+1)
+                self.WWmcycleCount.display(self.WWmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '23':  # WS
@@ -624,7 +624,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.WSbicycleCount.display(self.WSbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.WSmcycle.display(self.WSmcycle.intValue()+1)
+                self.WSmcycleCount.display(self.WSmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '30':  # SN
@@ -641,7 +641,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.SNbicycleCount.display(self.SNbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.SNmcycle.display(self.SNmcycle.intValue()+1)
+                self.SNmcycleCount.display(self.SNmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '31':  # SE
@@ -658,7 +658,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.SEbicycleCount.display(self.SEbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.SEmcycle.display(self.SEmcycle.intValue()+1)
+                self.SEmcycleCount.display(self.SEmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '32':  # SW
@@ -675,7 +675,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.SWbicycleCount.display(self.SWbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.SWmcycle.display(self.SWmcycle.intValue()+1)
+                self.SWmcycleCount.display(self.SWmcycleCount.intValue()+1)
             else:
                 return
         elif row_num == '33':  # SS
@@ -692,7 +692,7 @@ class ViewController(QWidget, Ui_Form):
             elif class_id == 4:
                 self.SSbicycleCount.display(self.SSbicycleCount.intValue()+1)
             elif class_id == 5:
-                self.SSmcycle.display(self.SSmcycle.intValue()+1)
+                self.SSmcycleCount.display(self.SSmcycleCount.intValue()+1)
             else:
                 return
         

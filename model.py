@@ -507,6 +507,7 @@ class Model(QObject):
                 start_time = time()
                 if self.stop_counting:
                     self.counted_ids = []
+                    self.cardinal_vehicle_counter = dict()
                     break
                 if self.use_video:
                     self.time_now += self.add_time
