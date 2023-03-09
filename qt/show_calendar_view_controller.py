@@ -4,6 +4,7 @@ import xlsxwriter
 from pathlib import Path
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
+from PySide2.QtWidgets import QFileDialog
 from qt.Show_Calendar import Ui_MainWindow
 from PySide2.QtCore import Signal, QCoreApplication
 from qt.ChartWindow import ChartWindow, BarChartWindow
@@ -81,174 +82,175 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.hide()
     
     def createExcelData(self):
+        path = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        if path:
+            cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
+            in_sides = [self.text_translator.a_in, self.text_translator.b_in, self.text_translator.c_in, self.text_translator.d_in]
+            out_sides = [self.text_translator.a_out, self.text_translator.b_out, self.text_translator.c_out, self.text_translator.d_out]
+            cam_name = self.comboBox.currentText()
+            self.excels_folder = path
+            end_time = self.timeEdit_2.time()
+            start_time = self.timeEdit.time()
 
-        cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
-        in_sides = [self.text_translator.a_in, self.text_translator.b_in, self.text_translator.c_in, self.text_translator.d_in]
-        out_sides = [self.text_translator.a_out, self.text_translator.b_out, self.text_translator.c_out, self.text_translator.d_out]
-        cam_name = self.comboBox.currentText()
-        self.excels_folder = 'downloaded_excel_files'
-        end_time = self.timeEdit_2.time()
-        start_time = self.timeEdit.time()
+            start_hour = f'0{start_time.hour()}' if len(str(start_time.hour())) == 1 else start_time.hour()
+            start_minute = f'0{start_time.minute()}' if len(str(start_time.minute())) == 1 else start_time.minute()
+            start_second = f'0{start_time.second()}' if len(str(start_time.second())) == 1 else start_time.second()
 
-        start_hour = f'0{start_time.hour()}' if len(str(start_time.hour())) == 1 else start_time.hour()
-        start_minute = f'0{start_time.minute()}' if len(str(start_time.minute())) == 1 else start_time.minute()
-        start_second = f'0{start_time.second()}' if len(str(start_time.second())) == 1 else start_time.second()
+            end_hour = f'0{end_time.hour()}' if len(str(end_time.hour())) == 1 else end_time.hour()
+            end_minute = f'0{end_time.minute()}' if len(str(end_time.minute())) == 1 else end_time.minute()
+            end_second = f'0{end_time.second()}' if len(str(end_time.second())) == 1 else end_time.second()
 
-        end_hour = f'0{end_time.hour()}' if len(str(end_time.hour())) == 1 else end_time.hour()
-        end_minute = f'0{end_time.minute()}' if len(str(end_time.minute())) == 1 else end_time.minute()
-        end_second = f'0{end_time.second()}' if len(str(end_time.second())) == 1 else end_time.second()
+            start_time_str = f'{start_hour}:{start_minute}:{start_second}'
+            end_time_str = f'{end_hour}:{end_minute}:{end_second}'
+            # print(start_time_str, end_time_str, 'Got from start and end time editors')
+            if not Path(self.excels_folder).exists():
+                os.makedirs(self.excels_folder)
+            excel_file_name = os.path.join(self.excels_folder, f'{datetime.datetime.now()}_{cam_name}_{self.label.text()}.xlsx'.replace('\\', '/').replace(' ', '').replace(':', '-'))
+            workbook = xlsxwriter.Workbook(excel_file_name)
 
-        start_time_str = f'{start_hour}:{start_minute}:{start_second}'
-        end_time_str = f'{end_hour}:{end_minute}:{end_second}'
-        # print(start_time_str, end_time_str, 'Got from start and end time editors')
-        if not Path(self.excels_folder).exists():
-            os.makedirs(self.excels_folder)
-        excel_file_name = os.path.join(self.excels_folder, f'{datetime.datetime.now()}_{cam_name}_{self.label.text()}.xlsx').replace('\\', '/').replace(' ', '').replace(':', '-')
-        workbook = xlsxwriter.Workbook(excel_file_name)
+            cardinal_worksheet = workbook.add_worksheet(self.text_translator.cardinalwise)
+            trucks_worksheet = workbook.add_worksheet(self.text_translator.linechart_trucks)
+            cars_worksheet = workbook.add_worksheet(self.text_translator.linechart_cars)
+            buses_worksheet = workbook.add_worksheet(self.text_translator.linechart_buses)
+            bicycles_worksheet = workbook.add_worksheet(self.text_translator.linechart_bicycles)
+            motorcycles_worksheet = workbook.add_worksheet(self.text_translator.linechart_motorcycles)
+            total_worksheet = workbook.add_worksheet(self.text_translator.total)
 
-        cardinal_worksheet = workbook.add_worksheet(self.text_translator.cardinalwise)
-        trucks_worksheet = workbook.add_worksheet(self.text_translator.linechart_trucks)
-        cars_worksheet = workbook.add_worksheet(self.text_translator.linechart_cars)
-        buses_worksheet = workbook.add_worksheet(self.text_translator.linechart_buses)
-        bicycles_worksheet = workbook.add_worksheet(self.text_translator.linechart_bicycles)
-        motorcycles_worksheet = workbook.add_worksheet(self.text_translator.linechart_motorcycles)
-        total_worksheet = workbook.add_worksheet(self.text_translator.total)
+            cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(start_time_str, end_time_str, get_all_data=True)
+            cf = workbook.add_format({'bg_color': 'yellow'})
+            for i in range(len(cardinal_truck_data)+1):
+                if i == 0:
+                    cardinal_worksheet.write(0, i, '')
+                    cardinal_worksheet.write(1, i, self.text_translator.linechart_trucks)
+                    cardinal_worksheet.write(2, i, self.text_translator.linechart_cars)
+                    cardinal_worksheet.write(3, i, self.text_translator.linechart_buses)
+                    cardinal_worksheet.write(4, i, self.text_translator.linechart_bicycles)
+                    cardinal_worksheet.write(5, i, self.text_translator.linechart_motorcycles)
+                    cardinal_worksheet.write(6, i, self.text_translator.total)
+                else:
+                    cardinal_side = cardinal_sides[i-1]
+                    truck_data = len(cardinal_truck_data[i-1])
+                    car_data = len(cardinal_car_data[i-1])
+                    bus_data = len(cardinal_bus_data[i-1])
+                    bicycle_data = len(cardinal_bicycle_data[i-1])
+                    mcycle_data = len(cardinal_mcycle_data[i-1])
+                    total = sum([truck_data, car_data, bus_data, bicycle_data, mcycle_data])
+                    cardinal_worksheet.write(0, i, cardinal_side)
+                    cardinal_worksheet.write(1, i, truck_data, cf if truck_data else workbook.add_format())
+                    cardinal_worksheet.write(2, i, car_data, cf if car_data else workbook.add_format())
+                    cardinal_worksheet.write(3, i, bus_data, cf if bus_data else workbook.add_format())
+                    cardinal_worksheet.write(4, i, bicycle_data, cf if bicycle_data else workbook.add_format())
+                    cardinal_worksheet.write(5, i, mcycle_data, cf if mcycle_data else workbook.add_format())
+                    cardinal_worksheet.write(6, i, total, cf if total else workbook.add_format())
+            
+            for i in range(5):
+                if i == 0:
+                    trucks_worksheet.write(0, i, '', cf)
+                    trucks_worksheet.write(1, i, in_sides[0], cf)
+                    trucks_worksheet.write(2, i, in_sides[1], cf)
+                    trucks_worksheet.write(3, i, in_sides[2], cf)
+                    trucks_worksheet.write(4, i, in_sides[3], cf)
 
-        cardinal_truck_data, cardinal_car_data, cardinal_bus_data, cardinal_bicycle_data, cardinal_mcycle_data = self.get_cardinalwise_data(start_time_str, end_time_str, get_all_data=True)
-        cf = workbook.add_format({'bg_color': 'yellow'})
-        for i in range(len(cardinal_truck_data)+1):
-            if i == 0:
-                cardinal_worksheet.write(0, i, '')
-                cardinal_worksheet.write(1, i, self.text_translator.linechart_trucks)
-                cardinal_worksheet.write(2, i, self.text_translator.linechart_cars)
-                cardinal_worksheet.write(3, i, self.text_translator.linechart_buses)
-                cardinal_worksheet.write(4, i, self.text_translator.linechart_bicycles)
-                cardinal_worksheet.write(5, i, self.text_translator.linechart_motorcycles)
-                cardinal_worksheet.write(6, i, self.text_translator.total)
-            else:
-                cardinal_side = cardinal_sides[i-1]
-                truck_data = len(cardinal_truck_data[i-1])
-                car_data = len(cardinal_car_data[i-1])
-                bus_data = len(cardinal_bus_data[i-1])
-                bicycle_data = len(cardinal_bicycle_data[i-1])
-                mcycle_data = len(cardinal_mcycle_data[i-1])
-                total = sum([truck_data, car_data, bus_data, bicycle_data, mcycle_data])
-                cardinal_worksheet.write(0, i, cardinal_side)
-                cardinal_worksheet.write(1, i, truck_data, cf if truck_data else workbook.add_format())
-                cardinal_worksheet.write(2, i, car_data, cf if car_data else workbook.add_format())
-                cardinal_worksheet.write(3, i, bus_data, cf if bus_data else workbook.add_format())
-                cardinal_worksheet.write(4, i, bicycle_data, cf if bicycle_data else workbook.add_format())
-                cardinal_worksheet.write(5, i, mcycle_data, cf if mcycle_data else workbook.add_format())
-                cardinal_worksheet.write(6, i, total, cf if total else workbook.add_format())
-        
-        for i in range(5):
-            if i == 0:
-                trucks_worksheet.write(0, i, '', cf)
-                trucks_worksheet.write(1, i, in_sides[0], cf)
-                trucks_worksheet.write(2, i, in_sides[1], cf)
-                trucks_worksheet.write(3, i, in_sides[2], cf)
-                trucks_worksheet.write(4, i, in_sides[3], cf)
+                    cars_worksheet.write(0, i, '', cf)
+                    cars_worksheet.write(1, i, in_sides[0], cf)
+                    cars_worksheet.write(2, i, in_sides[1], cf)
+                    cars_worksheet.write(3, i, in_sides[2], cf)
+                    cars_worksheet.write(4, i, in_sides[3], cf)
 
-                cars_worksheet.write(0, i, '', cf)
-                cars_worksheet.write(1, i, in_sides[0], cf)
-                cars_worksheet.write(2, i, in_sides[1], cf)
-                cars_worksheet.write(3, i, in_sides[2], cf)
-                cars_worksheet.write(4, i, in_sides[3], cf)
+                    buses_worksheet.write(0, i, '', cf)
+                    buses_worksheet.write(1, i, in_sides[0], cf)
+                    buses_worksheet.write(2, i, in_sides[1], cf)
+                    buses_worksheet.write(3, i, in_sides[2], cf)
+                    buses_worksheet.write(4, i, in_sides[3], cf)
 
-                buses_worksheet.write(0, i, '', cf)
-                buses_worksheet.write(1, i, in_sides[0], cf)
-                buses_worksheet.write(2, i, in_sides[1], cf)
-                buses_worksheet.write(3, i, in_sides[2], cf)
-                buses_worksheet.write(4, i, in_sides[3], cf)
+                    bicycles_worksheet.write(0, i, '', cf)
+                    bicycles_worksheet.write(1, i, in_sides[0], cf)
+                    bicycles_worksheet.write(2, i, in_sides[1], cf)
+                    bicycles_worksheet.write(3, i, in_sides[2], cf)
+                    bicycles_worksheet.write(4, i, in_sides[3], cf)
 
-                bicycles_worksheet.write(0, i, '', cf)
-                bicycles_worksheet.write(1, i, in_sides[0], cf)
-                bicycles_worksheet.write(2, i, in_sides[1], cf)
-                bicycles_worksheet.write(3, i, in_sides[2], cf)
-                bicycles_worksheet.write(4, i, in_sides[3], cf)
+                    motorcycles_worksheet.write(0, i, '', cf)
+                    motorcycles_worksheet.write(1, i, in_sides[0], cf)
+                    motorcycles_worksheet.write(2, i, in_sides[1], cf)
+                    motorcycles_worksheet.write(3, i, in_sides[2], cf)
+                    motorcycles_worksheet.write(4, i, in_sides[3], cf)
 
-                motorcycles_worksheet.write(0, i, '', cf)
-                motorcycles_worksheet.write(1, i, in_sides[0], cf)
-                motorcycles_worksheet.write(2, i, in_sides[1], cf)
-                motorcycles_worksheet.write(3, i, in_sides[2], cf)
-                motorcycles_worksheet.write(4, i, in_sides[3], cf)
+                    total_worksheet.write(0, i, '', cf)
+                    total_worksheet.write(1, i, in_sides[0], cf)
+                    total_worksheet.write(2, i, in_sides[1], cf)
+                    total_worksheet.write(3, i, in_sides[2], cf)
+                    total_worksheet.write(4, i, in_sides[3], cf)
 
-                total_worksheet.write(0, i, '', cf)
-                total_worksheet.write(1, i, in_sides[0], cf)
-                total_worksheet.write(2, i, in_sides[1], cf)
-                total_worksheet.write(3, i, in_sides[2], cf)
-                total_worksheet.write(4, i, in_sides[3], cf)
+                else:
+                    truck_data_a = cardinal_truck_data[i-1]
+                    truck_data_b = cardinal_truck_data[i-1+4]
+                    truck_data_c = cardinal_truck_data[i-1+8]
+                    truck_data_d = cardinal_truck_data[i-1+12]
 
-            else:
-                truck_data_a = cardinal_truck_data[i-1]
-                truck_data_b = cardinal_truck_data[i-1+4]
-                truck_data_c = cardinal_truck_data[i-1+8]
-                truck_data_d = cardinal_truck_data[i-1+12]
+                    car_data_a = cardinal_car_data[i-1]
+                    car_data_b = cardinal_car_data[i-1+4]
+                    car_data_c = cardinal_car_data[i-1+8]
+                    car_data_d = cardinal_car_data[i-1+12]
 
-                car_data_a = cardinal_car_data[i-1]
-                car_data_b = cardinal_car_data[i-1+4]
-                car_data_c = cardinal_car_data[i-1+8]
-                car_data_d = cardinal_car_data[i-1+12]
+                    bus_data_a = cardinal_bus_data[i-1]
+                    bus_data_b = cardinal_bus_data[i-1+4]
+                    bus_data_c = cardinal_bus_data[i-1+8]
+                    bus_data_d = cardinal_bus_data[i-1+12]
 
-                bus_data_a = cardinal_bus_data[i-1]
-                bus_data_b = cardinal_bus_data[i-1+4]
-                bus_data_c = cardinal_bus_data[i-1+8]
-                bus_data_d = cardinal_bus_data[i-1+12]
+                    bicycle_data_a = cardinal_bicycle_data[i-1]
+                    bicycle_data_b = cardinal_bicycle_data[i-1+4]
+                    bicycle_data_c = cardinal_bicycle_data[i-1+8]
+                    bicycle_data_d = cardinal_bicycle_data[i-1+12]
 
-                bicycle_data_a = cardinal_bicycle_data[i-1]
-                bicycle_data_b = cardinal_bicycle_data[i-1+4]
-                bicycle_data_c = cardinal_bicycle_data[i-1+8]
-                bicycle_data_d = cardinal_bicycle_data[i-1+12]
+                    mcycle_data_a = cardinal_mcycle_data[i-1]
+                    mcycle_data_b = cardinal_mcycle_data[i-1+4]
+                    mcycle_data_c = cardinal_mcycle_data[i-1+8]
+                    mcycle_data_d = cardinal_mcycle_data[i-1+12]
 
-                mcycle_data_a = cardinal_mcycle_data[i-1]
-                mcycle_data_b = cardinal_mcycle_data[i-1+4]
-                mcycle_data_c = cardinal_mcycle_data[i-1+8]
-                mcycle_data_d = cardinal_mcycle_data[i-1+12]
+                    total_a = sum([len(truck_data_a), len(car_data_a), len(bus_data_a), len(bicycle_data_a), len(mcycle_data_a)])
+                    total_b = sum([len(truck_data_b), len(car_data_b), len(bus_data_b), len(bicycle_data_b), len(mcycle_data_b)])
+                    total_c = sum([len(truck_data_c), len(car_data_c), len(bus_data_c), len(bicycle_data_c), len(mcycle_data_c)])
+                    total_d = sum([len(truck_data_d), len(car_data_d), len(bus_data_d), len(bicycle_data_d), len(mcycle_data_d)])
 
-                total_a = sum([len(truck_data_a), len(car_data_a), len(bus_data_a), len(bicycle_data_a), len(mcycle_data_a)])
-                total_b = sum([len(truck_data_b), len(car_data_b), len(bus_data_b), len(bicycle_data_b), len(mcycle_data_b)])
-                total_c = sum([len(truck_data_c), len(car_data_c), len(bus_data_c), len(bicycle_data_c), len(mcycle_data_c)])
-                total_d = sum([len(truck_data_d), len(car_data_d), len(bus_data_d), len(bicycle_data_d), len(mcycle_data_d)])
+                    trucks_worksheet.write(0, i, out_sides[i-1], cf)
+                    trucks_worksheet.write(1, i, len(truck_data_a))
+                    trucks_worksheet.write(2, i, len(truck_data_b))
+                    trucks_worksheet.write(3, i, len(truck_data_c))
+                    trucks_worksheet.write(4, i, len(truck_data_d))
 
-                trucks_worksheet.write(0, i, out_sides[i-1], cf)
-                trucks_worksheet.write(1, i, len(truck_data_a))
-                trucks_worksheet.write(2, i, len(truck_data_b))
-                trucks_worksheet.write(3, i, len(truck_data_c))
-                trucks_worksheet.write(4, i, len(truck_data_d))
+                    cars_worksheet.write(0, i, out_sides[i-1], cf)
+                    cars_worksheet.write(1, i, len(car_data_a))
+                    cars_worksheet.write(2, i, len(car_data_b))
+                    cars_worksheet.write(3, i, len(car_data_c))
+                    cars_worksheet.write(4, i, len(car_data_d))
 
-                cars_worksheet.write(0, i, out_sides[i-1], cf)
-                cars_worksheet.write(1, i, len(car_data_a))
-                cars_worksheet.write(2, i, len(car_data_b))
-                cars_worksheet.write(3, i, len(car_data_c))
-                cars_worksheet.write(4, i, len(car_data_d))
+                    buses_worksheet.write(0, i, out_sides[i-1], cf)
+                    buses_worksheet.write(1, i, len(bus_data_a))
+                    buses_worksheet.write(2, i, len(bus_data_b))
+                    buses_worksheet.write(3, i, len(bus_data_c))
+                    buses_worksheet.write(4, i, len(bus_data_d))
 
-                buses_worksheet.write(0, i, out_sides[i-1], cf)
-                buses_worksheet.write(1, i, len(bus_data_a))
-                buses_worksheet.write(2, i, len(bus_data_b))
-                buses_worksheet.write(3, i, len(bus_data_c))
-                buses_worksheet.write(4, i, len(bus_data_d))
+                    bicycles_worksheet.write(0, i, out_sides[i-1], cf)
+                    bicycles_worksheet.write(1, i, len(bicycle_data_a))
+                    bicycles_worksheet.write(2, i, len(bicycle_data_b))
+                    bicycles_worksheet.write(3, i, len(bicycle_data_c))
+                    bicycles_worksheet.write(4, i, len(bicycle_data_d))
 
-                bicycles_worksheet.write(0, i, out_sides[i-1], cf)
-                bicycles_worksheet.write(1, i, len(bicycle_data_a))
-                bicycles_worksheet.write(2, i, len(bicycle_data_b))
-                bicycles_worksheet.write(3, i, len(bicycle_data_c))
-                bicycles_worksheet.write(4, i, len(bicycle_data_d))
+                    motorcycles_worksheet.write(0, i, out_sides[i-1], cf)
+                    motorcycles_worksheet.write(1, i, len(mcycle_data_a))
+                    motorcycles_worksheet.write(2, i, len(mcycle_data_b))
+                    motorcycles_worksheet.write(3, i, len(mcycle_data_c))
+                    motorcycles_worksheet.write(4, i, len(mcycle_data_d))
 
-                motorcycles_worksheet.write(0, i, out_sides[i-1], cf)
-                motorcycles_worksheet.write(1, i, len(mcycle_data_a))
-                motorcycles_worksheet.write(2, i, len(mcycle_data_b))
-                motorcycles_worksheet.write(3, i, len(mcycle_data_c))
-                motorcycles_worksheet.write(4, i, len(mcycle_data_d))
-
-                total_worksheet.write(0, i, out_sides[i-1], cf)
-                total_worksheet.write(1, i, total_a)
-                total_worksheet.write(2, i, total_b)
-                total_worksheet.write(3, i, total_c)
-                total_worksheet.write(4, i, total_d)
+                    total_worksheet.write(0, i, out_sides[i-1], cf)
+                    total_worksheet.write(1, i, total_a)
+                    total_worksheet.write(2, i, total_b)
+                    total_worksheet.write(3, i, total_c)
+                    total_worksheet.write(4, i, total_d)
 
 
-        self.showPopup(f'{excel_file_name} '+self.text_translator.excel_data_written_success)
-        workbook.close()
+            self.showPopup(f'{excel_file_name} '+self.text_translator.excel_data_written_success)
+            workbook.close()
     
     def get_cardinalwise_data(self,start_time_str='00:00:00', end_time_str='23:59:59', get_all_data=False):
         cam_name = self.comboBox.currentText()

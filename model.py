@@ -459,8 +459,11 @@ class Model(QObject):
 
         # Load model
         device = select_device()
-        model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
-        model_cls = DetectMultiBackend(weights_cls, device=device, dnn=dnn, data=data)
+        try:
+            model = DetectMultiBackend(weights, device=device, dnn=dnn, data=data)
+            model_cls = DetectMultiBackend(weights_cls, device=device, dnn=dnn, data=data)
+        except Exception as err:
+            print('Error init', err)
         
         stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size

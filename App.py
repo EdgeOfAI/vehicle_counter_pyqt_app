@@ -1,6 +1,10 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
+import pathlib
+temp = pathlib.PosixPath
+pathlib.PosixPath = pathlib.WindowsPath
+
 import sys
 import sqlite3
 from PySide2.QtCore import Qt, QThread
