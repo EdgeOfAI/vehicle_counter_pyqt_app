@@ -83,7 +83,8 @@ class Translator:
             'truck':'yuku a.',
             'bus':'avtobus',
             'bicycle':'velosiped',
-            'motorcycle':'motosikl'
+            'motorcycle':'motosikl',
+            'van':'marshrutka'
         }
 
         self.week_days = {

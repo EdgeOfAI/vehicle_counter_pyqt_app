@@ -37,7 +37,8 @@ class_id_map = {
     'car'   : '2',
     'bus'   : '3',
     'bicycle': '4',
-    'motorcycle': '5'
+    'motorcycle': '5',
+    'van':'6'
 }
 class_id_map.update({item[1]: item[0] for item in class_id_map.items()})
 
@@ -83,7 +84,7 @@ class Model(QObject):
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         
         self.allowed_classes = ['bicycle', 'car', 'motorcycle', 'bus', 'truck',  'van']
-        self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
+        self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
         self.images_root = None
 
@@ -98,7 +99,7 @@ class Model(QObject):
         self.margin = 20
         #initialize color map
         cmap = plt.get_cmap('tab20b')
-        self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
+        self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147), (1, 27, 200)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
 
 #======================= Setters  ===========================
     def update_db_conn_cur(self, db_conn, db_cur):
