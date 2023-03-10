@@ -86,7 +86,7 @@ class Model(QObject):
         self.allowed_classes = ['bicycle', 'car', 'motorcycle', 'bus', 'truck',  'van']
         self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
-        self.images_root = None
+        self.images_root = 'crop_images'
 
         self.db_conn = conn 
         self.db_cur = cur 
