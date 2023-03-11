@@ -33,12 +33,12 @@ MAX_DETECTION_NUM = 500
 
 class_id_map = {
     'none'  : '0',
-    'truck' : '1',
-    'car'   : '2',
-    'bus'   : '3',
-    'bicycle': '4',
-    'motorcycle': '5',
-    'van':'6'
+    'truck' : '6',
+    'car'   : '1',
+    'bus'   : '4',
+    'bicycle': '2',
+    'motorcycle': '3',
+    'van':'5'
 }
 class_id_map.update({item[1]: item[0] for item in class_id_map.items()})
 
@@ -57,6 +57,7 @@ class Model(QObject):
         self.encoder = None
         self.saved_model_loaded = None
         self.max_cosine_distance = 0.4
+        self.start_classifying_distance = 2000
         self.iou_thresh = 0.45
         self.score_thresh = 0.7
         self.input_video_path = ''
@@ -83,8 +84,8 @@ class Model(QObject):
             os.makedirs(self.save_crops_path)
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         
-        self.allowed_classes = ['bicycle', 'car', 'motorcycle', 'bus', 'truck',  'van']
-        self.vehicle_counter = {'1':0, '2':0, '3':0, '4':0, '5':0, '6':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
+        self.allowed_classes = ['car', 'bicycle', 'motorcycle', 'bus', 'van',  'truck', '']
+        self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
         self.images_root = 'crop_images'
 
@@ -99,7 +100,7 @@ class Model(QObject):
         self.margin = 20
         #initialize color map
         cmap = plt.get_cmap('tab20b')
-        self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147), (1, 27, 200)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
+        self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147), (1, 27, 200), (0, 0, 0)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
 
 #======================= Setters  ===========================
     def update_db_conn_cur(self, db_conn, db_cur):
@@ -570,14 +571,28 @@ class Model(QObject):
                 objects = sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
                 obj_num = 0
                 # print("len objs: ", len(objects))
+                print(objects)
                 for obj in objects:
                     # print(obj)
                     objectID = obj[1]
                     x_min, y_min, x_max, y_max = int(obj[2]), int(obj[3]), int(obj[4]), int(obj[5])
                     track_obj = self.trackableObjects.get(objectID, None)
                     if track_obj is None:
-                        track_obj = TrackableObject(objectID)
-                    if  not track_obj.classified:
+                        track_obj = TrackableObject(objectID, x_min, y_min, x_max, y_max, self.det_area_x0, self.det_area_y0, self.det_area_x1, self.det_area_y1)
+                    
+                    # if objectID == 205:
+                    # print('Id', objectID, track_obj.area, track_obj.walk_distance)
+
+                    if not track_obj.classified:
+                        track_obj.can_start_classifying(x_min, y_min, x_max, y_max)
+
+                    if track_obj.class_name < 0:
+                        class_name = ''
+                    else:
+                        class_name = self.allowed_classes[track_obj.class_name]
+
+                    print('-->', objectID, track_obj.start_classifying, track_obj.start_classifying_margin, track_obj.distances, xmin, ymin, xmax, ymax, self.det_area_x0, self.det_area_y0, self.det_area_x1, self.det_area_y1)
+                    if  not track_obj.classified and track_obj.start_classifying:
                         param = {
                         "org_img": original_frame,
                         "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
@@ -591,13 +606,12 @@ class Model(QObject):
                         class_name = self.get_class_name(crop, model_cls)
                         track_obj.class_name=class_name
                         track_obj.classified = True
-                    self.trackableObjects[objectID] = track_obj
-                    class_name = self.allowed_classes[track_obj.class_name]
+                        class_name = self.allowed_classes[track_obj.class_name]
                     class_id = self.getClassId(class_name)
+                    self.trackableObjects[objectID] = track_obj
 
                     frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
                     self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
-
 
                     # draw bbox on screen
                     original_frame = self.drawBoundingBox(original_frame, class_name, objectID, x_min, y_min, x_max, y_max)
