@@ -335,8 +335,11 @@ class Model(QObject):
                     'out_cardinal_side':None,
                     'row_id':False
                 }
+
+            centroid_object_width = 5
+            centroid_object_height = 5 
             
-            object_polygon = Polygon([[x_min, y_min], [x_max, y_min], [x_max, y_max], [x_min, y_max]])
+            object_polygon = Polygon([[cx, cy], [cx+centroid_object_width, cy], [cx+centroid_object_width, cy+centroid_object_height], [cx, cy+centroid_object_height]])
 
             if uid not in self.counted_ids:
                 # compute distance traveled
@@ -347,11 +350,11 @@ class Model(QObject):
                     tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
 
                 for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
-                    cardinal_side_copy = cardinal_side.copy() + [[point[0]+5, point[1]+5] for point in cardinal_side.copy()]
+                    cardinal_side_copy = cardinal_side.copy() + [[point[0]+2, point[1]+2] for point in cardinal_side.copy()]
                     cardinal_side_polygon = Polygon(cardinal_side_copy)
                     is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
                     if is_intersects:
-                        if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 300:
+                        if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 100:
                             tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                             row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
                             if self.cardinal_vehicle_counter.get(row_id):
@@ -407,7 +410,8 @@ class Model(QObject):
                             del tracker_dict[uid]
                             self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
                         else:
-                            tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                            if not tracker_dict[uid]['in_cardinal_side']:
+                                tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                         break
         except Exception as err:
             exc_type, exc_obj, exc_tb = sys.exc_info()
