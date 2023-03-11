@@ -333,11 +333,14 @@ class Model(QObject):
                     'counted': False,
                     'in_cardinal_side':None,
                     'out_cardinal_side':None,
+                    'check_out_cardinal_side':False,
+                    'last_in_cardinal_side_frame_num':None,
                     'row_id':False
                 }
 
             centroid_object_width = 5
             centroid_object_height = 5 
+            tracker_dict[uid]['prev_frame_num'] = frame_num
             
             object_polygon = Polygon([[cx, cy], [cx+centroid_object_width, cy], [cx+centroid_object_width, cy+centroid_object_height], [cx, cy+centroid_object_height]])
 
@@ -354,7 +357,10 @@ class Model(QObject):
                     cardinal_side_polygon = Polygon(cardinal_side_copy)
                     is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
                     if is_intersects:
-                        if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 100:
+                        # if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 100:
+
+                        # if centroid intersected with cardinal side and disappeared for 5 frames it will be counted as out cardina side 
+                        if tracker_dict[uid]['in_cardinal_side'] and (frame_num - tracker_dict[uid]['last_in_cardinal_side_frame_num']) > 10 and tracker_dict[uid]['dist'] > 40:
                             tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                             row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
                             if self.cardinal_vehicle_counter.get(row_id):
@@ -412,6 +418,7 @@ class Model(QObject):
                         else:
                             if not tracker_dict[uid]['in_cardinal_side']:
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                            tracker_dict[uid]['last_in_cardinal_side_frame_num'] = frame_num
                         break
         except Exception as err:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -633,7 +640,6 @@ class Model(QObject):
                     side_height = abs(side_ymax - side_ymin)
                     text_x = int(side_xmin + (side_width / 2))
                     text_y = int(side_ymin + (side_height / 2))
-                    print('TEXT_POSITION', text_x, text_y)
                     cv2.putText(original_frame, 
                                 side_txt, 
                                 (text_x, text_y), 
