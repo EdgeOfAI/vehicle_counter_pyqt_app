@@ -24,7 +24,7 @@ class App(QApplication):
     def __init__(self, sys_argv):
         super().__init__()
         text_translator = Translator()
-        self.draw_color = (35, 22, 164)  # (164, 22, 35) 
+        self.draw_color = (0,255,0)  # (164, 22, 35) 
         text_translator.translateToEnglish()
         qss_file = QtCore.QFile("style.qss")
         # qss = QtCore.QTextStream(qss_file)

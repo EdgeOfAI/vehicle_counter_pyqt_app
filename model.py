@@ -571,7 +571,6 @@ class Model(QObject):
                 objects = sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
                 obj_num = 0
                 # print("len objs: ", len(objects))
-                print(objects)
                 for obj in objects:
                     # print(obj)
                     objectID = obj[1]
@@ -591,7 +590,6 @@ class Model(QObject):
                     else:
                         class_name = self.allowed_classes[track_obj.class_name]
 
-                    print('-->', objectID, track_obj.start_classifying, track_obj.start_classifying_margin, track_obj.distances, xmin, ymin, xmax, ymax, self.det_area_x0, self.det_area_y0, self.det_area_x1, self.det_area_y1)
                     if  not track_obj.classified and track_obj.start_classifying:
                         param = {
                         "org_img": original_frame,
@@ -622,14 +620,24 @@ class Model(QObject):
                 # draw cardinal directions
                 # print(len(self.cardinal_direction_points))
                 for cardinal_direction_positions, side_txt in zip(self.cardinal_direction_points[:4], ['A', 'B', 'C', 'D']):
+                    side_xmin = min([cardinal_direction_positions[0][0], cardinal_direction_positions[1][0]])
+                    side_xmax = max([cardinal_direction_positions[0][0], cardinal_direction_positions[1][0]])
+                    side_ymin = min([cardinal_direction_positions[0][1], cardinal_direction_positions[1][1]])
+                    side_ymax = max([cardinal_direction_positions[0][1], cardinal_direction_positions[1][1]])
+
+                    side_width = abs(side_xmax - side_xmin)
+                    side_height = abs(side_ymax - side_ymin)
+                    text_x = int(side_xmin + (side_width / 2))
+                    text_y = int(side_ymin + (side_height / 2))
+                    print('TEXT_POSITION', text_x, text_y)
                     cv2.putText(original_frame, 
                                 side_txt, 
-                                (cardinal_direction_positions[0][0], cardinal_direction_positions[0][1]), 
+                                (text_x, text_y), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 3, 
                                 self.draw_color,  
                                 2, 
                                 cv2.LINE_4)
-                    original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], self.draw_color, 3)
+                    # original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], self.draw_color, 3)
 
                 # update frame on UI
                 self.frame_update_signal.emit(cv2.cvtColor(original_frame, cv2.COLOR_BGR2RGB), frame_num)
