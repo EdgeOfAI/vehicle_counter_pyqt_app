@@ -371,6 +371,13 @@ class ViewController(QWidget, Ui_Form):
 
     @Slot(int,int,int,np.ndarray)
     def updateVehicleCount(self, class_id, uid, count, img, row_num, preview_num):
+        '''
+        class_id 5 == van not motorcycle
+        class_id 2 == bicycle
+        class_id 3 == motorcycle
+
+        '''
+
         # self.truckCount.display(count)
         # self.carCount.display(count)
         # self.busCount.display(count)
@@ -425,16 +432,16 @@ class ViewController(QWidget, Ui_Form):
 
         if row_num == '00':  # NN
             self.NNtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.truckCount.display(self.truckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.carCount.display(self.carCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.NNbusCount.display(self.NNbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.NNbicycleCount.display(self.NNbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.NNmcycleCount.display(self.NNmcycleCount.intValue()+1)
@@ -442,16 +449,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '01':  # NE
             self.NEtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.NEtruckCount.display(self.NEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.NEcarCount.display(self.NEcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.NEbusCount.display(self.NEbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.NEbicycleCount.display(self.NEbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.NEmcycleCount.display(self.NEmcycleCount.intValue()+1)
@@ -459,16 +466,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '02':  # NW
             self.NWtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.NWtruckCount.display(self.NWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.NWcarCount.display(self.NWcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.NWbusCount.display(self.NWbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.NWbicycleCount.display(self.NWbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.NWmcycleCount.display(self.NWmcycleCount.intValue()+1)
@@ -476,16 +483,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '03':  # NS
             self.NStotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.NStruckCount.display(self.NStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.NScarCount.display(self.NScarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.NSbusCount.display(self.NSbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.NSbicycleCount.display(self.NSbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.NSmcycleCount.display(self.NSmcycleCount.intValue()+1)
@@ -493,16 +500,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '10':  # EN
             self.ENtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.ENtruckCount.display(self.ENtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.ENcarCount.display(self.ENcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.ENbusCount.display(self.ENbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.ENbicycleCount.display(self.ENbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.ENmcycleCount.display(self.ENmcycleCount.intValue()+1)
@@ -510,16 +517,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '11':  # EE
             self.EEtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.EEtruckCount.display(self.EEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.EEcarCount.display(self.EEcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.EEbusCount.display(self.EEbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.EEbicycleCount.display(self.EEbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.EEmcycleCount.display(self.EEmcycleCount.intValue()+1)
@@ -527,16 +534,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '12':  # EW
             self.EWtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.EWtruckCount.display(self.EWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.EWcarCount.display(self.EWcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.EWbusCount.display(self.EWbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.EWbicycleCount.display(self.EWbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.EWmcycleCount.display(self.EWmcycleCount.intValue()+1)
@@ -544,16 +551,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '13':  # ES
             self.EStotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.EStruckCount.display(self.EStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.EScarCount.display(self.EScarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.ESbusCount.display(self.ESbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.ESbicycleCount.display(self.ESbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.ESmcycleCount.display(self.ESmcycleCount.intValue()+1)
@@ -561,16 +568,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '20':  # WN
             self.WNtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.WNtruckCount.display(self.WNtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.WNcarCount.display(self.WNcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.WNbusCount.display(self.WNbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.WNbicycleCount.display(self.WNbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.WNmcycleCount.display(self.WNmcycleCount.intValue()+1)
@@ -578,16 +585,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '21':  # WE
             self.WEtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.WEtruckCount.display(self.WEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.WEcarCount.display(self.WEcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.WEbusCount.display(self.WEbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.WEbicycleCount.display(self.WEbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.WEmcycleCount.display(self.WEmcycleCount.intValue()+1)
@@ -595,16 +602,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '22':  # WW
             self.WWtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.WWtruckCount.display(self.WWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.WWcarCount.display(self.WWcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.WWbusCount.display(self.WWbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.WWbicycleCount.display(self.WWbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.WWmcycleCount.display(self.WWmcycleCount.intValue()+1)
@@ -612,16 +619,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '23':  # WS
             self.WStotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.WStruckCount.display(self.WStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.WScarCount.display(self.WScarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.WSbusCount.display(self.WSbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.WSbicycleCount.display(self.WSbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.WSmcycleCount.display(self.WSmcycleCount.intValue()+1)
@@ -629,16 +636,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '30':  # SN
             self.SNtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.SNtruckCount.display(self.SNtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.SNcarCount.display(self.SNcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.SNbusCount.display(self.SNbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.SNbicycleCount.display(self.SNbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.SNmcycleCount.display(self.SNmcycleCount.intValue()+1)
@@ -646,16 +653,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '31':  # SE
             self.SEtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.SEtruckCount.display(self.SEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.SEcarCount.display(self.SEcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.SEbusCount.display(self.SEbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.SEbicycleCount.display(self.SEbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.SEmcycleCount.display(self.SEmcycleCount.intValue()+1)
@@ -663,16 +670,16 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '32':  # SW
             self.SWtotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.SWtruckCount.display(self.SWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.SWcarCount.display(self.SWcarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.SWbusCount.display(self.SWbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.SWbicycleCount.display(self.SWbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.SWmcycleCount.display(self.SWmcycleCount.intValue()+1)
@@ -680,29 +687,29 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '33':  # SS
             self.SStotal.display(count)
-            if class_id == 1:
+            if class_id == 6:
                 self.SStruckCount.display(self.SStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
-            elif class_id == 2:
+            elif class_id == 1:
                 self.SScarCount.display(self.SScarCount.intValue()+1)
                 # table = self.carPreviewTable
-            elif class_id == 3:
+            elif class_id == 4:
                 self.SSbusCount.display(self.SSbusCount.intValue()+1)
                 # table = self.busPreviewTable
-            elif class_id == 4:
+            elif class_id == 2 or class_id == 3:
                 self.SSbicycleCount.display(self.SSbicycleCount.intValue()+1)
             elif class_id == 5:
                 self.SSmcycleCount.display(self.SSmcycleCount.intValue()+1)
             else:
                 return
         
-        # if class_id == 1:
+        # if class_id == 6:
         #     self.truckCount.display(count)
         #     table = self.truckPreviewTable
-        # elif class_id == 2:
+        # elif class_id == 1:
         #     self.carCount.display(count)
         #     table = self.carPreviewTable
-        # elif class_id == 3:
+        # elif class_id == 4:
         #     self.busCount.display(count)
         #     table = self.busPreviewTable
         # else:

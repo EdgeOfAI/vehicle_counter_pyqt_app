@@ -1377,7 +1377,7 @@ class Ui_Form(object):
 
         self.languageChooser.setCurrentIndex(0)
         self.comboBox.setCurrentIndex(-1)
-        self.sidewiseCountMatrixDisplay.setCurrentIndex(5)
+        self.sidewiseCountMatrixDisplay.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(Form)
@@ -1424,7 +1424,7 @@ class Ui_Form(object):
         self.label_22.setText(QCoreApplication.translate("Form", u"B out", None))
         self.label_20.setText(QCoreApplication.translate("Form", u"C out", None))
         self.label_3.setText(QCoreApplication.translate("Form", u"D out", None))
-        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.bicycleTab), QCoreApplication.translate("Form", u"Bicycles", None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.bicycleTab), QCoreApplication.translate("Form", u"B and M cycles", None))
         self.label_6.setText(QCoreApplication.translate("Form", u"D out", None))
         self.label_35.setText(QCoreApplication.translate("Form", u"B in", None))
         self.label_36.setText(QCoreApplication.translate("Form", u"B out", None))
@@ -1433,7 +1433,7 @@ class Ui_Form(object):
         self.label_37.setText(QCoreApplication.translate("Form", u"C out", None))
         self.label_33.setText(QCoreApplication.translate("Form", u"C in", None))
         self.label_34.setText(QCoreApplication.translate("Form", u"D in", None))
-        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.mcycleTab), QCoreApplication.translate("Form", u"Motorcycles", None))
+        self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.mcycleTab), QCoreApplication.translate("Form", u"Van", None))
         self.label_49.setText(QCoreApplication.translate("Form", u"B in", None))
         self.label_38.setText(QCoreApplication.translate("Form", u"C out", None))
         self.label_43.setText(QCoreApplication.translate("Form", u"D out", None))

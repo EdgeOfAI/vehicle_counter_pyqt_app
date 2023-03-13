@@ -360,7 +360,7 @@ class Model(QObject):
                         # if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 100:
 
                         # if centroid intersected with cardinal side and disappeared for 5 frames it will be counted as out cardina side 
-                        if tracker_dict[uid]['in_cardinal_side'] and (frame_num - tracker_dict[uid]['last_in_cardinal_side_frame_num']) > 10 and tracker_dict[uid]['dist'] > 40:
+                        if tracker_dict[uid]['in_cardinal_side'] and (frame_num - tracker_dict[uid]['last_in_cardinal_side_frame_num']) > 7 and tracker_dict[uid]['dist'] > 40:
                             tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                             row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
                             if self.cardinal_vehicle_counter.get(row_id):
@@ -414,7 +414,7 @@ class Model(QObject):
                                     )
                             self.db_conn.commit()
                             del tracker_dict[uid]
-                            self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)])
+                            self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)]) 
                         else:
                             if not tracker_dict[uid]['in_cardinal_side']:
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]

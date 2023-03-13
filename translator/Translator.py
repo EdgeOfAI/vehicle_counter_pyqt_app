@@ -79,12 +79,13 @@ class Translator:
 
 
         self.class_names = {
+            '':'',
             'car':'yengil a.',
-            'truck':'yuku a.',
+            'truck':'yuk a.',
             'bus':'avtobus',
             'bicycle':'velosiped',
             'motorcycle':'motosikl',
-            'van':'marshrutka'
+            'van':'mikroavtobus'
         }
 
         self.week_days = {
@@ -123,8 +124,8 @@ class Translator:
         self.use_video_checkbox = 'Use Video'
         self.cars = 'Cars'
         self.buses = 'Buses'
-        self.bicycles = 'Bicycles'
-        self.motorcycles = 'Motorcycles'
+        self.bicycles = 'B and M cycles'
+        self.motorcycles = 'Van'
         self.trucks = 'Trucks'
         self.total = 'Total'
         self.a_in = 'A in'
@@ -202,8 +203,8 @@ class Translator:
         self.use_video_checkbox = 'Video ishlatish'
         self.cars = 'Yengil mashinalar'
         self.buses = 'Avtobuslar'
-        self.bicycles = 'Velosipedlar'
-        self.motorcycles = 'Motosikllar'
+        self.bicycles = 'Velosiped va Motosikllar'
+        self.motorcycles = 'Mikroavtobus'
         self.trucks = 'Yuk mashinalari'
         self.total = 'Umumiy'
         self.a_in = 'A kirish'

@@ -251,7 +251,7 @@
            </sizepolicy>
           </property>
           <property name="currentIndex">
-           <number>5</number>
+           <number>3</number>
           </property>
           <widget class="QWidget" name="carTab">
            <attribute name="title">
@@ -920,7 +920,7 @@
           </widget>
           <widget class="QWidget" name="bicycleTab">
            <attribute name="title">
-            <string>Bicycles</string>
+            <string>B and M cycles</string>
            </attribute>
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
@@ -1233,7 +1233,7 @@
           </widget>
           <widget class="QWidget" name="mcycleTab">
            <attribute name="title">
-            <string>Motorcycles</string>
+            <string>Van</string>
            </attribute>
            <layout class="QGridLayout" name="gridLayout_8">
             <item row="0" column="0">
