@@ -41,6 +41,7 @@ class_id_map = {
     'van':'5'
 }
 class_id_map.update({item[1]: item[0] for item in class_id_map.items()})
+print(class_id_map)
 
 class Model(QObject):
     frame_update_signal = Signal(np.ndarray, int)
@@ -340,7 +341,6 @@ class Model(QObject):
 
             centroid_object_width = 5
             centroid_object_height = 5 
-            tracker_dict[uid]['prev_frame_num'] = frame_num
             
             object_polygon = Polygon([[cx, cy], [cx+centroid_object_width, cy], [cx+centroid_object_width, cy+centroid_object_height], [cx, cy+centroid_object_height]])
 
@@ -363,23 +363,33 @@ class Model(QObject):
                         if tracker_dict[uid]['in_cardinal_side'] and (frame_num - tracker_dict[uid]['last_in_cardinal_side_frame_num']) > 7 and tracker_dict[uid]['dist'] > 40:
                             tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                             row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
+
                             if self.cardinal_vehicle_counter.get(row_id):
                                 self.cardinal_vehicle_counter[row_id] += 1
                             else:
                                 self.cardinal_vehicle_counter[row_id] = 1
+
                             img = self.getVehicleImage(detection, frame)
                             exps = os.listdir(self.save_crops_path)
+
                             if not self.images_root:
                                 self.images_root = os.path.join(self.save_crops_path, str(len(exps)))
+
                             if not Path(self.images_root).exists():
                                 os.makedirs(self.images_root)
+
                             image_path = os.path.join(self.images_root, str(class_id))
+
                             if not Path(image_path).exists():
                                 os.makedirs(image_path)
+
                             image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+
                             cv2.imwrite(os.path.join(image_save_path), img)
+
                             self.counted_ids.append(uid)
                             self.vehicle_counter[str(class_id)] += 1
+
                             self.db_cur.execute(f"""INSERT INTO vehicles(
                                                                 id,
                                                                 initial_centroid_x,
@@ -413,6 +423,7 @@ class Model(QObject):
                                                             )"""
                                     )
                             self.db_conn.commit()
+                            print('Removed ID:  ', uid, class_id, tracker_dict[uid])
                             del tracker_dict[uid]
                             self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)]) 
                         else:
@@ -420,7 +431,10 @@ class Model(QObject):
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                             tracker_dict[uid]['last_in_cardinal_side_frame_num'] = frame_num
                         break
+
         except Exception as err:
+            import traceback
+            traceback.print_exc()
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
@@ -446,6 +460,24 @@ class Model(QObject):
 
     @Slot()
     def startInference(self):
+        # for i in range(10):
+        #     time.sleep(1)
+        #     self.vehicle_count_signal.emit(6, 333, i, None, '00', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+1, None, '01', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+2, None, '02', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+3, None, '03', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+4, None, '10', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+5, None, '11', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+6, None, '12', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+7, None, '13', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+8, None, '20', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+9, None, '21', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+10, None, '22', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+11, None, '23', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+12, None, '30', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+13, None, '31', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+14, None, '32', 1)
+        #     self.vehicle_count_signal.emit(6, 333, i+15, None, '33', 1)
         # self.input_video_path = './videos/test.mp4'
         # self.vid = cv2.VideoCapture(self.input_video_path)
         # _, frame = self.vid.read()
@@ -487,6 +519,7 @@ class Model(QObject):
             print('FPS:  ', dataset.fps)
             self.time_now = datetime.datetime.now()
             self.add_time = datetime.timedelta(seconds=1/dataset.fps)
+            self.cam_id = 0
         else:
             dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
         # print('Dataset initializded')
@@ -520,6 +553,7 @@ class Model(QObject):
                 start_time = time()
                 if self.stop_counting:
                     self.counted_ids = []
+                    self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}
                     self.cardinal_vehicle_counter = dict()
                     break
                 if self.use_video:
@@ -657,6 +691,8 @@ class Model(QObject):
 
                 # print('Frame #: ', frame_num)
             except Exception as err:
+                import traceback
+                traceback.print_exc()
                 exc_type, exc_obj, exc_tb = sys.exc_info()
                 fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
                 print(exc_type, fname, exc_tb.tb_lineno)

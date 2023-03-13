@@ -13,6 +13,7 @@ class ChartWindow(QMainWindow):
                        buses_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        bicycle_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        mcycle_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+                       van_data=[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                        text_translator=None):
         super(ChartWindow, self).__init__()
 
@@ -51,12 +52,14 @@ class ChartWindow(QMainWindow):
         pen3 = pg.mkPen(color=(0, 0, 255))
         pen4 = pg.mkPen(color=(255, 0, 0))
         pen5 = pg.mkPen(color=(0, 255, 0))
+        pen6 = pg.mkPen(color=(0, 0, 255))
 
         self.graphWidget.plot(hour, cars_data, name=f"{self.text_translator.linechart_cars} {sum(cars_data)}",  pen=pen1, symbol='x', symbolSize=15, symbolBrush=('r'))
         self.graphWidget.plot(hour, trucks_data, name=f"{self.text_translator.linechart_trucks} {sum(trucks_data)}",  pen=pen2, symbol='+', symbolSize=15, symbolBrush=('g'))
         self.graphWidget.plot(hour, buses_data, name=f"{self.text_translator.linechart_buses} {sum(buses_data)}",  pen=pen3, symbol='o', symbolSize=15, symbolBrush=('b'))
         self.graphWidget.plot(hour, bicycle_data, name=f"{self.text_translator.linechart_bicycles} {sum(bicycle_data)}",  pen=pen4, symbol='o', symbolSize=15, symbolBrush=('r'))
         self.graphWidget.plot(hour, mcycle_data, name=f"{self.text_translator.linechart_motorcycles} {sum(mcycle_data)}",  pen=pen5, symbol='x', symbolSize=15, symbolBrush=('g'))
+        self.graphWidget.plot(hour, van_data, name=f"{self.text_translator.linechart_van} {sum(van_data)}",  pen=pen6, symbol='+', symbolSize=15, symbolBrush=('b'))
         
         # self.show()
     

@@ -65,6 +65,7 @@ class Translator:
         self.linechart_buses = ''
         self.linechart_bicycles = ''
         self.linechart_motorcycles = ''
+        self.linechart_van = ''
 
         # pop up messages 
         self.information = ''
@@ -179,6 +180,7 @@ class Translator:
         self.linechart_buses = 'Buses'
         self.linechart_bicycles = 'Bicycles'
         self.linechart_motorcycles = 'MCycles'
+        self.linechart_van = 'Vans'
 
         # pop up messages 
         self.information = 'Infoormation'
@@ -258,6 +260,7 @@ class Translator:
         self.linechart_buses = 'Avtobuslar'
         self.linechart_bicycles = 'Velosipedlar'
         self.linechart_motorcycles = 'Motosikllar'
+        self.linechart_van = 'Mikroavtobuslar'
 
         # pop up messages
         self.information = 'Ma\'lumot'
