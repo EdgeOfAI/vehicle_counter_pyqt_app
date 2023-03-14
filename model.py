@@ -668,6 +668,7 @@ class Model(QObject):
                     original_frame = self.drawBoundingBox(original_frame, class_name, objectID, x_min, y_min, x_max, y_max)
                     
                     obj_num = obj_num +  1
+                need_to_remove = []
                 for i in self.trackableObjects:
                     track_obj = self.trackableObjects.get(i, None)
                     if track_obj is None:
@@ -676,7 +677,9 @@ class Model(QObject):
                         track_obj.lost_count+=1
                         self.trackableObjects[i] = track_obj
                     if track_obj.lost_count>25:
-                        del self.trackableObjects[i]
+                        need_to_remove.append(i)
+                for i in need_to_remove:
+                    del self.trackableObjects[i]
 
 
                 # draw cardinal directions
