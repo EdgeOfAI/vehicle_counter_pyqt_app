@@ -616,6 +616,12 @@ class Model(QObject):
                 objects = sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
                 obj_num = 0
                 # print("len objs: ", len(objects))
+                for i in self.trackableObjects:
+                    track_obj = self.trackableObjects.get(i, None)
+                    if track_obj is None:
+                        continue
+                    track_obj.live = False
+                    self.trackableObjects[i] = track_obj
                 for obj in objects:
                     # print(obj)
                     objectID = obj[1]
@@ -651,6 +657,8 @@ class Model(QObject):
                         track_obj.classified = True
                         class_name = self.allowed_classes[track_obj.class_name]
                     class_id = self.getClassId(class_name)
+                    track_obj.live=True
+                    track_obj.lost_count=0
                     self.trackableObjects[objectID] = track_obj
 
                     frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
@@ -660,6 +668,15 @@ class Model(QObject):
                     original_frame = self.drawBoundingBox(original_frame, class_name, objectID, x_min, y_min, x_max, y_max)
                     
                     obj_num = obj_num +  1
+                for i in self.trackableObjects:
+                    track_obj = self.trackableObjects.get(i, None)
+                    if track_obj is None:
+                        continue
+                    if not track_obj.live:
+                        track_obj.lost_count+=1
+                        self.trackableObjects[i] = track_obj
+                    if track_obj.lost_count>25:
+                        del self.trackableObjects[i]
 
 
                 # draw cardinal directions
