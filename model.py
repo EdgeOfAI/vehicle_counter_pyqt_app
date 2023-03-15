@@ -342,10 +342,11 @@ class Model(QObject):
             centroid_object_width = 5
             centroid_object_height = 5 
             
-            object_polygon = Polygon([[cx, cy], [cx+centroid_object_width, cy], [cx+centroid_object_width, cy+centroid_object_height], [cx, cy+centroid_object_height]])
+            object_polygon = Polygon([[cx-centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy+centroid_object_height], [cx-centroid_object_width, cy+centroid_object_height]])
 
             if uid not in self.counted_ids:
                 # compute distance traveled
+                # print(tracker_dict)
                 prev_centroid = tracker_dict[uid]['prev_centroid'] 
                 tracker_dict[uid]['prev_centroid'] = centroid
                 tracker_dict[uid]['prev_frame_num'] = frame_num
@@ -353,9 +354,13 @@ class Model(QObject):
                     tracker_dict[uid]['dist'] = tracker_dict[uid]['dist'] + math.dist(prev_centroid, centroid)
 
                 for cardinal_side_id, cardinal_side in enumerate(self.cardinal_direction_points):
-                    cardinal_side_copy = cardinal_side.copy() + [[point[0]+2, point[1]+2] for point in cardinal_side.copy()]
-                    cardinal_side_polygon = Polygon(cardinal_side_copy)
-                    is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
+                    point_2 = [[point[0]+15, point[1]+15] for point in cardinal_side.copy()]
+                    line2_start = point_2[0]
+                    line2_end = point_2[1]
+                    vertices = np.array([line2_start, line2_end, cardinal_side[1], cardinal_side[0]])
+                    cardinal_side_polygon = Polygon(vertices)
+                    is_intersects = cardinal_side_polygon.intersects(object_polygon)
+                    # is_intersects = self.myTouches(cardinal_side_polygon, object_polygon)
                     if is_intersects:
                         # if tracker_dict[uid]['in_cardinal_side'] and tracker_dict[uid]['dist'] > 100:
 
@@ -488,8 +493,8 @@ class Model(QObject):
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         weights_cls = ['./weights/classification.pt']  # model path or triton URL
-        source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
-        # source = 'https://www.youtube.com/watch?v=GgriNm5S2WE'
+        # source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
+        source = [os.path.join('./videos', os.listdir('videos')[0])]
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=640  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -501,6 +506,17 @@ class Model(QObject):
         augment=False  # augmented inference
         dnn=False  # use OpenCV DNN for ONNX inference
         bs = 1
+
+        # create polygon from cardinal lines
+        # for cardinal_direction_positions, side_txt in zip(self.cardinal_direction_points[:4], ['A', 'B', 'C', 'D']):
+        #     point_2 = [[point[0]+15, point[1]+15] for point in cardinal_direction_positions.copy()]
+        #     line1_start = point_2[0]
+        #     line1_end = point_2[1]
+        #     # cv2.line(original_frame, line1_start, line1_end, (255, 0, 0), 2)
+        #     # cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255, 0), 2)
+
+        #     vertices = np.array([line1_start, line1_end, cardinal_direction_positions[1], cardinal_direction_positions[0]])
+        #     cv2.fillConvexPoly(original_frame, vertices, (0, 255, 0))
 
         # Load model
         device = select_device()
@@ -677,18 +693,33 @@ class Model(QObject):
                         track_obj.lost_count+=1
                         self.trackableObjects[i] = track_obj
                     if track_obj.lost_count>25:
-                        need_to_remove.append(i)
+                         need_to_remove.append(i)
                 for i in need_to_remove:
                     del self.trackableObjects[i]
+
 
 
                 # draw cardinal directions
                 # print(len(self.cardinal_direction_points))
                 for cardinal_direction_positions, side_txt in zip(self.cardinal_direction_points[:4], ['A', 'B', 'C', 'D']):
+                    point_2 = [[point[0]+15, point[1]+15] for point in cardinal_direction_positions.copy()]
+                    line1_start = point_2[0]
+                    line1_end = point_2[1]
+                    # cv2.line(original_frame, line1_start, line1_end, (255, 0, 0), 2)
+                    # cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255, 0), 2)
+                    vertices = np.array([line1_start, line1_end, cardinal_direction_positions[1], cardinal_direction_positions[0]])
+                    # cv2.fillConvexPoly(original_frame, vertices, (0, 255, 0))
+
+                    # cardinal_side_polygon = Polygon(cardinal_side_copy)
+                    # original_frame = cv2.polylines(original_frame, cardinal_side_copy, True, self.draw_color)
                     side_xmin = min([cardinal_direction_positions[0][0], cardinal_direction_positions[1][0]])
                     side_xmax = max([cardinal_direction_positions[0][0], cardinal_direction_positions[1][0]])
                     side_ymin = min([cardinal_direction_positions[0][1], cardinal_direction_positions[1][1]])
                     side_ymax = max([cardinal_direction_positions[0][1], cardinal_direction_positions[1][1]])
+                    # rect_start = (min(side_xmin, side_xmax)-10, min(side_ymin, side_ymax)-10)
+                    # rect_end = (max(side_xmin, side_xmax)+10, max(side_ymin, side_ymax)+10)
+                    # cv2.rectangle(original_frame, rect_start, rect_end, self.draw_color, 2)
+
 
                     side_width = abs(side_xmax - side_xmin)
                     side_height = abs(side_ymax - side_ymin)
