@@ -684,6 +684,24 @@ class Model(QObject):
 
                     frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
                     self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
+                    x_min = frame_data[obj_num][2]
+                    y_min = frame_data[obj_num][3]
+                    x_max = frame_data[obj_num][4]
+                    y_max = frame_data[obj_num][5]
+                    width = x_max - x_min
+                    height = y_max - y_min
+                    cx = x_min + (width / 2)
+                    cy = y_min + (height / 2)
+                    centroid_object_width = 5
+                    centroid_object_height = 5 
+                    centroid_xmin = int(cx-centroid_object_width)
+                    centroid_ymin = int(cy-centroid_object_height)
+                    centroid_xmax = int(cx+centroid_object_width)
+                    centroid_ymax = int(cy+centroid_object_height)
+                    
+                    # object_polygon = Polygon([[cx-centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy+centroid_object_height], [cx-centroid_object_width, cy+centroid_object_height]])
+
+                    original_frame = cv2.rectangle(original_frame, (centroid_xmin, centroid_ymin), (centroid_xmax, centroid_ymax), (255, 0, 255), 2)
 
                     # draw bbox on screen
                     original_frame = self.drawBoundingBox(original_frame, class_name, objectID, x_min, y_min, x_max, y_max)
@@ -713,7 +731,7 @@ class Model(QObject):
                     # cv2.line(original_frame, line1_start, line1_end, (255, 0, 0), 2)
                     # cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255, 0), 2)
                     vertices = np.array([line1_start, line1_end, cardinal_direction_positions[1], cardinal_direction_positions[0]])
-                    # cv2.fillConvexPoly(original_frame, vertices, (0, 255, 0))
+                    cv2.fillConvexPoly(original_frame, vertices, (0, 255, 0))
 
                     # cardinal_side_polygon = Polygon(cardinal_side_copy)
                     # original_frame = cv2.polylines(original_frame, cardinal_side_copy, True, self.draw_color)
