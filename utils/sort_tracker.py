@@ -174,6 +174,8 @@ class SORT(CentroidKF_Tracker):
             self._update_track(track_id, self.frame_count, bbox, detection_confidence=confidence, class_id=cid, lost=self.tracks[track_id].lost+1)
             
             if self.tracks[track_id].lost > self.max_lost:
+                if track_id == 8:
+                    print(self.tracks[track_id].lost)
                 self._remove_track(track_id)
 
         outputs = self._get_tracks(self.tracks)

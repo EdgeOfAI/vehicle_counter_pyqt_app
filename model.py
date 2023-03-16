@@ -436,6 +436,11 @@ class Model(QObject):
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                             tracker_dict[uid]['last_in_cardinal_side_frame_num'] = frame_num
                         break
+                    else:
+                        # print('Not intersected:  ', uid)
+                        continue
+                if class_id == 18:
+                    print(uid, tracker_dict[uid], frame_num)
 
         except Exception as err:
             import traceback
@@ -496,7 +501,7 @@ class Model(QObject):
         # source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
         source = [os.path.join('./videos', os.listdir('videos')[0])]
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
-        imgsz=640  # inference size (height, width)
+        imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
         iou_thres=0.4  # NMS IOU threshold
         max_det=1000  # maximum detections per image
