@@ -162,7 +162,8 @@ class ViewController(QWidget, Ui_Form):
         self.enableControls(True)
         self.checkBox.setEnabled(True)
         self.stopProcessBtn.setEnabled(True)
-        if self.model.stop_counting:
+        print('Stop_couunting', self.model.stop_counting)
+        if not self.model.stop_counting:
             self.startInferenceBtn.setEnabled(False)
         if self.use_video:
             self.add_cam_window.setEnabled(False)
