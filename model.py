@@ -27,7 +27,7 @@ sort_tracker = SORT(max_lost=25, iou_threshold=0.3)
 from utils.trackableobject import TrackableObject
 from utils.image_cropper import CropImage
 ########################################
-MAX_DETECTION_NUM = 500
+MAX_DETECTION_NUM = 800
 
 
 
@@ -499,7 +499,8 @@ class Model(QObject):
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         weights_cls = ['./weights/classification.pt']  # model path or triton URL
         # source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
-        source = [os.path.join('./videos', os.listdir('videos')[0])]
+        # source = [os.path.join('./videos', os.listdir('videos')[0])]
+        source = ['/home/yeoju/Desktop/videos/138(7)']
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -581,22 +582,23 @@ class Model(QObject):
                     self.time_now += self.add_time
                 original_frame = im0s.copy()
                 ################
-                self.det_area_x0 = max(0, self.det_area_x0)
-                self.det_area_y0 = max(0, self.det_area_y0)
-                self.det_area_x1 = min(self.det_area_x1, original_frame.shape[1])
-                self.det_area_y1 = min(self.det_area_y1, original_frame.shape[0])
+                # self.det_area_x0 = max(0, self.det_area_x0)
+                # self.det_area_y0 = max(0, self.det_area_y0)
+                # self.det_area_x1 = min(self.det_area_x1, original_frame.shape[1])
+                # self.det_area_y1 = min(self.det_area_y1, original_frame.shape[0])
                
-                cv2.rectangle(original_frame, (self.det_area_x0, self.det_area_y0), (self.det_area_x1, self.det_area_y1), (0,255,0), 2)
-                det_area = im[self.det_area_y0:self.det_area_y1, self.det_area_x0:self.det_area_x1]
+                # cv2.rectangle(original_frame, (self.det_area_x0, self.det_area_y0), (self.det_area_x1, self.det_area_y1), (0,255,0), 2)
+                # det_area = im[self.det_area_y0:self.det_area_y1, self.det_area_x0:self.det_area_x1]
+                # det_area = im.copy()
 
-                im = letterbox(det_area, imgsz, stride=stride)[0]  # padded resize
+                im = letterbox(im, imgsz, stride=stride)[0]  # padded resize
                 im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
                 im = np.ascontiguousarray(im)  # contiguous
                 ###############
                 frame_num += 1
                 frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
                 im = torch.from_numpy(im).to(model.device)
-                im = im.half() if model.fp16 else im.float()  # uint8 to fp16/32
+                im = im.float()  # uint8 to fp16/32
                 im /= 255  # 0 - 255 to 0.0 - 1.0
                 if len(im.shape) == 3:
                     im = im[None]  # expand for batch dim
@@ -617,7 +619,7 @@ class Model(QObject):
                     if len(det):
                         # print('Detes', det)
                         # Rescale boxes from img_size to im0 size
-                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], det_area.shape).round()
+                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0s.shape).round()
                         # Write results
                         for *xyxy, conf, cls in reversed(det):
                             class_indx = int(cls.cpu())
@@ -628,7 +630,8 @@ class Model(QObject):
                             scores.append(conf.cpu())
                             # print(xyxy)
                             xmin, ymin, xmax, ymax = xyxy
-                            xmin, ymin, xmax, ymax = xmin.cpu()+self.det_area_x0, ymin.cpu()+self.det_area_y0, xmax.cpu() + self.det_area_x0, ymax.cpu()+self.det_area_y0
+                            # xmin, ymin, xmax, ymax = xmin.cpu()+self.det_area_x0, ymin.cpu()+self.det_area_y0, xmax.cpu() + self.det_area_x0, ymax.cpu()+self.det_area_y0
+                            xmin, ymin, xmax, ymax = xmin.cpu(), ymin.cpu(), xmax.cpu(), ymax.cpu()
                             bboxes.append(np.array([xmin, ymin, xmax, ymax]))
                            
                             # # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
@@ -649,7 +652,7 @@ class Model(QObject):
                     x_min, y_min, x_max, y_max = int(obj[2]), int(obj[3]), int(obj[4]), int(obj[5])
                     track_obj = self.trackableObjects.get(objectID, None)
                     if track_obj is None:
-                        track_obj = TrackableObject(objectID, x_min, y_min, x_max, y_max, self.det_area_x0, self.det_area_y0, self.det_area_x1, self.det_area_y1)
+                        track_obj = TrackableObject(objectID, x_min, y_min, x_max, y_max, 0, 0, im0s.shape[1], im0s.shape[0])
                     
                     # if objectID == 205:
                     # print('Id', objectID, track_obj.area, track_obj.walk_distance)
