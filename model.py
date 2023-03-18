@@ -433,7 +433,11 @@ class Model(QObject):
                             self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)]) 
                         else:
                             if not tracker_dict[uid]['in_cardinal_side']:
+                                track_obj = self.trackableObjects.get(int(uid), None)
+                                track_obj.start_classifying = True
+                                self.trackableObjects[int(uid)] = track_obj
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                                
                             tracker_dict[uid]['last_in_cardinal_side_frame_num'] = frame_num
                         break
                     else:
@@ -498,9 +502,9 @@ class Model(QObject):
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         weights_cls = ['./weights/classification.pt']  # model path or triton URL
-        # source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
+        source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
         # source = [os.path.join('./videos', os.listdir('videos')[0])]
-        source = ['/home/yeoju/Desktop/videos/138(7)']
+        # source = ['/home/yeoju/Desktop/videos/138(7)']
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -651,14 +655,15 @@ class Model(QObject):
                     objectID = obj[1]
                     x_min, y_min, x_max, y_max = int(obj[2]), int(obj[3]), int(obj[4]), int(obj[5])
                     track_obj = self.trackableObjects.get(objectID, None)
+
                     if track_obj is None:
                         track_obj = TrackableObject(objectID, x_min, y_min, x_max, y_max, 0, 0, im0s.shape[1], im0s.shape[0])
                     
                     # if objectID == 205:
                     # print('Id', objectID, track_obj.area, track_obj.walk_distance)
 
-                    if not track_obj.classified:
-                        track_obj.can_start_classifying(x_min, y_min, x_max, y_max)
+                    # if not track_obj.classified:
+                    #     track_obj.can_start_classifying(x_min, y_min, x_max, y_max)
 
                     if track_obj.class_name < 0:
                         class_name = ''
@@ -686,6 +691,7 @@ class Model(QObject):
                     self.trackableObjects[objectID] = track_obj
 
                     frame_data[obj_num] = [class_id, objectID, x_min, y_min, x_max, y_max]
+                    # print()
                     self.countVehiclesCustom(original_frame, frame_num, frame_data[obj_num])
                     x_min = frame_data[obj_num][2]
                     y_min = frame_data[obj_num][3]
