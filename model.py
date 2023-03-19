@@ -383,14 +383,14 @@ class Model(QObject):
                             if not Path(self.images_root).exists():
                                 os.makedirs(self.images_root)
 
-                            image_path = os.path.join(self.images_root, str(class_id))
+                            # image_path = os.path.join(self.images_root, str(class_id))
 
-                            if not Path(image_path).exists():
-                                os.makedirs(image_path)
+                            # if not Path(image_path).exists():
+                            #     os.makedirs(image_path)
 
-                            image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+                            # image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
 
-                            cv2.imwrite(os.path.join(image_save_path), img)
+                            # cv2.imwrite(os.path.join(image_save_path), img)
 
                             self.counted_ids.append(uid)
                             self.vehicle_counter[str(class_id)] += 1
@@ -502,9 +502,9 @@ class Model(QObject):
         # arguments for yolov5 model inference
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         weights_cls = ['./weights/classification.pt']  # model path or triton URL
-        source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
-        # source = [os.path.join('./videos', os.listdir('videos')[0])]
-        # source = ['/home/yeoju/Desktop/videos/138(7)']
+        # source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
+        source = [os.path.join('./videos', os.listdir('videos')[0])]
+        source = [r'F:\vehicle_count\14,03,2023\24 Format 02.12']
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
         imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
@@ -682,9 +682,20 @@ class Model(QObject):
                         crop = self.image_cropper.crop(**param)
                         # crop = im0s[y_min:y_max, x_min:x_max]
                         class_name = self.get_class_name(crop, model_cls)
+                        if class_name == 6:
+                            class_name = 0
                         track_obj.class_name=class_name
                         track_obj.classified = True
                         class_name = self.allowed_classes[track_obj.class_name]
+                        image_path = os.path.join(self.images_root, str(class_name))
+
+                        if not Path(image_path).exists():
+                            os.makedirs(image_path)
+
+                        image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+
+                        cv2.imwrite(os.path.join(image_save_path), crop)
+
                     class_id = self.getClassId(class_name)
                     track_obj.live=True
                     track_obj.lost_count=0

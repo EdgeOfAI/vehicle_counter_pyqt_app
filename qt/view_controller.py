@@ -125,7 +125,7 @@ class ViewController(QWidget, Ui_Form):
             self.enableControls(False)
             self.showDataBtn.setEnabled(True)
             source = os.path.join('./videos', os.listdir('videos')[0])
-            # source = '/home/yeoju/Desktop/videos/138(7)/ch01_00000000007000000.mp4'
+            source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
             f = cv2.VideoCapture(source)
             rval, frame = f.read()
             f.release()
