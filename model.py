@@ -503,10 +503,10 @@ class Model(QObject):
         weights = ['./weights/vehicle.pt']  # model path or triton URL
         weights_cls = ['./weights/classification.pt']  # model path or triton URL
         # source = [os.path.join('./videos', os.listdir('videos')[0])]  # file/dir/URL/glob/screen/0(webcam)
-        source = [os.path.join('./videos', os.listdir('videos')[0])]
-        source = [r'F:\vehicle_count\14,03,2023\24 Format 02.12']
+        # source = [os.path.join('./videos', os.listdir('videos')[0])]
+        # source = [r'F:\vehicle_count\14,03,2023\24 Format 02.12']
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
-        imgsz=1280  # inference size (height, width)
+        imgsz=640  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
         iou_thres=0.4  # NMS IOU threshold
         max_det=1000  # maximum detections per image
@@ -541,14 +541,18 @@ class Model(QObject):
 
         # Load dataset
         if self.use_video:
-            dataset = LoadImages(source, imgsz, stride, pt)
+            dataset = LoadImages(self.source, imgsz, stride, pt)
             print('FPS:  ', dataset.fps)
             self.time_now = datetime.datetime.now()
             self.add_time = datetime.timedelta(seconds=1/dataset.fps)
             self.cam_id = 0
         else:
             dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
+
         # print('Dataset initializded')
+        rtsp_stream = 'http://46.151.101.134:8082/?action=stream'
+        dataset = LoadStreams(rtsp_stream, img_size=imgsz, stride=stride, auto=pt)
+        bs = len(dataset)
 
         model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
         seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
@@ -574,7 +578,7 @@ class Model(QObject):
         self.det_area_x1 = max(x_list) + self.margin
         self.det_area_y1 = max(y_list) + self.margin
         
-        for path, im, im0s in dataset:
+        for i, (path, im, im0s) in enumerate(dataset):
             try:
                 start_time = time()
                 if self.stop_counting:
@@ -584,7 +588,11 @@ class Model(QObject):
                     break
                 if self.use_video:
                     self.time_now += self.add_time
-                original_frame = im0s.copy()
+                    original_frame = im0s.copy()
+                else:
+                    im0 = im0s[i].copy()
+                    original_frame = im0.copy()
+                
                 ################
                 # self.det_area_x0 = max(0, self.det_area_x0)
                 # self.det_area_y0 = max(0, self.det_area_y0)
@@ -594,6 +602,9 @@ class Model(QObject):
                 # cv2.rectangle(original_frame, (self.det_area_x0, self.det_area_y0), (self.det_area_x1, self.det_area_y1), (0,255,0), 2)
                 # det_area = im[self.det_area_y0:self.det_area_y1, self.det_area_x0:self.det_area_x1]
                 # det_area = im.copy()
+                print(im)
+                cv2.imshow('hello', im)
+                cv2.imwrite('im.png', im)
 
                 im = letterbox(im, imgsz, stride=stride)[0]  # padded resize
                 im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB

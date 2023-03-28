@@ -1377,7 +1377,7 @@ class Ui_Form(object):
 
         self.languageChooser.setCurrentIndex(0)
         self.comboBox.setCurrentIndex(-1)
-        self.sidewiseCountMatrixDisplay.setCurrentIndex(3)
+        self.sidewiseCountMatrixDisplay.setCurrentIndex(5)
 
 
         QMetaObject.connectSlotsByName(Form)

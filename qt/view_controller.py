@@ -1,4 +1,4 @@
-
+from pathlib import Path
 from typing import Tuple
 from PySide2.QtCore import QPoint, Signal, Slot, QCoreApplication
 # from PyQt5 import QtCore, QtGui, QtWidgets
@@ -124,9 +124,11 @@ class ViewController(QWidget, Ui_Form):
             self.use_video = True
             self.enableControls(False)
             self.showDataBtn.setEnabled(True)
-            source = os.path.join('./videos', os.listdir('videos')[0])
-            source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
-            f = cv2.VideoCapture(source)
+            videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+            self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
+            # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
+            print(self.source)
+            f = cv2.VideoCapture(self.source[0])
             rval, frame = f.read()
             f.release()
             self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
@@ -844,6 +846,8 @@ class ViewController(QWidget, Ui_Form):
         self.model.use_video = self.checkBox.isChecked()
         self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[0:4]
         self.model.text_translator = self.text_translator
+        if self.use_video:
+            self.model.source = self.source
         # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         self.startInferenceSignal.emit()
     
