@@ -374,6 +374,7 @@ class Model(QObject):
                             else:
                                 self.cardinal_vehicle_counter[row_id] = 1
 
+                            # start = time()
                             img = self.getVehicleImage(detection, frame)
                             exps = os.listdir(self.save_crops_path)
 
@@ -383,17 +384,21 @@ class Model(QObject):
                             if not Path(self.images_root).exists():
                                 os.makedirs(self.images_root)
 
-                            # image_path = os.path.join(self.images_root, str(class_id))
+                            image_path = os.path.join(self.images_root, str(class_id))
 
-                            # if not Path(image_path).exists():
-                            #     os.makedirs(image_path)
+                            if not Path(image_path).exists():
+                                os.makedirs(image_path)
 
-                            # image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+                            image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
 
-                            # cv2.imwrite(os.path.join(image_save_path), img)
+                            cv2.imwrite(os.path.join(image_save_path), img)
 
                             self.counted_ids.append(uid)
                             self.vehicle_counter[str(class_id)] += 1
+                            # print('Get image aand create folders: ', time() - start)
+
+
+                            # start = time()
 
                             self.db_cur.execute(f"""INSERT INTO vehicles(
                                                                 id,
@@ -428,9 +433,13 @@ class Model(QObject):
                                                             )"""
                                     )
                             self.db_conn.commit()
+                            # print('Inserting into db: ', time() - start)
+
+                            # start = time()
                             print('Removed ID:  ', uid, class_id, tracker_dict[uid])
                             del tracker_dict[uid]
                             self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)]) 
+                            # print('Remove vehicle and send to view_controller: ', time() - start)
                         else:
                             if not tracker_dict[uid]['in_cardinal_side']:
                                 track_obj = self.trackableObjects.get(int(uid), None)
@@ -443,8 +452,19 @@ class Model(QObject):
                     else:
                         # print('Not intersected:  ', uid)
                         continue
-                if class_id == 18:
-                    print(uid, tracker_dict[uid], frame_num)
+        except KeyError:
+            tracker_dict[uid] = {
+                    'initial_centroid' : [cx, cy], 
+                    'prev_centroid': [cx, cy],
+                    'prev_frame_num': frame_num,
+                    'dist': 0,
+                    'counted': False,
+                    'in_cardinal_side':None,
+                    'out_cardinal_side':None,
+                    'check_out_cardinal_side':False,
+                    'last_in_cardinal_side_frame_num':None,
+                    'row_id':False
+                }
 
         except Exception as err:
             import traceback
@@ -506,7 +526,7 @@ class Model(QObject):
         # source = [os.path.join('./videos', os.listdir('videos')[0])]
         # source = [r'F:\vehicle_count\14,03,2023\24 Format 02.12']
         data='yolov5/data/coco128.yaml'  # dataset.yaml path
-        imgsz=640  # inference size (height, width)
+        imgsz=1280  # inference size (height, width)
         conf_thres=0.5  # confidence threshold
         iou_thres=0.4  # NMS IOU threshold
         max_det=1000  # maximum detections per image
@@ -628,8 +648,10 @@ class Model(QObject):
                 for i, det in enumerate(pred):  # per image
                     if not self.use_video:
                         original_frame = im0s[i].copy()
+                        frame_for_cls = im0s[i].copy()
                     else:
                         original_frame = im0s.copy()
+                        frame_for_cls = im0s.copy()
                     seen += 1
                     # p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
                     if len(det):
@@ -684,7 +706,7 @@ class Model(QObject):
 
                     if  not track_obj.classified and track_obj.start_classifying:
                         param = {
-                                "org_img": original_frame,
+                                "org_img": frame_for_cls,
                                 "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
                                 "scale": 1,
                                 "out_w": 64,
