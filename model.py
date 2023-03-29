@@ -547,12 +547,13 @@ class Model(QObject):
             self.add_time = datetime.timedelta(seconds=1/dataset.fps)
             self.cam_id = 0
         else:
-            dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
+            # dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
+            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
+            rtsp_stream = 'http://46.151.101.134:8082/?action=stream'
+            dataset = LoadStreams(rtsp_stream, img_size=imgsz, stride=stride, auto=pt)
+            bs = len(dataset)
 
         # print('Dataset initializded')
-        rtsp_stream = 'http://46.151.101.134:8082/?action=stream'
-        dataset = LoadStreams(rtsp_stream, img_size=imgsz, stride=stride, auto=pt)
-        bs = len(dataset)
 
         model.warmup(imgsz=(1 if pt or model.triton else bs, 3, *imgsz))  # warmup
         seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
@@ -569,17 +570,20 @@ class Model(QObject):
         # [[(292, 426), (752, 258)], [(796, 300), (902, 438)], [(896, 442), (576, 636)], [(318, 422), (506, 602)]]
         x_list = []
         y_list = []
-        for line in self.cardinal_direction_points:
-            for point in line:
-                x_list.append(point[0])
-                y_list.append(point[1])
-        self.det_area_x0 = min(x_list) - self.margin 
-        self.det_area_y0 = min(y_list) - self.margin
-        self.det_area_x1 = max(x_list) + self.margin
-        self.det_area_y1 = max(y_list) + self.margin
+        print('Use video', self.use_video)
+        if self.cardinal_direction_points:
+            for line in self.cardinal_direction_points:
+                for point in line:
+                    x_list.append(point[0])
+                    y_list.append(point[1])
+        # self.det_area_x0 = min(x_list) - self.margin 
+        # self.det_area_y0 = min(y_list) - self.margin
+        # self.det_area_x1 = max(x_list) + self.margin
+        # self.det_area_y1 = max(y_list) + self.margin
         
         for i, (path, im, im0s) in enumerate(dataset):
             try:
+                # print('Use video', self.use_video)
                 start_time = time()
                 if self.stop_counting:
                     self.counted_ids = []
@@ -588,10 +592,6 @@ class Model(QObject):
                     break
                 if self.use_video:
                     self.time_now += self.add_time
-                    original_frame = im0s.copy()
-                else:
-                    im0 = im0s[i].copy()
-                    original_frame = im0.copy()
                 
                 ################
                 # self.det_area_x0 = max(0, self.det_area_x0)
@@ -602,13 +602,10 @@ class Model(QObject):
                 # cv2.rectangle(original_frame, (self.det_area_x0, self.det_area_y0), (self.det_area_x1, self.det_area_y1), (0,255,0), 2)
                 # det_area = im[self.det_area_y0:self.det_area_y1, self.det_area_x0:self.det_area_x1]
                 # det_area = im.copy()
-                print(im)
-                cv2.imshow('hello', im)
-                cv2.imwrite('im.png', im)
 
-                im = letterbox(im, imgsz, stride=stride)[0]  # padded resize
-                im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
-                im = np.ascontiguousarray(im)  # contiguous
+                # im = letterbox(im, imgsz, stride=stride)[0]  # padded resize
+                # im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
+                # im = np.ascontiguousarray(im)  # contiguous
                 ###############
                 frame_num += 1
                 frame_data = np.zeros((MAX_DETECTION_NUM, 6), dtype=int)
@@ -629,6 +626,10 @@ class Model(QObject):
                 # print('Predictions', pred)
                 # Process predictions
                 for i, det in enumerate(pred):  # per image
+                    if not self.use_video:
+                        original_frame = im0s[i].copy()
+                    else:
+                        original_frame = im0s.copy()
                     seen += 1
                     # p, im0, frame = path, im0s.copy(), getattr(dataset, 'frame', 0)
                     if len(det):
@@ -683,13 +684,13 @@ class Model(QObject):
 
                     if  not track_obj.classified and track_obj.start_classifying:
                         param = {
-                        "org_img": original_frame,
-                        "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
-                        "scale": 1,
-                        "out_w": 64,
-                        "out_h": 64,
-                        "crop": True,
-                            }
+                                "org_img": original_frame,
+                                "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
+                                "scale": 1,
+                                "out_w": 64,
+                                "out_h": 64,
+                                "crop": True,
+                                    }
                         crop = self.image_cropper.crop(**param)
                         # crop = im0s[y_min:y_max, x_min:x_max]
                         class_name = self.get_class_name(crop, model_cls)

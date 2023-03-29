@@ -845,6 +845,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
         self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[0:4]
+        # self.model.cardinal_direction_points = []
         self.model.text_translator = self.text_translator
         if self.use_video:
             self.model.source = self.source

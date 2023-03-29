@@ -72,6 +72,9 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                             32,
                                             False
                                         )
+            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
+            # vcap = cv2.VideoCapture(rtsp_stream)
+            # ret, frame = vcap.read()
             frame = dataset.get_frame()
             self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
             cv2.imshow('Image', self.draw_line_widget.show_image())
