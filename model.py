@@ -701,7 +701,8 @@ class Model(QObject):
                     else:
                         class_name = self.allowed_classes[track_obj.class_name]
 
-                    if  not track_obj.classified and track_obj.start_classifying:
+                    if  (not track_obj.classified) and (track_obj.start_classifying) and (track_obj.count_classification < 10):
+                        track_obj.count_classification += 1
                         param = {
                                 "org_img": frame_for_cls,
                                 "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
@@ -715,8 +716,8 @@ class Model(QObject):
                         class_name = self.get_class_name(crop, model_cls)
                         if class_name == 6:
                             class_name = 0
-                        track_obj.class_name=class_name
-                        track_obj.classified = True
+                        track_obj.class_occurances[class_name] += 1
+                        track_obj.class_name = track_obj.class_occurances.index(max(track_obj.class_occurances))
                         class_name = self.allowed_classes[track_obj.class_name]
                         if not os.path.exists(self.images_root):
                             os.makedirs(self.images_root)
@@ -728,6 +729,33 @@ class Model(QObject):
                         image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
 
                         cv2.imwrite(os.path.join(image_save_path), crop)
+                    # if  not track_obj.classified and track_obj.start_classifying:
+                    #     param = {
+                    #             "org_img": frame_for_cls,
+                    #             "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
+                    #             "scale": 1,
+                    #             "out_w": 64,
+                    #             "out_h": 64,
+                    #             "crop": True,
+                    #                 }
+                    #     crop = self.image_cropper.crop(**param)
+                    #     # crop = im0s[y_min:y_max, x_min:x_max]
+                    #     class_name = self.get_class_name(crop, model_cls)
+                    #     if class_name == 6:
+                    #         class_name = 0
+                    #     track_obj.class_name=class_name
+                    #     track_obj.classified = True
+                    #     class_name = self.allowed_classes[track_obj.class_name]
+                    #     if not os.path.exists(self.images_root):
+                    #         os.makedirs(self.images_root)
+                    #     image_path = os.path.join(self.images_root, str(class_name))
+
+                    #     if not Path(image_path).exists():
+                    #         os.makedirs(image_path)
+
+                    #     image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+
+                    #     cv2.imwrite(os.path.join(image_save_path), crop)
 
                     class_id = self.getClassId(class_name)
                     track_obj.live=True

@@ -13,6 +13,10 @@ class TrackableObject:
 		self.start_classifying_margin = 40
 		self.track_side_index = -1
 
+		self.count_classification = 0
+
+		self.class_occurances = [0, 0, 0, 0, 0, 0]
+
 		self.find_min_side(xmin, ymin, xmax, ymax)
 
 		width = xmax - xmin
