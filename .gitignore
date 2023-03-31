@@ -6,6 +6,7 @@ images/*
 *.avi
 *.mp4
 *.xlsx
+*.code
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -137,3 +138,12 @@ dmypy.json
 .pyre/
 *.db
 *.pt
+
+# vscode
+*.vscdb
+*.backup
+storage.json
+workspace.json
+builtin
+user
+

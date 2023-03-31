@@ -80,16 +80,13 @@ class Model(QObject):
         self.cam_id = 0
         self.counted_ids = []
         self.draw_color = draw_color
-        self.save_crops_path = './images'
-        if not Path(self.save_crops_path).exists():
-            os.makedirs(self.save_crops_path)
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
         
         self.allowed_classes = ['car', 'bicycle', 'motorcycle', 'bus', 'van',  'truck', '']
         self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
-        self.images_root = 'crop_images'
-
+        self.images_root = '/home/yeoju/vehicle_counter/crops'
+        self.images_root = os.path.join(self.images_root, str(datetime.date.today()))
         self.db_conn = conn 
         self.db_cur = cur 
         self.trackableObjects = {}
@@ -376,22 +373,22 @@ class Model(QObject):
 
                             # start = time()
                             img = self.getVehicleImage(detection, frame)
-                            exps = os.listdir(self.save_crops_path)
+                            # exps = os.listdir(self.save_crops_path)
 
-                            if not self.images_root:
-                                self.images_root = os.path.join(self.save_crops_path, str(len(exps)))
+                            # if not self.images_root:
+                            #     self.images_root = os.path.join(self.save_crops_path, str(len(exps)))
 
-                            if not Path(self.images_root).exists():
-                                os.makedirs(self.images_root)
+                            # if not Path(self.images_root).exists():
+                            #     os.makedirs(self.images_root)
 
-                            image_path = os.path.join(self.images_root, str(class_id))
+                            # image_path = os.path.join(self.images_root, str(class_id))
 
-                            if not Path(image_path).exists():
-                                os.makedirs(image_path)
+                            # if not Path(image_path).exists():
+                            #     os.makedirs(image_path)
 
-                            image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
+                            # image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
 
-                            cv2.imwrite(os.path.join(image_save_path), img)
+                            # cv2.imwrite(os.path.join(image_save_path), img)
 
                             self.counted_ids.append(uid)
                             self.vehicle_counter[str(class_id)] += 1
@@ -721,6 +718,8 @@ class Model(QObject):
                         track_obj.class_name=class_name
                         track_obj.classified = True
                         class_name = self.allowed_classes[track_obj.class_name]
+                        if not os.path.exists(self.images_root):
+                            os.makedirs(self.images_root)
                         image_path = os.path.join(self.images_root, str(class_name))
 
                         if not Path(image_path).exists():

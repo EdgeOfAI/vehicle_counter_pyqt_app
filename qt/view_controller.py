@@ -124,7 +124,7 @@ class ViewController(QWidget, Ui_Form):
             self.use_video = True
             self.enableControls(False)
             self.showDataBtn.setEnabled(True)
-            videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+            videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", "/home/yeoju/"))
             self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
             # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
             print(self.source)
@@ -172,6 +172,11 @@ class ViewController(QWidget, Ui_Form):
             self.edit_camera_window.setEnabled(False)
             self.remove_camera_window.setEnabled(False)
             self.comboBox.setEnabled(False)
+        else:
+            self.add_cam_window.setEnabled(True)
+            self.edit_camera_window.setEnabled(True)
+            self.remove_camera_window.setEnabled(True)
+            self.comboBox.setEnabled(True)
         
     def openAddCamWindow(self):
         # print('Opening camera add window')

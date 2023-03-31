@@ -1,9 +1,9 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-import pathlib
-temp = pathlib.PosixPath
-pathlib.PosixPath = pathlib.WindowsPath
+# import pathlib
+# temp = pathlib.PosixPath
+# pathlib.PosixPath = pathlib.WindowsPath
 
 import sys
 import sqlite3
@@ -31,7 +31,7 @@ class App(QApplication):
         # print(qss.readAll())
         # self.setStyleSheet(qss.readAll())
         # create database
-        conn = sqlite3.connect("main.db", check_same_thread=False)
+        conn = sqlite3.connect("/home/yeoju/vehicle_counter/databases/main.db", check_same_thread=False)
         cur = conn.cursor()
 
         # create tables

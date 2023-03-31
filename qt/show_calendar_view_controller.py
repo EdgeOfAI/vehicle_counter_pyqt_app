@@ -82,7 +82,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.hide()
     
     def createExcelData(self):
-        path = str(QFileDialog.getExistingDirectory(self, "Select Directory"))
+        path = str(QFileDialog.getExistingDirectory(self, "Select Directory", '/home/yeoju/'))
         if path:
             cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
             in_sides = [self.text_translator.a_in, self.text_translator.b_in, self.text_translator.c_in, self.text_translator.d_in]
