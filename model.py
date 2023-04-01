@@ -565,8 +565,8 @@ class Model(QObject):
             self.cam_id = 0
         else:
             # dataset = LoadHikvisionCamera(ip=self.cam_ip if self.cam_ip.startswith('http') else f'http://{self.cam_ip}', username=self.cam_username, password=self.cam_password, display_name=self.cam_name, cam_id=self.cam_id, imgsz=imgsz, stride=stride, auto=pt)
-            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
-            rtsp_stream = 'http://46.151.101.134:8082/?action=stream'
+            rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/Channels/101'
+            # rtsp_stream = 'http://46.151.101.134:8082/?action=stream'
             dataset = LoadStreams(rtsp_stream, img_size=imgsz, stride=stride, auto=pt)
             bs = len(dataset)
 
