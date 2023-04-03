@@ -1,6 +1,7 @@
 import os
 import datetime
 import xlsxwriter
+from config import home
 from pathlib import Path
 from PySide2 import QtWidgets
 from PySide2.QtGui import QIcon
@@ -82,7 +83,11 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
         # self.hide()
     
     def createExcelData(self):
-        path = str(QFileDialog.getExistingDirectory(self, "Select Directory", '/home/yeoju/'))
+        if home:
+            root = 'D:/'
+        else:
+            root = '/home/yeoju/'
+        path = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))
         if path:
             cardinal_sides = ['AA', 'AB', 'AC', 'AD', 'BA', 'BB', 'BC', 'BD', 'CA', 'CB', 'CC', 'CD', 'DA', 'DB', 'DC', 'DD']
             in_sides = [self.text_translator.a_in, self.text_translator.b_in, self.text_translator.c_in, self.text_translator.d_in]

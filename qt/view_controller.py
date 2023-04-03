@@ -8,6 +8,7 @@ from qt.Ui_Form import Ui_Form
 import numpy as np
 import cv2, os, math
 import pyqtgraph as pg
+from config import home
 
 from DrawLineWidget import DrawLineWidget
 from qt.add_camera_view_controller import AddCameraWindow
@@ -20,6 +21,7 @@ class ViewController(QWidget, Ui_Form):
     startInferenceSignal = Signal()
     startCountingSignal = Signal()
     startCountingAnalysisSignal = Signal()
+    startCountInSignal = Signal()
 
     def __init__(self, model, conn, cur, qss_file, text_translator, draw_color):
         super().__init__()
@@ -82,6 +84,7 @@ class ViewController(QWidget, Ui_Form):
         self.languageChooser.activated[str].connect(self.onLanguageChange)
         self.checkBox.stateChanged.connect(self.checkboxChanged)
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
+        self.model.vehicle_in_count_signal.connect(self.updateInCount)
         self.model.process_done_signal.connect(self.onProcessDone)
         self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.remove_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
@@ -124,7 +127,11 @@ class ViewController(QWidget, Ui_Form):
             self.use_video = True
             self.enableControls(False)
             self.showDataBtn.setEnabled(True)
-            videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", "/home/yeoju/"))
+            if home:
+                root = 'D:/'
+            else:
+                root = '/home/yeoju/'
+            videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))
             self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
             # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
             print(self.source)
@@ -485,6 +492,24 @@ class ViewController(QWidget, Ui_Form):
             self.SSbusCount.display(0)
             self.SSbicycleCount.display(0)
             self.SSmcycleCount.display(0)
+
+            self.aInCount.display(0)
+            self.bInCount.display(0)
+            self.cInCount.display(0)
+            self.dInCount.display(0)
+    
+    @Slot(int)
+    def updateInCount(self, side_id):
+        if side_id == 0:  # a side
+            self.aInCount.display(self.aInCount.intValue()+1)
+        elif side_id == 1:  # b side
+            self.bInCount.display(self.bInCount.intValue()+1)
+        elif side_id == 2:  # c side
+            self.cInCount.display(self.cInCount.intValue()+1)
+        elif side_id == 3:  # d side
+            self.dInCount.display(self.dInCount.intValue()+1)
+        return
+        
 
     @Slot(int,int,int,np.ndarray)
     def updateVehicleCount(self, class_id, uid, count, img, row_num, preview_num):
@@ -1060,4 +1085,8 @@ class ViewController(QWidget, Ui_Form):
         self.label_57.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
         self.label_13.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
         self.label_7.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.aInLabel.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.bInLabel.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.cInLabel.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.dInLabel.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
         self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.tab), QCoreApplication.translate("Form", self.text_translator.total, None))   

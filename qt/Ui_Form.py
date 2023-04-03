@@ -147,13 +147,6 @@ class Ui_Form(object):
         self.gridLayout_9 = QGridLayout()
         self.gridLayout_9.setObjectName(u"gridLayout_9")
         self.gridLayout_9.setContentsMargins(5, -1, -1, -1)
-        self.frame_2 = QFrame(self.frame)
-        self.frame_2.setObjectName(u"frame_2")
-        self.frame_2.setFrameShape(QFrame.StyledPanel)
-        self.frame_2.setFrameShadow(QFrame.Raised)
-
-        self.gridLayout_9.addWidget(self.frame_2, 1, 0, 1, 1)
-
         self.sidewiseCountMatrixDisplay = QTabWidget(self.frame)
         self.sidewiseCountMatrixDisplay.setObjectName(u"sidewiseCountMatrixDisplay")
         sizePolicy1 = QSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)
@@ -1366,6 +1359,111 @@ class Ui_Form(object):
 
         self.gridLayout_9.addWidget(self.sidewiseCountMatrixDisplay, 0, 0, 1, 1)
 
+        self.frame_2 = QFrame(self.frame)
+        self.frame_2.setObjectName(u"frame_2")
+        self.frame_2.setFrameShape(QFrame.StyledPanel)
+        self.frame_2.setFrameShadow(QFrame.Raised)
+        self.verticalLayout_7 = QVBoxLayout(self.frame_2)
+        self.verticalLayout_7.setObjectName(u"verticalLayout_7")
+        self.frame_3 = QFrame(self.frame_2)
+        self.frame_3.setObjectName(u"frame_3")
+        self.frame_3.setMinimumSize(QSize(0, 191))
+        self.frame_3.setMaximumSize(QSize(16777215, 191))
+        self.frame_3.setFrameShape(QFrame.StyledPanel)
+        self.frame_3.setFrameShadow(QFrame.Raised)
+        self.frame_3.setLineWidth(0)
+        self.horizontalLayout_10 = QHBoxLayout(self.frame_3)
+        self.horizontalLayout_10.setObjectName(u"horizontalLayout_10")
+        self.verticalLayout_6 = QVBoxLayout()
+        self.verticalLayout_6.setObjectName(u"verticalLayout_6")
+        self.horizontalLayout = QHBoxLayout()
+        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.aInLabel = QLabel(self.frame_3)
+        self.aInLabel.setObjectName(u"aInLabel")
+
+        self.horizontalLayout.addWidget(self.aInLabel)
+
+        self.aInCount = QLCDNumber(self.frame_3)
+        self.aInCount.setObjectName(u"aInCount")
+        self.aInCount.setLineWidth(0)
+        self.aInCount.setDigitCount(10)
+        self.aInCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.horizontalLayout.addWidget(self.aInCount)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout)
+
+        self.horizontalLayout_5 = QHBoxLayout()
+        self.horizontalLayout_5.setObjectName(u"horizontalLayout_5")
+        self.bInLabel = QLabel(self.frame_3)
+        self.bInLabel.setObjectName(u"bInLabel")
+
+        self.horizontalLayout_5.addWidget(self.bInLabel)
+
+        self.bInCount = QLCDNumber(self.frame_3)
+        self.bInCount.setObjectName(u"bInCount")
+        self.bInCount.setLineWidth(0)
+        self.bInCount.setDigitCount(10)
+        self.bInCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.horizontalLayout_5.addWidget(self.bInCount)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_5)
+
+        self.horizontalLayout_6 = QHBoxLayout()
+        self.horizontalLayout_6.setObjectName(u"horizontalLayout_6")
+        self.cInLabel = QLabel(self.frame_3)
+        self.cInLabel.setObjectName(u"cInLabel")
+
+        self.horizontalLayout_6.addWidget(self.cInLabel)
+
+        self.cInCount = QLCDNumber(self.frame_3)
+        self.cInCount.setObjectName(u"cInCount")
+        self.cInCount.setLineWidth(0)
+        self.cInCount.setDigitCount(10)
+        self.cInCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.horizontalLayout_6.addWidget(self.cInCount)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_6)
+
+        self.horizontalLayout_7 = QHBoxLayout()
+        self.horizontalLayout_7.setObjectName(u"horizontalLayout_7")
+        self.dInLabel = QLabel(self.frame_3)
+        self.dInLabel.setObjectName(u"dInLabel")
+
+        self.horizontalLayout_7.addWidget(self.dInLabel)
+
+        self.dInCount = QLCDNumber(self.frame_3)
+        self.dInCount.setObjectName(u"dInCount")
+        self.dInCount.setLineWidth(0)
+        self.dInCount.setDigitCount(10)
+        self.dInCount.setSegmentStyle(QLCDNumber.Flat)
+
+        self.horizontalLayout_7.addWidget(self.dInCount)
+
+
+        self.verticalLayout_6.addLayout(self.horizontalLayout_7)
+
+
+        self.horizontalLayout_10.addLayout(self.verticalLayout_6)
+
+
+        self.verticalLayout_7.addWidget(self.frame_3)
+
+        self.frame_4 = QFrame(self.frame_2)
+        self.frame_4.setObjectName(u"frame_4")
+        self.frame_4.setFrameShape(QFrame.StyledPanel)
+        self.frame_4.setFrameShadow(QFrame.Raised)
+
+        self.verticalLayout_7.addWidget(self.frame_4)
+
+
+        self.gridLayout_9.addWidget(self.frame_2, 2, 0, 1, 1)
+
 
         self.horizontalLayout_4.addLayout(self.gridLayout_9)
 
@@ -1377,7 +1475,7 @@ class Ui_Form(object):
 
         self.languageChooser.setCurrentIndex(0)
         self.comboBox.setCurrentIndex(-1)
-        self.sidewiseCountMatrixDisplay.setCurrentIndex(5)
+        self.sidewiseCountMatrixDisplay.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(Form)
@@ -1452,5 +1550,9 @@ class Ui_Form(object):
         self.label_13.setText(QCoreApplication.translate("Form", u"A in", None))
         self.label_7.setText(QCoreApplication.translate("Form", u"A out", None))
         self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.tab), QCoreApplication.translate("Form", u"Total", None))
+        self.aInLabel.setText(QCoreApplication.translate("Form", u"A in", None))
+        self.bInLabel.setText(QCoreApplication.translate("Form", u"B in", None))
+        self.cInLabel.setText(QCoreApplication.translate("Form", u"C in", None))
+        self.dInLabel.setText(QCoreApplication.translate("Form", u"D in", None))
     # retranslateUi
 

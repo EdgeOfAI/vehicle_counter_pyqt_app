@@ -26,6 +26,7 @@ from utils.sort_tracker import SORT
 sort_tracker = SORT(max_lost=25, iou_threshold=0.3)
 from utils.trackableobject import TrackableObject
 from utils.image_cropper import CropImage
+from config import home
 ########################################
 MAX_DETECTION_NUM = 800
 
@@ -49,6 +50,7 @@ class Model(QObject):
     process_done_signal = Signal()
     error_signal = Signal(str)
     vehicle_count_signal = Signal(int,int,int,np.ndarray,str,int)
+    vehicle_in_count_signal = Signal(int)
 
     def __init__(self, conn, cur, draw_color):
         super().__init__()
@@ -85,7 +87,11 @@ class Model(QObject):
         self.allowed_classes = ['car', 'bicycle', 'motorcycle', 'bus', 'van',  'truck', '']
         self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
-        self.images_root = '/home/yeoju/vehicle_counter/crops'
+        if home:
+            root = 'D:/'
+        else:
+            root = '/home/yeoju/'
+        self.images_root = f'{root}vehicle_counter/crops'
         self.images_root = os.path.join(self.images_root, str(datetime.date.today()))
         self.db_conn = conn 
         self.db_cur = cur 
@@ -101,12 +107,12 @@ class Model(QObject):
         self.colors = [(255, 89, 94), (255, 202, 58), (138, 201, 38), (25, 130, 196), (106, 76, 147), (1, 27, 200), (0, 0, 0)]  # colors which are being used https://coolors.co/palette/ff595e-ffca3a-8ac926-1982c4-6a4c93
 
 #======================= Setters  ===========================
+    def initialize_counting(self):
+        self.detected_vehicles = dict()
+
     def update_db_conn_cur(self, db_conn, db_cur):
         self.db_conn = db_conn
         self.db_cur = db_cur
-
-    def initialize_counting(self):
-        self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
 
     def setInputVideoPath(self, path):
         self.input_video_path = path
@@ -204,9 +210,6 @@ class Model(QObject):
             self.error_signal.emit('Video and cache frame count does not match')
             return
 
-        # reinitialize dict for counting
-        self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
-
         # go to first frame
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
             
@@ -270,8 +273,6 @@ class Model(QObject):
             self.error_signal.emit('Video and cache frame count does not match')
             return
 
-        # reinitialize dict for counting
-        self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
         self.stop_counting = False
         # go to first frame
         self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)
@@ -319,10 +320,10 @@ class Model(QObject):
             cx = x_min + (width / 2)
             cy = y_min + (height / 2)
             centroid = [cx, cy]
-            tracker_dict = self.detected_vehicles[str(class_id)]
+            tracker_dict = self.detected_vehicles
 
             # detecting for the first time
-            if uid not in tracker_dict.keys() and uid not in self.cardinal_vehicle_counter.keys():
+            if uid not in tracker_dict.keys() and uid not in self.counted_ids:
                 tracker_dict[uid] = {
                     'initial_centroid' : [cx, cy], 
                     'prev_centroid': [cx, cy],
@@ -443,6 +444,7 @@ class Model(QObject):
                                 track_obj.start_classifying = True
                                 self.trackableObjects[int(uid)] = track_obj
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                                self.vehicle_in_count_signal.emit(cardinal_side_id)
                                 
                             tracker_dict[uid]['last_in_cardinal_side_frame_num'] = frame_num
                         break
@@ -450,6 +452,7 @@ class Model(QObject):
                         # print('Not intersected:  ', uid)
                         continue
         except KeyError:
+            print('KEYERROR**********************', uid)
             tracker_dict[uid] = {
                     'initial_centroid' : [cx, cy], 
                     'prev_centroid': [cx, cy],
@@ -576,7 +579,7 @@ class Model(QObject):
         seen, windows, dt = 0, [], (Profile(), Profile(), Profile())
 
         self.stop_inference = False
-        self.detected_vehicles = {class_id : {} for class_name, class_id in class_id_map.items()}
+        self.detected_vehicles = dict()
 
         # go to first frame
         # self.vid.set(cv2.CAP_PROP_POS_FRAMES, 0)

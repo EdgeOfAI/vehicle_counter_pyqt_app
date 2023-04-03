@@ -1,9 +1,9 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-# import pathlib
-# temp = pathlib.PosixPath
-# pathlib.PosixPath = pathlib.WindowsPath
+import pathlib
+temp = pathlib.PosixPath
+pathlib.PosixPath = pathlib.WindowsPath
 
 import sys
 import sqlite3
@@ -15,6 +15,7 @@ from PySide2 import QtCore
 from model import Model
 import pyqtgraph as pg
 import qtmodern.styles
+from config import home
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons
@@ -31,7 +32,11 @@ class App(QApplication):
         # print(qss.readAll())
         # self.setStyleSheet(qss.readAll())
         # create database
-        conn = sqlite3.connect("/home/yeoju/vehicle_counter/databases/main.db", check_same_thread=False)
+        if home:
+            root = 'D:/'
+        else:
+            root = '/home/yeoju/'
+        conn = sqlite3.connect(f"{root}vehicle_counter/databases/main.db", check_same_thread=False)
         cur = conn.cursor()
 
         # create tables
