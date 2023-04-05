@@ -133,13 +133,6 @@ class Model(QObject):
 
     def setCacheDataPath(self, path):
         self.cache_data_path = path
-
-        # parse Model path and send signal with max frame num # Shakh
-        # cache = h5py.File(self.cache_data_path, 'r')
-        # cache_data = cache.get('dataset_1')
-        # self.cache_data = np.array(cache_data)
-
-        # self.max_frame_update_signal.emit(self.cache_data.shape[0])
  
     def setCameraInfo(self, id, ip, username, password, camera_name, cardinal_direction_points):
         self.cam_id = id
@@ -342,7 +335,7 @@ class Model(QObject):
             
             object_polygon = Polygon([[cx-centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy+centroid_object_height], [cx-centroid_object_width, cy+centroid_object_height]])
 
-            if uid not in self.counted_ids:
+            if uid not in self.counted_ids and tracker_dict.get(uid):
                 # compute distance traveled
                 # print(tracker_dict)
                 prev_centroid = tracker_dict[uid]['prev_centroid'] 
@@ -451,6 +444,12 @@ class Model(QObject):
                     else:
                         # print('Not intersected:  ', uid)
                         continue
+                
+                if tracker_dict.get(uid):
+                    if (frame_num - tracker_dict[uid]['prev_frame_num']) > 300:
+                        del tracker_dict[uid]
+                        self.counted_ids.append(uid)
+
         except KeyError:
             print('KEYERROR**********************', uid)
             tracker_dict[uid] = {
@@ -474,7 +473,13 @@ class Model(QObject):
             print(exc_type, fname, exc_tb.tb_lineno)
             print('Custom count error:  ', err)
 
-            
+    def redefineCounterVariables(self):
+        self.counted_ids = []
+        self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}
+        self.cardinal_vehicle_counter = dict()
+        self.detected_vehicles = dict()
+        self.trackableObjects = dict()
+        self.sort_tracker = SORT(max_lost=25, iou_threshold=0.3)
 
 #==================== Inference Functions ========================
     def myTouches(self, poly1, poly2):
@@ -536,6 +541,8 @@ class Model(QObject):
         augment=False  # augmented inference
         dnn=False  # use OpenCV DNN for ONNX inference
         bs = 1
+        self.sort_tracker = SORT(max_lost=25, iou_threshold=0.3)
+        self.redefineCounterVariables()
 
         # create polygon from cardinal lines
         # for cardinal_direction_positions, side_txt in zip(self.cardinal_direction_points[:4], ['A', 'B', 'C', 'D']):
@@ -606,9 +613,7 @@ class Model(QObject):
                 # print('Use video', self.use_video)
                 start_time = time()
                 if self.stop_counting:
-                    self.counted_ids = []
-                    self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}
-                    self.cardinal_vehicle_counter = dict()
+                    self.redefineCounterVariables()
                     break
                 if self.use_video:
                     self.time_now += self.add_time
@@ -675,7 +680,7 @@ class Model(QObject):
                             # # print('*()*&)(*&)(*&)(*&)(*&)(*&)(&*)(*&)(*&)(*&)(*&)(*&)')
                             # xmin, ymin, w, h = xmin.cpu(), ymin.cpu(), xmax.cpu()-xmin.cpu(), ymax.cpu()-ymin.cpu()
                             # bboxes.append(np.array([xmin.cpu(), ymin.cpu(), w.cpu(), h.cpu()]))
-                objects = sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
+                objects = self.sort_tracker.update(np.array(bboxes), np.array(classes), np.array(scores))
                 obj_num = 0
                 # print("len objs: ", len(objects))
                 for i in self.trackableObjects:
@@ -731,34 +736,8 @@ class Model(QObject):
 
                         image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
 
-                        cv2.imwrite(os.path.join(image_save_path), crop)
-                    # if  not track_obj.classified and track_obj.start_classifying:
-                    #     param = {
-                    #             "org_img": frame_for_cls,
-                    #             "bbox": [x_min, y_min, x_max-x_min, y_max-y_min],
-                    #             "scale": 1,
-                    #             "out_w": 64,
-                    #             "out_h": 64,
-                    #             "crop": True,
-                    #                 }
-                    #     crop = self.image_cropper.crop(**param)
-                    #     # crop = im0s[y_min:y_max, x_min:x_max]
-                    #     class_name = self.get_class_name(crop, model_cls)
-                    #     if class_name == 6:
-                    #         class_name = 0
-                    #     track_obj.class_name=class_name
-                    #     track_obj.classified = True
-                    #     class_name = self.allowed_classes[track_obj.class_name]
-                    #     if not os.path.exists(self.images_root):
-                    #         os.makedirs(self.images_root)
-                    #     image_path = os.path.join(self.images_root, str(class_name))
-
-                    #     if not Path(image_path).exists():
-                    #         os.makedirs(image_path)
-
-                    #     image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
-
-                    #     cv2.imwrite(os.path.join(image_save_path), crop)
+                        if track_obj.count_classification == 9:
+                            cv2.imwrite(os.path.join(image_save_path), crop)
 
                     class_id = self.getClassId(class_name)
                     track_obj.live=True
