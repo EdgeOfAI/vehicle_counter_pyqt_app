@@ -146,6 +146,7 @@ class ViewController(QWidget, Ui_Form):
             videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))
             self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
             # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
+            self.draw_dynamic_line_widget = None
             self.changeSidePosition()
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
             # cv2.imshow('Image', self.draw_line_widget.show_image())
