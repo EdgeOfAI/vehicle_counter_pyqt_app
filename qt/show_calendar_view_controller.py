@@ -84,7 +84,7 @@ class ShowCalendarWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     
     def createExcelData(self):
         if home:
-            root = 'D:/'
+            root = 'C:/'
         else:
             root = '/home/yeoju/'
         path = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))

@@ -88,7 +88,7 @@ class Model(QObject):
         self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
         if home:
-            root = 'D:/'
+            root = 'C:/'
         else:
             root = '/home/yeoju/'
         self.images_root = f'{root}vehicle_counter/crops'
@@ -788,13 +788,14 @@ class Model(QObject):
                 # draw cardinal directions
                 # print(len(self.cardinal_direction_points))
                 for cardinal_direction_positions, side_txt in zip(self.cardinal_direction_points[:4], ['A', 'B', 'C', 'D']):
-                    point_2 = [[point[0]+15, point[1]+15] for point in cardinal_direction_positions.copy()]
+                    point_2 = [[point[0]+7, point[1]+7] for point in cardinal_direction_positions.copy()]
                     line1_start = point_2[0]
                     line1_end = point_2[1]
-                    # cv2.line(original_frame, line1_start, line1_end, (255, 0, 0), 2)
-                    # cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255, 0), 2)
-                    vertices = np.array([line1_start, line1_end, cardinal_direction_positions[1], cardinal_direction_positions[0]])
-                    cv2.fillConvexPoly(original_frame, vertices, (0, 255, 0))
+                    # # cv2.line(original_frame, line1_start, line1_end, (255, 0, 0), 2)
+                    # # cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], (0, 255, 0), 2)
+                    # vertices = np.array([line1_start, line1_end, cardinal_direction_positions[1], cardinal_direction_positions[0]])
+                    # cv2.fillConvexPoly(original_frame, vertices, (0, 255, 0))
+                    original_frame = cv2.line(original_frame, line1_start, line1_end, self.draw_color, 15)
 
                     # cardinal_side_polygon = Polygon(cardinal_side_copy)
                     # original_frame = cv2.polylines(original_frame, cardinal_side_copy, True, self.draw_color)
@@ -815,9 +816,9 @@ class Model(QObject):
                                 side_txt, 
                                 (text_x, text_y), 
                                 cv2.FONT_HERSHEY_SIMPLEX, 3, 
-                                self.draw_color,  
-                                2, 
-                                cv2.LINE_4)
+                                (0, 0, 255),  
+                                6, 
+                                cv2.LINE_AA)
                     # original_frame = cv2.line(original_frame, cardinal_direction_positions[0], cardinal_direction_positions[1], self.draw_color, 3)
 
                 # update frame on UI

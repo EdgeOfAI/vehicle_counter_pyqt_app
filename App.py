@@ -33,9 +33,11 @@ class App(QApplication):
         # self.setStyleSheet(qss.readAll())
         # create database
         if home:
-            root = 'D:/'
+            root = 'C:/'
         else:
             root = '/home/yeoju/'
+        if not pathlib.Path(root, 'vehicle_counter').exists:
+            os.makedirs(os.path.join(root, 'vehicle_counter', 'databases'))
         conn = sqlite3.connect(f"{root}vehicle_counter/databases/main.db", check_same_thread=False)
         cur = conn.cursor()
 
@@ -103,5 +105,5 @@ class App(QApplication):
 
 if __name__ == '__main__':
     app = App(sys.argv)
-    qtmodern.styles.light(app)
+    # qtmodern.styles.light(app)
     sys.exit(app.exec_())

@@ -11,6 +11,7 @@ import pyqtgraph as pg
 from config import home
 
 from DrawLineWidget import DrawLineWidget
+from DrawDynamicLine import DrawDynamicLineWidget
 from qt.add_camera_view_controller import AddCameraWindow
 from qt.remove_camera_view_controller import RemoveCameraWindow
 from qt.edit_camera_view_controller import EditCameraWindow
@@ -128,7 +129,7 @@ class ViewController(QWidget, Ui_Form):
             self.enableControls(False)
             self.showDataBtn.setEnabled(True)
             if home:
-                root = 'D:/'
+                root = 'C:/'
             else:
                 root = '/home/yeoju/'
             videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))
@@ -138,8 +139,10 @@ class ViewController(QWidget, Ui_Form):
             f = cv2.VideoCapture(self.source[0])
             rval, frame = f.read()
             f.release()
-            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
-            cv2.imshow('Image', self.draw_line_widget.show_image())
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
+            self.draw_dynamic_line_widget.show()
+            # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
+            # cv2.imshow('Image', self.draw_line_widget.show_image())
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
         else:
@@ -876,7 +879,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.use_video = self.checkBox.isChecked()
         self.model.text_translator = self.text_translator
         if self.checkBox.isChecked():
-            self.model.cardinal_direction_points = self.draw_line_widget.list_coordinates[0:4]
+            self.model.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
         else:
             self.onActivated(str(self.comboBox.currentText()))
             # self.model.cardinal_direction_points = []
