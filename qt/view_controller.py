@@ -1009,6 +1009,7 @@ class ViewController(QWidget, Ui_Form):
 
     def onProcessDone(self):
         self.enableControls(True)
+        self.changeSidePositionsBtn.setEnabled(True)
 
     @Slot(int)
     def updateMaxFrameNum(self, frame_num):

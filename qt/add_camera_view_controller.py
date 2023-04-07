@@ -5,6 +5,7 @@ from PySide2.QtGui import QIcon
 from PySide2.QtCore import Signal, QCoreApplication
 from qt.Add_Camera import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
+from DrawDynamicLine import DrawDynamicLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
@@ -76,9 +77,11 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # vcap = cv2.VideoCapture(rtsp_stream)
             # ret, frame = vcap.read()
             frame = dataset.get_frame()
-            self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
-            cv2.imshow('Image', self.draw_line_widget.show_image())
-            self.cardinal_direction_points = self.draw_line_widget.list_coordinates
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
+            self.draw_dynamic_line_widget.show()
+            # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
+            # cv2.imshow('Image', self.draw_line_widget.show_image())
+            self.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
 
             msg = QMessageBox()
             msg.setWindowTitle(self.text_translator.information)
