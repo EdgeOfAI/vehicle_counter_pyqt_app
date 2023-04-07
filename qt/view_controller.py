@@ -59,6 +59,7 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path, self.text_translator)
+        self.draw_dynamic_line_widget = None
 
         self.add_cam_window.setStyleSheet(qss_file)
         self.remove_camera_window.setStyleSheet(qss_file)
@@ -79,6 +80,7 @@ class ViewController(QWidget, Ui_Form):
         self.addCamBtn.clicked.connect(self.openAddCamWindow)
         self.editCameraBtn.clicked.connect(self.openEditCamWindow)
         self.removeCameraBtn.clicked.connect(self.openRemoveCamWindow)
+        self.changeSidePositionsBtn.clicked.connect(self.changeSidePosition)
         self.showDataBtn.clicked.connect(self.openShowCalendarWindow)
         self.model.frame_update_signal.connect(self.updateFrame)
         self.comboBox.activated[str].connect(self.onActivated)
@@ -123,24 +125,28 @@ class ViewController(QWidget, Ui_Form):
         self.show_calendar_window.setTextTranslator(self.text_translator)
         self.show_calendar_window.retranslateUi(self.add_cam_window)
     
+    def changeSidePosition(self):
+        if self.source:
+            f = cv2.VideoCapture(self.source[0])
+            rval, frame = f.read()
+            f.release()
+            if not self.draw_dynamic_line_widget:
+                self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
+            self.draw_dynamic_line_widget.show()
+    
     def checkboxChanged(self):
         if self.checkBox.isChecked():
             self.use_video = True
             self.enableControls(False)
             self.showDataBtn.setEnabled(True)
             if home:
-                root = 'C:/'
+                root = 'D:/'
             else:
                 root = '/home/yeoju/'
             videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))
             self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
             # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
-            print(self.source)
-            f = cv2.VideoCapture(self.source[0])
-            rval, frame = f.read()
-            f.release()
-            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
-            self.draw_dynamic_line_widget.show()
+            self.changeSidePosition()
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
             # cv2.imshow('Image', self.draw_line_widget.show_image())
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
@@ -873,6 +879,7 @@ class ViewController(QWidget, Ui_Form):
         self.prepareforAnalysis()
         self.set_zero_vehicle_matrix()
         self.enableControls(False)
+        self.changeSidePositionsBtn.setEnabled(False)
         self.showDataBtn.setEnabled(True)
         # print('before inference:  ', self.db_cur)
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
@@ -895,6 +902,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.stopCountingAnalysis()
         # print('Use video:  ', self.use_video)
         self.enableControls(True)
+        self.changeSidePositionsBtn.setEnabled(True)
         if self.use_video:
             # print('Use video true')
             self.startInferenceBtn.setEnabled(True)
@@ -1028,6 +1036,7 @@ class ViewController(QWidget, Ui_Form):
         self.addCamBtn.setText(QCoreApplication.translate("Form", self.text_translator.add_camera_btn, None))
         self.editCameraBtn.setText(QCoreApplication.translate("Form", self.text_translator.edit_camera_btn, None))
         self.removeCameraBtn.setText(QCoreApplication.translate("Form", self.text_translator.remove_camera_btn, None))
+        self.changeSidePositionsBtn.setText(QCoreApplication.translate("Form", u"Change positions", None))
         self.showDataBtn.setText(QCoreApplication.translate("Form", self.text_translator.show_data_btn, None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")

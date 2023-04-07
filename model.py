@@ -88,7 +88,7 @@ class Model(QObject):
         self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
         self.initialize_counting()
         if home:
-            root = 'C:/'
+            root = 'D:/'
         else:
             root = '/home/yeoju/'
         self.images_root = f'{root}vehicle_counter/crops'

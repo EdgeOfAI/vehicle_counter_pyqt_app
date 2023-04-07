@@ -61,6 +61,11 @@ class Ui_Form(object):
 
         self.cameraEditBox.addWidget(self.removeCameraBtn)
 
+        self.changeSidePositionsBtn = QPushButton(self.frame)
+        self.changeSidePositionsBtn.setObjectName(u"changeSidePositionsBtn")
+
+        self.cameraEditBox.addWidget(self.changeSidePositionsBtn)
+
         self.showDataBtn = QPushButton(self.frame)
         self.showDataBtn.setObjectName(u"showDataBtn")
 
@@ -130,7 +135,7 @@ class Ui_Form(object):
 
         self.checkBox = QCheckBox(self.mediaGBox)
         self.checkBox.setObjectName(u"checkBox")
-        self.checkBox.setMaximumSize(QSize(80, 16777215))
+        self.checkBox.setMaximumSize(QSize(90, 16777215))
 
         self.gridLayout_2.addWidget(self.checkBox, 0, 3, 1, 1)
 
@@ -1489,6 +1494,7 @@ class Ui_Form(object):
         self.addCamBtn.setText(QCoreApplication.translate("Form", u"Add Camera", None))
         self.editCameraBtn.setText(QCoreApplication.translate("Form", u"Edit Camera", None))
         self.removeCameraBtn.setText(QCoreApplication.translate("Form", u"Remove Camera", None))
+        self.changeSidePositionsBtn.setText(QCoreApplication.translate("Form", u"Change positions", None))
         self.showDataBtn.setText(QCoreApplication.translate("Form", u"Show Data", None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")

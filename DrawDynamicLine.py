@@ -3,6 +3,7 @@ from PyQt5.QtGui import QPainter, QColor, QPen, QImage, QFont
 from PyQt5.QtCore import Qt, QPoint, QRect
 from config import side_names
 
+app = QApplication([])
 
 class Line:
     def __init__(self, start, end):

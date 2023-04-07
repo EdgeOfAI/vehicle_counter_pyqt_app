@@ -33,7 +33,7 @@ class App(QApplication):
         # self.setStyleSheet(qss.readAll())
         # create database
         if home:
-            root = 'C:/'
+            root = 'D:/'
         else:
             root = '/home/yeoju/'
         if not pathlib.Path(root, 'vehicle_counter').exists:

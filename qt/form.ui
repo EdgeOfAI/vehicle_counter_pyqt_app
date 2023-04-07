@@ -90,6 +90,13 @@
            </widget>
           </item>
           <item>
+           <widget class="QPushButton" name="changeSidePositionsBtn">
+            <property name="text">
+             <string>Change positions</string>
+            </property>
+           </widget>
+          </item>
+          <item>
            <widget class="QPushButton" name="showDataBtn">
             <property name="text">
              <string>Show Data</string>
@@ -211,7 +218,7 @@
               <widget class="QCheckBox" name="checkBox">
                <property name="maximumSize">
                 <size>
-                 <width>80</width>
+                 <width>90</width>
                  <height>16777215</height>
                 </size>
                </property>
