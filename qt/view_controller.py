@@ -16,6 +16,7 @@ from qt.add_camera_view_controller import AddCameraWindow
 from qt.remove_camera_view_controller import RemoveCameraWindow
 from qt.edit_camera_view_controller import EditCameraWindow
 from qt.show_calendar_view_controller import ShowCalendarWindow
+from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
 class ViewController(QWidget, Ui_Form):
@@ -27,6 +28,7 @@ class ViewController(QWidget, Ui_Form):
     def __init__(self, model, conn, cur, qss_file, text_translator, draw_color):
         super().__init__()
         self.model = model
+        self.video_source = None
         self.draw_color = draw_color
         self.text_translator = text_translator
         self.setStyleSheet(qss_file)
@@ -70,6 +72,8 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window.setWindowIcon(QIcon(self.icon_path))
         self.edit_camera_window.setWindowIcon(QIcon(self.icon_path))
         self.show_calendar_window.setWindowIcon(QIcon(self.icon_path))
+
+        self.sidewiseCountMatrixDisplay.setCurrentIndex(5)
 
         self.updateCameraDropDown()
         self.setupSignalSlots()
@@ -126,13 +130,67 @@ class ViewController(QWidget, Ui_Form):
         self.show_calendar_window.retranslateUi(self.add_cam_window)
     
     def changeSidePosition(self):
-        if self.source:
-            f = cv2.VideoCapture(self.source[0])
+        if self.video_source:
+            print('self.', self.video_source[0])
+            f = cv2.VideoCapture(self.video_source[0])
             rval, frame = f.read()
             f.release()
             if not self.draw_dynamic_line_widget:
                 self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
             self.draw_dynamic_line_widget.show()
+        else:
+            cam_id = str(self.comboBox.currentText()).split('.')[0]
+            self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
+            camera_info = self.db_cur.fetchall()
+            ip = camera_info[0][1]
+            username = camera_info[0][2]
+            password = camera_info[0][3]
+            camera_name = camera_info[0][4]
+            dataset = LoadHikvisionCamera(
+                        ip if ip.startswith('http') else f'http://{ip}',
+                        username,
+                        password,
+                        f'{camera_name}',
+                        camera_name.split('.')[0],
+                        [640, 640],
+                        32,
+                        False
+                    )
+            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
+            # vcap = cv2.VideoCapture(rtsp_stream)
+            # ret, frame = vcap.read()
+            frame = dataset.get_frame()
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
+            self.draw_dynamic_line_widget.show()
+            # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
+            # cv2.imshow('Image', self.draw_line_widget.show_image())
+            self.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
+            print(self.cardinal_direction_points)
+
+            self.db_cur.execute(f"""UPDATE cameras SET  
+                    ip = '{ip}', 
+                    username = '{username}',
+                    password = '{password}',
+                    name = '{camera_name}',
+                    nx1 = {self.cardinal_direction_points[0][0][0]},
+                    ny1 = {self.cardinal_direction_points[0][0][1]},
+                    nx2 = {self.cardinal_direction_points[0][1][0]},
+                    ny2 = {self.cardinal_direction_points[0][1][1]},
+                    ex1 = {self.cardinal_direction_points[1][0][0]},
+                    ey1 = {self.cardinal_direction_points[1][0][1]},
+                    ex2 = {self.cardinal_direction_points[1][1][0]},
+                    ey2 = {self.cardinal_direction_points[1][1][1]},
+                    wx1 = {self.cardinal_direction_points[2][0][0]},
+                    wy1 = {self.cardinal_direction_points[2][0][1]},
+                    wx2 = {self.cardinal_direction_points[2][1][0]},
+                    wy2 = {self.cardinal_direction_points[2][1][1]},
+                    sx1 = {self.cardinal_direction_points[3][0][0]},
+                    sy1 = {self.cardinal_direction_points[3][0][1]},
+                    sx2 = {self.cardinal_direction_points[3][1][0]},
+                    sy2 = {self.cardinal_direction_points[3][1][1]} 
+                    WHERE id={cam_id}""")
+
+            
     
     def checkboxChanged(self):
         if self.checkBox.isChecked():
@@ -143,8 +201,8 @@ class ViewController(QWidget, Ui_Form):
                 root = 'D:/'
             else:
                 root = '/home/yeoju/'
-            videos_root = str(QFileDialog.getExistingDirectory(self, "Select Directory", root))
-            self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
+            self.video_source = QFileDialog.getOpenFileName(self, "Open Video", '/home/yeoju', "mp4 (*.mp4)")
+            # self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
             # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
             self.draw_dynamic_line_widget = None
             self.changeSidePosition()
@@ -153,6 +211,7 @@ class ViewController(QWidget, Ui_Form):
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
         else:
+            self.video_source = None
             self.use_video = False
             self.enableControls(True)
 
@@ -892,7 +951,7 @@ class ViewController(QWidget, Ui_Form):
             self.onActivated(str(self.comboBox.currentText()))
             # self.model.cardinal_direction_points = []
         if self.use_video:
-            self.model.source = self.source
+            self.model.source = self.video_source[0]
         # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         self.startInferenceSignal.emit()
     

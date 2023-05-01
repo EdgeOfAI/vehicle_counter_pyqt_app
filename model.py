@@ -330,8 +330,8 @@ class Model(QObject):
                     'row_id':False
                 }
 
-            centroid_object_width = 5
-            centroid_object_height = 5 
+            centroid_object_width = 15
+            centroid_object_height = 15 
             
             object_polygon = Polygon([[cx-centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy-centroid_object_height], [cx+centroid_object_width, cy+centroid_object_height], [cx-centroid_object_width, cy+centroid_object_height]])
 
@@ -662,7 +662,9 @@ class Model(QObject):
                     if len(det):
                         # print('Detes', det)
                         # Rescale boxes from img_size to im0 size
-                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], im0s.shape).round()
+                        print(type(im), ' Image type!!!!!!!!!!')
+                        cv2.imwrite('Image.png', im)
+                        det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], original_frame.shape).round()
                         # Write results
                         for *xyxy, conf, cls in reversed(det):
                             class_indx = int(cls.cpu())
@@ -696,7 +698,7 @@ class Model(QObject):
                     track_obj = self.trackableObjects.get(objectID, None)
 
                     if track_obj is None:
-                        track_obj = TrackableObject(objectID, x_min, y_min, x_max, y_max, 0, 0, im0s.shape[1], im0s.shape[0])
+                        track_obj = TrackableObject(objectID, x_min, y_min, x_max, y_max, 0, 0, original_frame.shape[1], original_frame.shape[0])
                     
                     # if objectID == 205:
                     # print('Id', objectID, track_obj.area, track_obj.walk_distance)
@@ -709,7 +711,7 @@ class Model(QObject):
                     else:
                         class_name = self.allowed_classes[track_obj.class_name]
 
-                    if  (not track_obj.classified) and (track_obj.start_classifying) and (track_obj.count_classification < 10):
+                    if  (not track_obj.classified) and (track_obj.start_classifying) and (track_obj.count_classification < 15):
                         track_obj.count_classification += 1
                         param = {
                                 "org_img": frame_for_cls,
@@ -736,7 +738,7 @@ class Model(QObject):
 
                         image_save_path = os.path.join(image_path, f'{len(os.listdir(image_path))}.png')
 
-                        if track_obj.count_classification == 9:
+                        if track_obj.count_classification == 14:
                             cv2.imwrite(os.path.join(image_save_path), crop)
 
                     class_id = self.getClassId(class_name)
