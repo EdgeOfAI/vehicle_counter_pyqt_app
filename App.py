@@ -1,9 +1,6 @@
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-import pathlib
-# temp = pathlib.PosixPath
-# pathlib.PosixPath = pathlib.WindowsPath
 
 import sys
 import sqlite3
@@ -16,6 +13,11 @@ from model import Model
 import pyqtgraph as pg
 import qtmodern.styles
 from config import home
+import pathlib
+
+if home:
+    temp = pathlib.PosixPath
+    pathlib.PosixPath = pathlib.WindowsPath
 
 QApplication.setAttribute(Qt.AA_EnableHighDpiScaling, True) #enable highdpi scaling
 QApplication.setAttribute(Qt.AA_UseHighDpiPixmaps, True) #use highdpi icons

@@ -45,6 +45,32 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def set_db_conn_cur(self, db_conn, db_cur):
         self.db_conn = db_conn
         self.db_cur = db_cur
+    
+    def updateEditedLines(self, cam_id):
+        print('Cam ID:  ', cam_id)
+        if cam_id > 0:
+            # [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
+            cardinal_points = self.draw_dynamic_line_widget.getPolygonPoints()
+            print(cardinal_points)
+            self.db_cur.execute(f"""UPDATE cameras SET  
+                                nx1 = {cardinal_points[0][0][0] if 1 <= len(cardinal_points) else 0} ,
+                                ny1 = {cardinal_points[0][0][1] if 1 <= len(cardinal_points) else 0} ,
+                                nx2 = {cardinal_points[0][1][0] if 1 <= len(cardinal_points) else 0} ,
+                                ny2 = {cardinal_points[0][1][1] if 1 <= len(cardinal_points) else 0} ,
+                                ex1 = {cardinal_points[1][0][0] if 2 <= len(cardinal_points) else 0} ,
+                                ey1 = {cardinal_points[1][0][1] if 2 <= len(cardinal_points) else 0} ,
+                                ex2 = {cardinal_points[1][1][0] if 2 <= len(cardinal_points) else 0} ,
+                                ey2 = {cardinal_points[1][1][1] if 2 <= len(cardinal_points) else 0} ,
+                                wx1 = {cardinal_points[2][0][0] if 3 <= len(cardinal_points) else 0} ,
+                                wy1 = {cardinal_points[2][0][1] if 3 <= len(cardinal_points) else 0} ,
+                                wx2 = {cardinal_points[2][1][0] if 3 <= len(cardinal_points) else 0} ,
+                                wy2 = {cardinal_points[2][1][1] if 3 <= len(cardinal_points) else 0} ,
+                                sx1 = {cardinal_points[3][0][0] if 4 <= len(cardinal_points) else 0} ,
+                                sy1 = {cardinal_points[3][0][1] if 4 <= len(cardinal_points) else 0} ,
+                                sx2 = {cardinal_points[3][1][0] if 4 <= len(cardinal_points) else 0} ,
+                                sy2 = {cardinal_points[3][1][1] if 4 <= len(cardinal_points) else 0}  
+                                WHERE id={cam_id}""")
+            print('Updated!!!', cardinal_points)
 
     def add_cam(self):
         try:
@@ -77,7 +103,8 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             # vcap = cv2.VideoCapture(rtsp_stream)
             # ret, frame = vcap.read()
             frame = dataset.get_frame()
-            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, last_id + 1)
+            self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
             self.draw_dynamic_line_widget.show()
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
             # cv2.imshow('Image', self.draw_line_widget.show_image())
@@ -89,7 +116,6 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.setWindowIcon(QIcon(self.icon_path))
             msg.setIcon(QMessageBox.Warning)
 
-            x = msg.exec_()
         except Exception as err:
             b = bytes(str(err), encoding = 'utf-8')
             msg = QMessageBox()
@@ -97,9 +123,10 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
             msg.setWindowTitle('Error!')
             msg.setText(str(b, encoding = 'utf-8')+self.text_translator.add_camera_popup_error)
             msg.setIcon(QMessageBox.Warning)
-            x = msg.exec_()
+
         self.process_done_signal.emit()
         self.hide()
+        x = msg.exec_()
 
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", self.text_translator.add_cam_window_title, None))

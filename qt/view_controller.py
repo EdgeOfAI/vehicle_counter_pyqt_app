@@ -61,7 +61,37 @@ class ViewController(QWidget, Ui_Form):
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.show_calendar_window = ShowCalendarWindow(self.db_conn, self.db_cur, qss_file, self.icon_path, self.text_translator)
-        self.draw_dynamic_line_widget = None
+        self.db_cur.execute(f"SELECT * FROM cameras")
+        cameras = self.db_cur.fetchall()
+        if len(cameras):
+            camera_info = cameras[0]
+            print(camera_info)
+            cam_ip = camera_info[1]
+            username = camera_info[2]
+            password = camera_info[3]
+
+            dataset = LoadHikvisionCamera(
+                                            cam_ip if cam_ip.startswith('http') else f'http://{cam_ip}',
+                                            username,
+                                            password,
+                                            f'dataset',
+                                            1,
+                                            [640, 640],
+                                            32,
+                                            False
+                                        )
+            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
+            # vcap = cv2.VideoCapture(rtsp_stream)
+            # ret, frame = vcap.read()
+            frame = dataset.get_frame()
+            # print(camera_info)
+            cardinal_direction_points = [
+                                            [[camera_info[5], camera_info[6]], [camera_info[7], camera_info[8]]], # north
+                                            [[camera_info[9], camera_info[10]], [camera_info[11], camera_info[12]]], # east
+                                            [[camera_info[13], camera_info[14]], [camera_info[15],camera_info[16]]], # west
+                                            [[camera_info[17], camera_info[18]], [camera_info[19], camera_info[20]]] # south
+                                        ]
+        self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, 1, cardinal_direction_points) if len(cameras) else DrawDynamicLineWidget(None)
 
         self.add_cam_window.setStyleSheet(qss_file)
         self.remove_camera_window.setStyleSheet(qss_file)
@@ -93,6 +123,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.vehicle_count_signal.connect(self.updateVehicleCount)
         self.model.vehicle_in_count_signal.connect(self.updateInCount)
         self.model.process_done_signal.connect(self.onProcessDone)
+        self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
         self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.remove_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.edit_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
@@ -100,6 +131,32 @@ class ViewController(QWidget, Ui_Form):
         self.stopProcessBtn.clicked.connect(self.stopProcess)
 
 #====================== File Dialog Functions =====================
+    def updateEditedLines(self, cam_id):
+        print('Cam ID:  ', cam_id)
+        if cam_id > 0:
+            # [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
+            cardinal_points = self.draw_dynamic_line_widget.getPolygonPoints()
+            print(cardinal_points)
+            self.db_cur.execute(f"""UPDATE cameras SET  
+                                nx1 = {cardinal_points[0][0][0]},
+                                ny1 = {cardinal_points[0][0][1]},
+                                nx2 = {cardinal_points[0][1][0]},
+                                ny2 = {cardinal_points[0][1][1]},
+                                ex1 = {cardinal_points[1][0][0]},
+                                ey1 = {cardinal_points[1][0][1]},
+                                ex2 = {cardinal_points[1][1][0]},
+                                ey2 = {cardinal_points[1][1][1]},
+                                wx1 = {cardinal_points[2][0][0]},
+                                wy1 = {cardinal_points[2][0][1]},
+                                wx2 = {cardinal_points[2][1][0]},
+                                wy2 = {cardinal_points[2][1][1]},
+                                sx1 = {cardinal_points[3][0][0]},
+                                sy1 = {cardinal_points[3][0][1]},
+                                sx2 = {cardinal_points[3][1][0]},
+                                sy2 = {cardinal_points[3][1][1]} 
+                                WHERE id={cam_id}""")
+            print('Updated!!!', cardinal_points)
+
     def onActivated(self, text):
         cam_id = text.split('.')[0]
         # print(cam_id)
@@ -130,18 +187,27 @@ class ViewController(QWidget, Ui_Form):
         self.show_calendar_window.retranslateUi(self.add_cam_window)
     
     def changeSidePosition(self):
-        if self.video_source:
+        is_camera = False
+        if self.checkBox.isChecked():
             print('self.', self.video_source[0])
             f = cv2.VideoCapture(self.video_source[0])
             rval, frame = f.read()
             f.release()
-            if not self.draw_dynamic_line_widget:
-                self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
-            self.draw_dynamic_line_widget.show()
         else:
+            is_camera = True
             cam_id = str(self.comboBox.currentText()).split('.')[0]
             self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
             camera_info = self.db_cur.fetchall()
+
+            # print(camera_info)
+            cardinal_direction_points = [
+                                            [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
+                                            [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
+                                            [[camera_info[0][13], camera_info[0][14]], [camera_info[0][15],camera_info[0][16]]], # west
+                                            [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
+                                        ]
+            
+            print('CamID:  ', cam_id, cardinal_direction_points)
             ip = camera_info[0][1]
             username = camera_info[0][2]
             password = camera_info[0][3]
@@ -160,37 +226,23 @@ class ViewController(QWidget, Ui_Form):
             # vcap = cv2.VideoCapture(rtsp_stream)
             # ret, frame = vcap.read()
             frame = dataset.get_frame()
-            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame)
-            self.draw_dynamic_line_widget.show()
+
+        print('Before')
+        print('Camid:  ', self.draw_dynamic_line_widget.cam_id, self.draw_dynamic_line_widget.lines)
+
+        if self.draw_dynamic_line_widget.cam_id != 0:
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, cam_id if is_camera else 0, cardinal_direction_points if is_camera else None)
+            self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
+        elif self.draw_dynamic_line_widget.cam_id == 0 and not self.draw_dynamic_line_widget.lines:
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, cam_id if is_camera else 0, cardinal_direction_points if is_camera else None)
+            self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
+        
+        print('after')
+        print('Camid:  ', self.draw_dynamic_line_widget.cam_id, self.draw_dynamic_line_widget.lines)
+
+        self.draw_dynamic_line_widget.show()
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
             # cv2.imshow('Image', self.draw_line_widget.show_image())
-            self.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
-            print(self.cardinal_direction_points)
-
-            self.db_cur.execute(f"""UPDATE cameras SET  
-                    ip = '{ip}', 
-                    username = '{username}',
-                    password = '{password}',
-                    name = '{camera_name}',
-                    nx1 = {self.cardinal_direction_points[0][0][0]},
-                    ny1 = {self.cardinal_direction_points[0][0][1]},
-                    nx2 = {self.cardinal_direction_points[0][1][0]},
-                    ny2 = {self.cardinal_direction_points[0][1][1]},
-                    ex1 = {self.cardinal_direction_points[1][0][0]},
-                    ey1 = {self.cardinal_direction_points[1][0][1]},
-                    ex2 = {self.cardinal_direction_points[1][1][0]},
-                    ey2 = {self.cardinal_direction_points[1][1][1]},
-                    wx1 = {self.cardinal_direction_points[2][0][0]},
-                    wy1 = {self.cardinal_direction_points[2][0][1]},
-                    wx2 = {self.cardinal_direction_points[2][1][0]},
-                    wy2 = {self.cardinal_direction_points[2][1][1]},
-                    sx1 = {self.cardinal_direction_points[3][0][0]},
-                    sy1 = {self.cardinal_direction_points[3][0][1]},
-                    sx2 = {self.cardinal_direction_points[3][1][0]},
-                    sy2 = {self.cardinal_direction_points[3][1][1]} 
-                    WHERE id={cam_id}""")
-
-            
     
     def checkboxChanged(self):
         if self.checkBox.isChecked():
@@ -203,17 +255,50 @@ class ViewController(QWidget, Ui_Form):
                 root = '/home/yeoju/'
             self.video_source = QFileDialog.getOpenFileName(self, "Open Video", '/home/yeoju', "mp4 (*.mp4)")
             # self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
-            # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'
-            self.draw_dynamic_line_widget = None
+            # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'            
             self.changeSidePosition()
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
             # cv2.imshow('Image', self.draw_line_widget.show_image())
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             self.startInferenceBtn.setEnabled(True)
+            self.changeSidePositionsBtn.setEnabled(True)
         else:
             self.video_source = None
             self.use_video = False
             self.enableControls(True)
+            cam_id = str(self.comboBox.currentText()).split('.')[0]
+            self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
+            camera_info = self.db_cur.fetchall()
+
+            # print(camera_info)
+            cardinal_direction_points = [
+                                            [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
+                                            [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
+                                            [[camera_info[0][13], camera_info[0][14]], [camera_info[0][15],camera_info[0][16]]], # west
+                                            [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
+                                        ]
+            
+            print('CamID:  ', cam_id, cardinal_direction_points)
+            ip = camera_info[0][1]
+            username = camera_info[0][2]
+            password = camera_info[0][3]
+            camera_name = camera_info[0][4]
+            dataset = LoadHikvisionCamera(
+                        ip if ip.startswith('http') else f'http://{ip}',
+                        username,
+                        password,
+                        f'{camera_name}',
+                        camera_name.split('.')[0],
+                        [640, 640],
+                        32,
+                        False
+                    )
+            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
+            # vcap = cv2.VideoCapture(rtsp_stream)
+            # ret, frame = vcap.read()
+            frame = dataset.get_frame()
+            self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, cam_id, cardinal_direction_points)
+            self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
 
     def openShowCalendarWindow(self):
         self.enableControls(False)
@@ -241,8 +326,10 @@ class ViewController(QWidget, Ui_Form):
         self.checkBox.setEnabled(True)
         self.stopProcessBtn.setEnabled(True)
         print('Stop_couunting', self.model.stop_counting)
-        if not self.model.stop_counting:
+        self.model.stop_counting = False
+        if self.model.stop_counting:
             self.startInferenceBtn.setEnabled(False)
+            self.changeSidePositionsBtn.setEnabled(False)
         if self.use_video:
             self.add_cam_window.setEnabled(False)
             self.edit_camera_window.setEnabled(False)
@@ -253,6 +340,8 @@ class ViewController(QWidget, Ui_Form):
             self.edit_camera_window.setEnabled(True)
             self.remove_camera_window.setEnabled(True)
             self.comboBox.setEnabled(True)
+            self.changeSidePositionsBtn.setEnabled(True)
+        self.model.stop_countin = True
         
     def openAddCamWindow(self):
         # print('Opening camera add window')
@@ -948,12 +1037,28 @@ class ViewController(QWidget, Ui_Form):
         if self.checkBox.isChecked():
             self.model.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
         else:
-            self.onActivated(str(self.comboBox.currentText()))
-            # self.model.cardinal_direction_points = []
+            cam_id = str(self.comboBox.currentText()).split('.')[0]
+            self.setCardinalPoints(cam_id)
         if self.use_video:
             self.model.source = self.video_source[0]
         # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
         self.startInferenceSignal.emit()
+    
+    def setCardinalPoints(self, cam_id):
+        if int(cam_id) > 0:
+            print(cam_id)
+            self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
+            camera_info = self.db_cur.fetchall()
+            # print(camera_info)
+            cardinal_direction_points = [
+                                            [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
+                                            [[camera_info[0][9], camera_info[0][10]], [camera_info[0][11], camera_info[0][12]]], # east
+                                            [[camera_info[0][13], camera_info[0][14]], [camera_info[0][15],camera_info[0][16]]], # west
+                                            [[camera_info[0][17], camera_info[0][18]], [camera_info[0][19], camera_info[0][20]]] # south
+                                        ]
+            self.model.setCameraInfo(camera_info[0][0], camera_info[0][1], camera_info[0][2], camera_info[0][3], camera_info[0][4], cardinal_direction_points)
+        else:
+            self.model.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
     
     def stopProcess(self):
         self.db_conn = self.model.db_conn
@@ -966,6 +1071,7 @@ class ViewController(QWidget, Ui_Form):
         if self.use_video:
             # print('Use video true')
             self.startInferenceBtn.setEnabled(True)
+            self.changeSidePositionsBtn.setEnabled(True)
             self.addCamBtn.setEnabled(False)
             self.removeCameraBtn.setEnabled(False)
             self.editCameraBtn.setEnabled(False)
@@ -1053,6 +1159,7 @@ class ViewController(QWidget, Ui_Form):
         self.startInferenceBtn.setEnabled(state)
         # self.cameraEditBox.setEnabled(state)
         self.showDataBtn.setEnabled(state)
+        self.changeSidePositionsBtn.setEnabled(state)
         if not self.use_video:
             self.addCamBtn.setEnabled(state)
             self.editCameraBtn.setEnabled(state)
@@ -1097,7 +1204,7 @@ class ViewController(QWidget, Ui_Form):
         self.addCamBtn.setText(QCoreApplication.translate("Form", self.text_translator.add_camera_btn, None))
         self.editCameraBtn.setText(QCoreApplication.translate("Form", self.text_translator.edit_camera_btn, None))
         self.removeCameraBtn.setText(QCoreApplication.translate("Form", self.text_translator.remove_camera_btn, None))
-        self.changeSidePositionsBtn.setText(QCoreApplication.translate("Form", u"Change positions", None))
+        self.changeSidePositionsBtn.setText(QCoreApplication.translate("Form", self.text_translator.change_position, None))
         self.showDataBtn.setText(QCoreApplication.translate("Form", self.text_translator.show_data_btn, None))
         self.videoSwitcher.setTitle("")
         self.mediaGBox.setTitle("")

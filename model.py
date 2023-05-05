@@ -662,8 +662,6 @@ class Model(QObject):
                     if len(det):
                         # print('Detes', det)
                         # Rescale boxes from img_size to im0 size
-                        print(type(im), ' Image type!!!!!!!!!!')
-                        cv2.imwrite('Image.png', im)
                         det[:, :4] = scale_boxes(im.shape[2:], det[:, :4], original_frame.shape).round()
                         # Write results
                         for *xyxy, conf, cls in reversed(det):

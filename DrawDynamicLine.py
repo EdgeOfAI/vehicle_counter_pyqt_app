@@ -1,9 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5.QtGui import QPainter, QColor, QPen, QImage, QFont
-from PyQt5.QtCore import Qt, QPoint, QRect
+from PySide2.QtWidgets import QApplication, QMainWindow
+from PySide2.QtGui import QPainter, QColor, QPen, QImage, QFont
+from PySide2.QtCore import Signal
+from PySide2.QtCore import Qt, QPoint, QRect
 from config import side_names
 
-app = QApplication([])
 
 class Line:
     def __init__(self, start, end):
@@ -67,17 +67,30 @@ class Line:
         self.end_hovered = False
 
 class DrawDynamicLineWidget(QMainWindow):
-    def __init__(self, image, max_lines=4):
+    closed_signal = Signal(int)
+
+    def __init__(self, image, cam_id=0, cardinal_points=None, max_lines=4):
         super().__init__()
         self.scale = 2
-        self.width = int(image.shape[1] / self.scale)
-        self.height = int(image.shape[0] / self.scale)
-        self.setGeometry(100, 100, self.width, self.height)
+        self.is_created = False
         self.lines = []
-        self.background_image = QImage(self.convert_cv2_qimage(image))
-        self.background_image = self.background_image.scaled(self.width, self.height)
-        self.max_lines = max_lines
-        self.current_line = None
+        self.cam_id = cam_id
+        if image is not None:
+            self.is_created = True
+            self.width = int(image.shape[1] / self.scale)
+            self.height = int(image.shape[0] / self.scale)
+            self.setGeometry(100, 100, self.width, self.height)
+            self.background_image = QImage(self.convert_cv2_qimage(image))
+            self.background_image = self.background_image.scaled(self.width, self.height)
+            self.max_lines = max_lines
+            self.current_line = None
+            if cardinal_points:
+                self.polygonToLines(cardinal_points)
+    
+    def closeEvent(self, event):
+        # print('Close window pressed')
+        self.closed_signal.emit(int(self.cam_id))
+        event.accept()
     
     def convert_cv2_qimage(self, cv_image):
         height, width, channel = cv_image.shape
@@ -121,7 +134,6 @@ class DrawDynamicLineWidget(QMainWindow):
     def mouseReleaseEvent(self, event):
         if self.current_line is not None:
             self.current_line.mouseReleaseEvent(event)
-            print(self.current_line.line_start, self.current_line.line_end)
             self.current_line = None
             self.update()
     
@@ -133,6 +145,15 @@ class DrawDynamicLineWidget(QMainWindow):
             line_points = [start_point, end_point]
             points.append(line_points)
         return points
+    
+    def polygonToLines(self, polygon):
+        self.lines = []
+        # [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
+        for points in polygon:
+            start_point, end_point = QPoint(points[0][0]/self.scale, points[0][1]/self.scale), QPoint(points[1][0]/self.scale, points[1][1]/self.scale)
+            self.lines.append(Line(start_point, end_point))
+
+
 
 if __name__ == "__main__":
     app = QApplication([])
