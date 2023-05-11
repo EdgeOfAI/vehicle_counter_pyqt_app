@@ -64,34 +64,41 @@ class ViewController(QWidget, Ui_Form):
         self.db_cur.execute(f"SELECT * FROM cameras")
         cameras = self.db_cur.fetchall()
         if len(cameras):
+            draw_line = True
             camera_info = cameras[0]
             print(camera_info)
             cam_ip = camera_info[1]
             username = camera_info[2]
             password = camera_info[3]
 
-            dataset = LoadHikvisionCamera(
-                                            cam_ip if cam_ip.startswith('http') else f'http://{cam_ip}',
-                                            username,
-                                            password,
-                                            f'dataset',
-                                            1,
-                                            [640, 640],
-                                            32,
-                                            False
-                                        )
-            # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
-            # vcap = cv2.VideoCapture(rtsp_stream)
-            # ret, frame = vcap.read()
-            frame = dataset.get_frame()
-            # print(camera_info)
-            cardinal_direction_points = [
-                                            [[camera_info[5], camera_info[6]], [camera_info[7], camera_info[8]]], # north
-                                            [[camera_info[9], camera_info[10]], [camera_info[11], camera_info[12]]], # east
-                                            [[camera_info[13], camera_info[14]], [camera_info[15],camera_info[16]]], # west
-                                            [[camera_info[17], camera_info[18]], [camera_info[19], camera_info[20]]] # south
-                                        ]
-        self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, 1, cardinal_direction_points) if len(cameras) else DrawDynamicLineWidget(None)
+            try:
+
+                dataset = LoadHikvisionCamera(
+                                                cam_ip if cam_ip.startswith('http') else f'http://{cam_ip}',
+                                                username,
+                                                password,
+                                                f'dataset',
+                                                1,
+                                                [640, 640],
+                                                32,
+                                                False
+                                            )
+                # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
+                # vcap = cv2.VideoCapture(rtsp_stream)
+                # ret, frame = vcap.read()
+                frame = dataset.get_frame()
+                # print(camera_info)
+                cardinal_direction_points = [
+                                                [[camera_info[5], camera_info[6]], [camera_info[7], camera_info[8]]], # north
+                                                [[camera_info[9], camera_info[10]], [camera_info[11], camera_info[12]]], # east
+                                                [[camera_info[13], camera_info[14]], [camera_info[15],camera_info[16]]], # west
+                                                [[camera_info[17], camera_info[18]], [camera_info[19], camera_info[20]]] # south
+                                            ]
+            except Exception as err:
+                print('Error!', err)
+                draw_line = False
+
+        self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, 1, cardinal_direction_points) if draw_line else DrawDynamicLineWidget(None)
 
         self.add_cam_window.setStyleSheet(qss_file)
         self.remove_camera_window.setStyleSheet(qss_file)
