@@ -6,7 +6,6 @@ from qt.EditCameraUI import Ui_MainWindow
 from DrawLineWidget import DrawLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
 from PySide2.QtCore import Signal, QCoreApplication
-from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
 class EditCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
