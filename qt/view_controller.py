@@ -16,6 +16,7 @@ from qt.add_camera_view_controller import AddCameraWindow
 from qt.remove_camera_view_controller import RemoveCameraWindow
 from qt.edit_camera_view_controller import EditCameraWindow
 from qt.show_calendar_view_controller import ShowCalendarWindow
+from qt.set_distances_view_controller import SetDistanceWindow
 from yolov5.utils.dataloaders import LoadHikvisionCamera
 
 
@@ -57,6 +58,7 @@ class ViewController(QWidget, Ui_Form):
         self.use_video = False
         self.is_refresh_clicked = 0
 
+        self.set_distance_window = None
         self.add_cam_window = AddCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator, self.draw_color)
         self.remove_camera_window = RemoveCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
         self.edit_camera_window = EditCameraWindow(self.db_conn, self.db_cur, self.icon_path, self.text_translator)
@@ -133,6 +135,10 @@ class ViewController(QWidget, Ui_Form):
 #====================== File Dialog Functions =====================
     def updateEditedLines(self, cam_id):
         print('Cam ID:  ', cam_id)
+        if cam_id == 0:
+            self.set_distance_window = SetDistanceWindow(self.icon_path, self.text_translator, cam_id)
+            self.set_distance_window.show()
+
         if cam_id > 0:
             # [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
             cardinal_points = self.draw_dynamic_line_widget.getPolygonPoints()
@@ -1036,6 +1042,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.text_translator = self.text_translator
         if self.checkBox.isChecked():
             self.model.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
+            print('Distances:   ', self.set_distance_window.distances)
         else:
             cam_id = str(self.comboBox.currentText()).split('.')[0]
             self.setCardinalPoints(cam_id)

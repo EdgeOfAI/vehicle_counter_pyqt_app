@@ -8,6 +8,7 @@ from DrawLineWidget import DrawLineWidget
 from DrawDynamicLine import DrawDynamicLineWidget
 from PySide2.QtWidgets import QMessageBox, QAction
 from yolov5.utils.dataloaders import LoadHikvisionCamera
+from qt.set_distances_view_controller import SetDistanceWindow
 
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
@@ -49,9 +50,16 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def updateEditedLines(self, cam_id):
         print('Cam ID:  ', cam_id)
         if cam_id > 0:
+            set_distance_window = SetDistanceWindow(self.icon_path, self.text_translator, cam_id)
+            set_distance_window.process_done_signal.connect(self.updateDatabase)
+    
+    def updateDatabase(self, cam_id, side_distances):
+        if cam_id > 0:
             # [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
+            aa, ab, ac, ad, ba, bb, bc, bd, ca, cb, cc, cd, da, db, dc ,dd = side_distances
+            print('Side distances:  ', side_distances)
             cardinal_points = self.draw_dynamic_line_widget.getPolygonPoints()
-            print(cardinal_points)
+            print('Cardinal points:   ', cardinal_points)
             self.db_cur.execute(f"""UPDATE cameras SET  
                                 nx1 = {cardinal_points[0][0][0] if 1 <= len(cardinal_points) else 0} ,
                                 ny1 = {cardinal_points[0][0][1] if 1 <= len(cardinal_points) else 0} ,
