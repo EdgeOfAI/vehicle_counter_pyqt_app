@@ -13,6 +13,7 @@ from qt.set_distances_view_controller import SetDistanceWindow
 
 class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     process_done_signal = Signal()
+    set_distance_signal = Signal(int, list)
     def __init__(self, db_conn, db_cur, icon_path, text_translator, draw_color):
         super(AddCameraWindow, self).__init__()
         self.db_conn = db_conn
@@ -50,9 +51,10 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
     def updateEditedLines(self, cam_id):
         print('Cam ID:  ', cam_id)
         if cam_id > 0:
-            set_distance_window = SetDistanceWindow(self.icon_path, self.text_translator, cam_id)
-            set_distance_window.process_done_signal.connect(self.updateDatabase)
-    
+            self.set_distance_window = SetDistanceWindow(self.icon_path, self.text_translator, cam_id)
+            self.set_distance_window.process_done_signal.connect(self.updateDatabase)
+            self.set_distance_window.show()
+
     def updateDatabase(self, cam_id, side_distances):
         if cam_id > 0:
             # [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
@@ -76,9 +78,27 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                                 sx1 = {cardinal_points[3][0][0] if 4 <= len(cardinal_points) else 0} ,
                                 sy1 = {cardinal_points[3][0][1] if 4 <= len(cardinal_points) else 0} ,
                                 sx2 = {cardinal_points[3][1][0] if 4 <= len(cardinal_points) else 0} ,
-                                sy2 = {cardinal_points[3][1][1] if 4 <= len(cardinal_points) else 0}  
+                                sy2 = {cardinal_points[3][1][1] if 4 <= len(cardinal_points) else 0} ,
+                                aa = {aa} ,
+                                ab = {ab} ,
+                                ac = {ac} ,
+                                ad = {ad} ,
+                                ba = {ba} ,
+                                bb = {bb} ,
+                                bc = {bc} ,
+                                bd = {bd} ,
+                                ca = {ca} ,
+                                cb = {cb} ,
+                                cc = {cc} ,
+                                cd = {cd} ,
+                                da = {da} ,
+                                db = {db} ,
+                                dc = {dc} ,
+                                dd = {dd} 
                                 WHERE id={cam_id}""")
             print('Updated!!!', cardinal_points)
+
+            self.set_distance_signal.emit(cam_id, side_distances)
 
     def add_cam(self):
         try:
@@ -94,7 +114,7 @@ class AddCameraWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 last_id = 0
 
             # print('Cam ID:  ', f'{last_id + 1}. {self.inputCamDisplayName.text()}')
-            self.db_cur.execute(f"INSERT INTO cameras VALUES ({last_id + 1}, '{self.inputCamIP.text()}', '{self.inputCamUsername.text()}', '{self.inputCamPassword.text()}', '{last_id + 1}. {self.inputCamDisplayName.text()}', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)")
+            self.db_cur.execute(f"INSERT INTO cameras VALUES ({last_id + 1}, '{self.inputCamIP.text()}', '{self.inputCamUsername.text()}', '{self.inputCamPassword.text()}', '{last_id + 1}. {self.inputCamDisplayName.text()}', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)")
             self.db_conn.commit()
 
             dataset = LoadHikvisionCamera(

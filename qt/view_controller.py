@@ -88,6 +88,7 @@ class ViewController(QWidget, Ui_Form):
                 # rtsp_stream = f'rtsp://{self.cam_username}:{self.cam_password}@{self.cam_ip}:554/Streaming/channels/101'
                 # vcap = cv2.VideoCapture(rtsp_stream)
                 # ret, frame = vcap.read()
+                self.distances = [camera_info[21], camera_info[22], camera_info[23], camera_info[24], camera_info[25], camera_info[26], camera_info[27], camera_info[28], camera_info[29], camera_info[30], camera_info[31], camera_info[32], camera_info[33], camera_info[34], camera_info[35], camera_info[36]]
                 frame = dataset.get_frame()
                 # print(camera_info)
                 cardinal_direction_points = [
@@ -137,6 +138,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.process_done_signal.connect(self.onProcessDone)
         self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
         self.add_cam_window.process_done_signal.connect(self.onCamBtnsClosed)
+        self.add_cam_window.set_distance_signal.connect(self.updateDistances)
         self.remove_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.edit_camera_window.process_done_signal.connect(self.onCamBtnsClosed)
         self.show_calendar_window.process_done_signal.connect(self.onCamBtnsClosed)
@@ -175,15 +177,14 @@ class ViewController(QWidget, Ui_Form):
             print('Updated!!!', cardinal_points)
     
     def updateDistances(self, cam_id, distances):
-        if cam_id == 0:
-            self.distances = distances
-            print(self.distances)
+        self.distances = distances
 
     def onActivated(self, text):
         cam_id = text.split('.')[0]
         # print(cam_id)
         self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
         camera_info = self.db_cur.fetchall()
+        self.distances = [camera_info[0][21], camera_info[0][22], camera_info[0][23], camera_info[0][24], camera_info[0][25], camera_info[0][26], camera_info[0][27], camera_info[0][28], camera_info[0][29], camera_info[0][30], camera_info[0][31], camera_info[0][32], camera_info[0][33], camera_info[0][34], camera_info[0][35], camera_info[0][36]]
         # print(camera_info)
         cardinal_direction_points = [
                                         [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
@@ -220,6 +221,7 @@ class ViewController(QWidget, Ui_Form):
             cam_id = str(self.comboBox.currentText()).split('.')[0]
             self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
             camera_info = self.db_cur.fetchall()
+            self.distances = [camera_info[0][21], camera_info[0][22], camera_info[0][23], camera_info[0][24], camera_info[0][25], camera_info[0][26], camera_info[0][27], camera_info[0][28], camera_info[0][29], camera_info[0][30], camera_info[0][31], camera_info[0][32], camera_info[0][33], camera_info[0][34], camera_info[0][35], camera_info[0][36]]
 
             # print(camera_info)
             cardinal_direction_points = [
@@ -288,6 +290,7 @@ class ViewController(QWidget, Ui_Form):
             cam_id = str(self.comboBox.currentText()).split('.')[0]
             self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
             camera_info = self.db_cur.fetchall()
+            self.distances = [camera_info[0][21], camera_info[0][22], camera_info[0][23], camera_info[0][24], camera_info[0][25], camera_info[0][26], camera_info[0][27], camera_info[0][28], camera_info[0][29], camera_info[0][30], camera_info[0][31], camera_info[0][32], camera_info[0][33], camera_info[0][34], camera_info[0][35], camera_info[0][36]]
 
             # print(camera_info)
             cardinal_direction_points = [
@@ -424,6 +427,7 @@ class ViewController(QWidget, Ui_Form):
                                             [[cameras[0][13], cameras[0][14]], [cameras[0][15],cameras[0][16]]], # west
                                             [[cameras[0][17], cameras[0][18]], [cameras[0][19], cameras[0][20]]] # south
                                         ]
+            self.distances = [cameras[0][21], cameras[0][22], cameras[0][23], cameras[0][24], cameras[0][25], cameras[0][26], cameras[0][27], cameras[0][28], cameras[0][29], cameras[0][30], cameras[0][31], cameras[0][32], cameras[0][33], cameras[0][34], cameras[0][35], cameras[0][36]]
             self.model.setCameraInfo(cameras[0][0], cameras[0][1], cameras[0][2], cameras[0][3], cameras[0][4], cardinal_direction_points)
             self.is_refresh_clicked = 1
         self.comboBox.clear()
@@ -674,7 +678,24 @@ class ViewController(QWidget, Ui_Form):
             self.bInCount.display(0)
             self.cInCount.display(0)
             self.dInCount.display(0)
-    
+
+            self.NNbicycleCount_2.display(0)
+            self.NEbicycleCount_2.display(0)
+            self.NWbicycleCount_2.display(0)
+            self.NSbicycleCount_2.display(0)
+            self.ENbicycleCount_2.display(0)
+            self.EEbicycleCount_2.display(0)
+            self.EWbicycleCount_2.display(0)
+            self.ESbicycleCount_2.display(0)
+            self.WNbicycleCount_2.display(0)
+            self.WEbicycleCount_2.display(0)
+            self.WWbicycleCount_2.display(0)
+            self.WSbicycleCount_2.display(0)
+            self.SNbicycleCount_2.display(0)
+            self.SEbicycleCount_2.display(0)
+            self.SWbicycleCount_2.display(0)
+            self.SSbicycleCount_2.display(0)
+
     @Slot(int)
     def updateInCount(self, side_id):
         if side_id == 0:  # a side
@@ -700,6 +721,7 @@ class ViewController(QWidget, Ui_Form):
 
         if row_num == '00':  # NN
             self.NNtotal.display(count)
+            self.NNbicycleCount_2.display(self.NNbicycleCount_2.intValue()+speed if self.NNbicycleCount_2.intValue() == 0 else (self.NNbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.truckCount.display(self.truckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -717,6 +739,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '01':  # NE
             self.NEtotal.display(count)
+            self.NEbicycleCount_2.display(self.NEbicycleCount_2.intValue()+speed if self.NEbicycleCount_2.intValue() == 0 else (self.NEbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.NEtruckCount.display(self.NEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -734,6 +757,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '02':  # NW
             self.NWtotal.display(count)
+            self.NWbicycleCount_2.display(self.NWbicycleCount_2.intValue()+speed if self.NWbicycleCount_2.intValue() == 0 else (self.NWbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.NWtruckCount.display(self.NWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -751,6 +775,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '03':  # NS
             self.NStotal.display(count)
+            self.NSbicycleCount_2.display(self.NSbicycleCount_2.intValue()+speed if self.NSbicycleCount_2.intValue() == 0 else (self.NSbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.NStruckCount.display(self.NStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -768,6 +793,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '10':  # EN
             self.ENtotal.display(count)
+            self.ENbicycleCount_2.display(self.ENbicycleCount_2.intValue()+speed if self.ENbicycleCount_2.intValue() == 0 else (self.ENbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.ENtruckCount.display(self.ENtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -785,6 +811,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '11':  # EE
             self.EEtotal.display(count)
+            self.EEbicycleCount_2.display(self.EEbicycleCount_2.intValue()+speed if self.EEbicycleCount_2.intValue() == 0 else (self.EEbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.EEtruckCount.display(self.EEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -802,6 +829,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '12':  # EW
             self.EWtotal.display(count)
+            self.EWbicycleCount_2.display(self.EWbicycleCount_2.intValue()+speed if self.EWbicycleCount_2.intValue() == 0 else (self.EWbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.EWtruckCount.display(self.EWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -819,6 +847,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '13':  # ES
             self.EStotal.display(count)
+            self.ESbicycleCount_2.display(self.ESbicycleCount_2.intValue()+speed if self.ESbicycleCount_2.intValue() == 0 else (self.ESbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.EStruckCount.display(self.EStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -836,6 +865,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '20':  # WN
             self.WNtotal.display(count)
+            self.WNbicycleCount_2.display(self.WNbicycleCount_2.intValue()+speed if self.WNbicycleCount_2.intValue() == 0 else (self.WNbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.WNtruckCount.display(self.WNtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -853,6 +883,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '21':  # WE
             self.WEtotal.display(count)
+            self.WEbicycleCount_2.display(self.WEbicycleCount_2.intValue()+speed if self.WEbicycleCount_2.intValue() == 0 else (self.WEbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.WEtruckCount.display(self.WEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -870,6 +901,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '22':  # WW
             self.WWtotal.display(count)
+            self.WWbicycleCount_2.display(self.WWbicycleCount_2.intValue()+speed if self.WWbicycleCount_2.intValue() == 0 else (self.WWbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.WWtruckCount.display(self.WWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -887,6 +919,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '23':  # WS
             self.WStotal.display(count)
+            self.WSbicycleCount_2.display(self.WSbicycleCount_2.intValue()+speed if self.WSbicycleCount_2.intValue() == 0 else (self.WSbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.WStruckCount.display(self.WStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -904,6 +937,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '30':  # SN
             self.SNtotal.display(count)
+            self.SNbicycleCount_2.display(self.SNbicycleCount_2.intValue()+speed if self.SNbicycleCount_2.intValue() == 0 else (self.SNbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.SNtruckCount.display(self.SNtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -921,6 +955,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '31':  # SE
             self.SEtotal.display(count)
+            self.SEbicycleCount_2.display(self.SEbicycleCount_2.intValue()+speed if self.SEbicycleCount_2.intValue() == 0 else (self.SEbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.SEtruckCount.display(self.SEtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -938,6 +973,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '32':  # SW
             self.SWtotal.display(count)
+            self.SWbicycleCount_2.display(self.SWbicycleCount_2.intValue()+speed if self.SWbicycleCount_2.intValue() == 0 else (self.SWbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.SWtruckCount.display(self.SWtruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -955,6 +991,7 @@ class ViewController(QWidget, Ui_Form):
                 return
         elif row_num == '33':  # SS
             self.SStotal.display(count)
+            self.SSbicycleCount_2.display(self.SSbicycleCount_2.intValue()+speed if self.SSbicycleCount_2.intValue() == 0 else (self.SSbicycleCount_2.intValue()+speed)/2)
             if class_id == 6:
                 self.SStruckCount.display(self.SStruckCount.intValue()+1)
                 # table = self.truckPreviewTable
@@ -1019,6 +1056,7 @@ class ViewController(QWidget, Ui_Form):
             print(cam_id)
             self.db_cur.execute(f"SELECT * FROM cameras WHERE id = {cam_id}")
             camera_info = self.db_cur.fetchall()
+            self.distances = [camera_info[0][21], camera_info[0][22], camera_info[0][23], camera_info[0][24], camera_info[0][25], camera_info[0][26], camera_info[0][27], camera_info[0][28], camera_info[0][29], camera_info[0][30], camera_info[0][31], camera_info[0][32], camera_info[0][33], camera_info[0][34], camera_info[0][35], camera_info[0][36]]
             # print(camera_info)
             cardinal_direction_points = [
                                             [[camera_info[0][5], camera_info[0][6]], [camera_info[0][7], camera_info[0][8]]], # north
@@ -1239,4 +1277,14 @@ class ViewController(QWidget, Ui_Form):
         self.bInLabel.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
         self.cInLabel.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
         self.dInLabel.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+
+        # traffic flow translator
+        self.label_14.setText(QCoreApplication.translate("Form", self.text_translator.a_in, None))
+        self.label_58.setText(QCoreApplication.translate("Form", self.text_translator.b_in, None))
+        self.label_45.setText(QCoreApplication.translate("Form", self.text_translator.c_in, None))
+        self.label_51.setText(QCoreApplication.translate("Form", self.text_translator.d_in, None))
+        self.label_59.setText(QCoreApplication.translate("Form", self.text_translator.a_out, None))
+        self.label_60.setText(QCoreApplication.translate("Form", self.text_translator.b_out, None))
+        self.label_61.setText(QCoreApplication.translate("Form", self.text_translator.c_out, None))
+        self.label_15.setText(QCoreApplication.translate("Form", self.text_translator.d_out, None))
         self.sidewiseCountMatrixDisplay.setTabText(self.sidewiseCountMatrixDisplay.indexOf(self.tab), QCoreApplication.translate("Form", self.text_translator.total, None))   

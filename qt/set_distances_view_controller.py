@@ -9,7 +9,7 @@ class SetDistanceWindow(QMainWindow, Ui_MainWindow):
     process_done_signal = Signal(int, list)
     def __init__(self, icon_path, text_translator, cam_id):
         super(SetDistanceWindow, self).__init__()
-        self.distances = None 
+        self.distances = [0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] 
 
         self.cam_id = cam_id
         self.icon_path = icon_path
@@ -47,7 +47,7 @@ class SetDistanceWindow(QMainWindow, Ui_MainWindow):
     
     def onOkButtonClick(self):
         self.setDistances()
-        self.process_done_signal.emit(self.cam_id, self.distances)
+        self.process_done_signal.emit(int(self.cam_id), self.distances)
         self.hide()
     
     # def retranslateUi(self, MainWindow):

@@ -66,7 +66,23 @@ class App(QApplication):
                     sx1 integer,
                     sy1 integer,
                     sx2 integer,
-                    sy2 integer
+                    sy2 integer,
+                    aa integer,
+                    ab integer,
+                    ac integer,
+                    ad integer,
+                    ba integer,
+                    bb integer,
+                    bc integer,
+                    bd integer,
+                    ca integer,
+                    cb integer,
+                    cc integer,
+                    cd integer,
+                    da integer,
+                    db integer,
+                    dc integer,
+                    dd integer
                 )""")
         except Exception as err:
             print('Error:  ', err)
