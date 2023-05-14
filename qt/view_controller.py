@@ -99,6 +99,9 @@ class ViewController(QWidget, Ui_Form):
             except Exception as err:
                 print('Error!', err)
                 draw_line = False
+        
+        else:
+            draw_line = False
 
         self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, 1, cardinal_direction_points) if draw_line else DrawDynamicLineWidget(None)
 
@@ -144,6 +147,7 @@ class ViewController(QWidget, Ui_Form):
         print('Cam ID:  ', cam_id)
         if cam_id == 0:
             self.set_distance_window = SetDistanceWindow(self.icon_path, self.text_translator, cam_id)
+            self.set_distance_window.process_done_signal.connect(self.updateDistances)
             self.set_distance_window.show()
 
         if cam_id > 0:
@@ -169,6 +173,11 @@ class ViewController(QWidget, Ui_Form):
                                 sy2 = {cardinal_points[3][1][1]} 
                                 WHERE id={cam_id}""")
             print('Updated!!!', cardinal_points)
+    
+    def updateDistances(self, cam_id, distances):
+        if cam_id == 0:
+            self.distances = distances
+            print(self.distances)
 
     def onActivated(self, text):
         cam_id = text.split('.')[0]
@@ -199,7 +208,7 @@ class ViewController(QWidget, Ui_Form):
         self.show_calendar_window.setTextTranslator(self.text_translator)
         self.show_calendar_window.retranslateUi(self.add_cam_window)
     
-    def changeSidePosition(self):
+    def changeSidePosition(self, is_new_video=False):
         is_camera = False
         if self.checkBox.isChecked():
             print('self.', self.video_source[0])
@@ -240,8 +249,8 @@ class ViewController(QWidget, Ui_Form):
             # ret, frame = vcap.read()
             frame = dataset.get_frame()
 
-        print('Before')
-        print('Camid:  ', self.draw_dynamic_line_widget.cam_id, self.draw_dynamic_line_widget.lines)
+        if is_new_video:
+            self.draw_dynamic_line_widget.lines = []
 
         if self.draw_dynamic_line_widget.cam_id != 0:
             self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, cam_id if is_camera else 0, cardinal_direction_points if is_camera else None)
@@ -249,9 +258,6 @@ class ViewController(QWidget, Ui_Form):
         elif self.draw_dynamic_line_widget.cam_id == 0 and not self.draw_dynamic_line_widget.lines:
             self.draw_dynamic_line_widget = DrawDynamicLineWidget(frame, cam_id if is_camera else 0, cardinal_direction_points if is_camera else None)
             self.draw_dynamic_line_widget.closed_signal.connect(self.updateEditedLines)
-        
-        print('after')
-        print('Camid:  ', self.draw_dynamic_line_widget.cam_id, self.draw_dynamic_line_widget.lines)
 
         self.draw_dynamic_line_widget.show()
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, added_cam_id=last_id+1, draw_color=self.draw_color)
@@ -266,10 +272,10 @@ class ViewController(QWidget, Ui_Form):
                 root = 'D:/'
             else:
                 root = '/home/yeoju/'
-            self.video_source = QFileDialog.getOpenFileName(self, "Open Video", '/home/yeoju', "mp4 (*.mp4)")
+            self.video_source = QFileDialog.getOpenFileName(self, "Open Video", root, "mp4 (*.mp4)")
             # self.source = [os.path.join(videos_root, video_name) for video_name in os.listdir(videos_root) if Path(video_name).suffix in  ['.mp4', '.avi']]
             # source = r'F:\vehicle_count\14,03,2023\24 Format 02.12\ch01_00000000007000000 00_00_44-00_06_54.mp4'            
-            self.changeSidePosition()
+            self.changeSidePosition(True)
             # self.draw_line_widget = DrawLineWidget(frame, self.db_conn, self.db_cur, draw_color=self.draw_color)
             # cv2.imshow('Image', self.draw_line_widget.show_image())
             # self.model.cardinal_direction_points = [[[1010, 317], [1711, 321]], [[1863, 373], [2313, 657]], [[739, 387], [380, 790]], [[397, 901], [2461, 921]]]
@@ -682,66 +688,15 @@ class ViewController(QWidget, Ui_Form):
         return
         
 
-    @Slot(int,int,int,np.ndarray)
-    def updateVehicleCount(self, class_id, uid, count, img, row_num, preview_num):
+    @Slot(int,int,int,np.ndarray, str, int, float, int)
+    def updateVehicleCount(self, class_id, uid, count, img, row_num, preview_num, speed, side_idx):
         '''
         class_id 5 == van not motorcycle
         class_id 2 == bicycle
         class_id 3 == motorcycle
 
         '''
-
-        # self.truckCount.display(count)
-        # self.carCount.display(count)
-        # self.busCount.display(count)
-        # self.NEtruckCount.display(count)
-        # self.NEcarCount.display(count)
-        # self.NEbusCount.display(count)
-        # self.NWtruckCount.display(count)
-        # self.NWcarCount.display(count)
-        # self.NWbusCount.display(count)
-        # self.NStruckCount.display(count)
-        # self.NScarCount.display(count)
-        # self.NSbusCount.display(count)
-        # self.ENtruckCount.display(count)
-        # self.ENcarCount.display(count)
-        # self.ENbusCount.display(count)
-        # self.EEtruckCount.display(count)
-        # self.EEcarCount.display(count)
-        # self.EEbusCount.display(count)
-        # self.EWtruckCount.display(count)
-        # self.EWcarCount.display(count)
-        # self.EWbusCount.display(count)
-        # self.EStruckCount.display(count)
-        # self.EScarCount.display(count)
-        # self.ESbusCount.display(count)
-        # self.WNtruckCount.display(count)
-        # self.WNcarCount.display(count)
-        # self.WNbusCount.display(count)
-        # self.WEtruckCount.display(count)
-        # self.WEcarCount.display(count)
-        # self.WEbusCount.display(count)
-        # self.WWtruckCount.display(count)
-        # self.WWcarCount.display(count)
-        # self.WWbusCount.display(count)
-        # self.WStruckCount.display(count)
-        # self.WScarCount.display(count)
-        # self.WSbusCount.display(count)
-        # self.SNtruckCount.display(count)
-        # self.SNcarCount.display(count)
-        # self.SNbusCount.display(count)
-        # self.SEtruckCount.display(count)
-        # self.SEcarCount.display(count)
-        # self.SEbusCount.display(count)
-        # self.SWtruckCount.display(count)
-        # self.SWcarCount.display(count)
-        # self.SWbusCount.display(count)
-        # self.SStruckCount.display(count)
-        # self.SScarCount.display(count)
-        # self.SSbusCount.display(count)
-
-        # print('I am in update function')
-        # print(class_id, uid, count, row_num, preview_num)
+        print('Speed:  ', speed, side_idx)
 
         if row_num == '00':  # NN
             self.NNtotal.display(count)
@@ -1047,6 +1002,7 @@ class ViewController(QWidget, Ui_Form):
         self.model.update_db_conn_cur(self.db_conn, self.db_cur)
         self.model.use_video = self.checkBox.isChecked()
         self.model.text_translator = self.text_translator
+        self.model.distances = self.distances
         if self.checkBox.isChecked():
             self.model.cardinal_direction_points = self.draw_dynamic_line_widget.getPolygonPoints()
             print('Distances:   ', self.set_distance_window.distances)

@@ -49,7 +49,7 @@ class Model(QObject):
     # max_frame_update_signal = Signal(int)
     process_done_signal = Signal()
     error_signal = Signal(str)
-    vehicle_count_signal = Signal(int,int,int,np.ndarray,str,int)
+    vehicle_count_signal = Signal(int,int,int,np.ndarray, str,int, float, int)
     vehicle_in_count_signal = Signal(int)
 
     def __init__(self, conn, cur, draw_color):
@@ -83,6 +83,7 @@ class Model(QObject):
         self.counted_ids = []
         self.draw_color = draw_color
         self.CARDINAL_DIRECTIONS = ['North', 'East', 'West', 'South']
+        self.distances = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         
         self.allowed_classes = ['car', 'bicycle', 'motorcycle', 'bus', 'van',  'truck', '']
         self.vehicle_counter = {'0': 0,'1':0, '2':0, '3':0, '4':0, '5':0, '6':0, '':0}  # 1 truck, 2 car, 3 bus, 4 bicycle, 5 motorcycle
@@ -327,6 +328,7 @@ class Model(QObject):
                     'out_cardinal_side':None,
                     'check_out_cardinal_side':False,
                     'last_in_cardinal_side_frame_num':None,
+                    'in_time':None,
                     'row_id':False
                 }
 
@@ -358,7 +360,15 @@ class Model(QObject):
                         # if centroid intersected with cardinal side and disappeared for 5 frames it will be counted as out cardina side 
                         if tracker_dict[uid]['in_cardinal_side'] and (frame_num - tracker_dict[uid]['last_in_cardinal_side_frame_num']) > 7 and tracker_dict[uid]['dist'] > 40:
                             tracker_dict[uid]['out_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
+                            current_time = self.time_now if self.use_video else datetime.datetime.now()
                             row_id = f"{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['in_cardinal_side'])}{self.CARDINAL_DIRECTIONS.index(tracker_dict[uid]['out_cardinal_side'])}"
+                            side_idx = int(row_id[0])*4+int(row_id[1])  # 0-15 number which is index of the list [aa, ab, ac, ad, ba, bb, bc, bd, ca, cb, cc, cd, da, db, dc, dd]
+                            distance_km = self.distances[side_idx] * 0.001
+
+                            hour_difference = abs(current_time - tracker_dict[uid]['in_time']).total_seconds() / 3600.0
+                            speed = distance_km / hour_difference
+
+                            print('Distance:  ', distance_km / hour_difference)
 
                             if self.cardinal_vehicle_counter.get(row_id):
                                 self.cardinal_vehicle_counter[row_id] += 1
@@ -418,7 +428,7 @@ class Model(QObject):
                                                                 '{tracker_dict[uid]['in_cardinal_side']}',
                                                                 '{tracker_dict[uid]['out_cardinal_side']}',
                                                                 {class_id},
-                                                                '{self.time_now}',
+                                                                '{self.time_now if self.use_video else datetime.datetime.now()}',
                                                                 {self.cam_id},
                                                                 '{row_id}'
                                                             )"""
@@ -429,7 +439,7 @@ class Model(QObject):
                             # start = time()
                             print('Removed ID:  ', uid, class_id, tracker_dict[uid])
                             del tracker_dict[uid]
-                            self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)]) 
+                            self.vehicle_count_signal.emit(class_id, int(uid), self.cardinal_vehicle_counter[row_id], img, row_id, self.vehicle_counter[str(class_id)], speed, side_idx) 
                             # print('Remove vehicle and send to view_controller: ', time() - start)
                         else:
                             if not tracker_dict[uid]['in_cardinal_side']:
@@ -438,6 +448,7 @@ class Model(QObject):
                                 self.trackableObjects[int(uid)] = track_obj
                                 tracker_dict[uid]['in_cardinal_side'] = self.CARDINAL_DIRECTIONS[cardinal_side_id]
                                 self.vehicle_in_count_signal.emit(cardinal_side_id)
+                                tracker_dict[uid]['in_time'] = self.time_now if self.use_video else datetime.datetime.now()
                                 
                             tracker_dict[uid]['last_in_cardinal_side_frame_num'] = frame_num
                         break
@@ -462,6 +473,7 @@ class Model(QObject):
                     'out_cardinal_side':None,
                     'check_out_cardinal_side':False,
                     'last_in_cardinal_side_frame_num':None,
+                    'in_time':None,
                     'row_id':False
                 }
 
@@ -565,12 +577,12 @@ class Model(QObject):
         
         stride, class_names, classes, pt = model.stride, list(model.names.values()), model.names, model.pt
         imgsz = check_img_size(imgsz, s=stride)  # check image size
+        self.time_now = datetime.datetime.now()
 
         # Load dataset
         if self.use_video:
             dataset = LoadImages(self.source, imgsz, stride, pt)
             print('FPS:  ', dataset.fps)
-            self.time_now = datetime.datetime.now()
             self.add_time = datetime.timedelta(seconds=1/dataset.fps)
             self.cam_id = 0
         else:
